@@ -6,9 +6,35 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="Robots" content="index,follow" />
   <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/reset/reset-min.css">
+  <style type="text/css">
+  html { padding: 1em; color: #333; }
+  p { margin: 0 0 1em 0;}
+  ul { margin: 0.25em 0 1em 0;}
+  li { list-style-type: square; margin: 0 0 0 2em;}
+  h1 { font-size: 150%; margin: 0 0 1em 0; width: 100%; border-bottom: 1px dotted #333;}
+  h2 { font-size: 125%; margin: 0 0 0.5em 0;}
+  </style>
 </head>
 <body>
   <h1>Craig R Webster</h1>
-  <p>Skeleton GitHub pages project. See also <a href="http://barkingiguana.com/~craig">http://barkingiguana.com/~craig</a>.</p>
+  <h2>See also:</h2>
+  <ul>
+    <li><a href="http://barkingiguana.com/~craig">my homepage</a></li>
+    <li><a href="http://github.com/craigw">my projects on GitHub</a>
+  </ul>
+
+  <h2>Things I want to write or do</h2>
+  <ul>
+    <li>Bussy. An application skeleton generator for services that sit on the bus.</li>
+    <li>Blobby. An abstraction of various blob stores to allow them to be swapped out simply by changing a configuration file. Sort of like <a href="http://github.com/seanohalpin/smqueue">SMQueue</a> but for MogileFS, S3 and other such services.</li>
+    <li>An SRPM for ActiveMQ. I'm fed up of having to install this by hand.</li>
+    <li>An SRPM for DaemonTools. With sensible paths... /command does not work for me.</li>
+    <li>HTML-to-PDF. A service that sits on the bus and converts incoming messages containing HTML (or perhaps a reference to an HTML document) to a PDF.</li>
+    <li>Geolocation. A service that sits on the bus and converts an address to latitude/longtitude.</li>
+    <li>Pseudo-application: expose a queue or topic via XMPP PubSub.</li>
+    <li>A service that searches hashtags and puts the results on the bus.</li>
+    <li>Application that allows people to search for NXER trains by price rather than date: <q>When can I travel to Edinburgh and back for less than &pound;50?</q></li>
+  </ul>
+  <p>If you'd be interested in hacking on any of these things with me, if you've already implemented all or part of one of these projects, or even if you're just interested in using one of them... please <a href="http://barkingiguana.com/~craig/contact">give me a yell<a/> and let me know!</p>
 </body>
 </html>
