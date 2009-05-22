@@ -30,7 +30,6 @@
     <li>An SRPM for ActiveMQ. I'm fed up of having to install this by hand.</li>
     <li>An SRPM for DaemonTools. With sensible paths... /command does not work for me and I shouldn't need to be root to run <code>svstat</code> like the default instructions require.</li>
     <li>HTML-to-PDF. A service that sits on the bus and converts incoming messages containing HTML (or perhaps a reference to an HTML document) to a PDF.</li>
-    <li>Geolocation. A service that sits on the bus and converts an address to latitude/longtitude.</li>
     <li>Pseudo-application: expose a queue or topic via XMPP PubSub. Seems like <a href="http://camel.apache.org/components.html">Apache Camel</a> can bridge between various queue implementations (thanks @<a href="http://twitter.com/jstrachan">jstrachan</a>).</li>
     <li>A service that searches hashtags and puts the results on the bus.</li>
     <li>Application that allows people to search for NXER trains by price rather than date: <q>When can I travel to Edinburgh and back for less than &pound;50?</q></li>
@@ -42,5 +41,10 @@
     <li>An application that will aggregate music libraries on the same network into one large library then allow people to vote for which track is next iTunes DJ style. Look into using mDNS to discover libraries. Music should be streamed and not copied over the network.</li>
   </ul>
   <p>If you'd be interested in hacking on any of these things with me, if you've already implemented all or part of one of these projects, or even if you're just interested in using one of them... please <a href="http://barkingiguana.com/~craig/contact">give me a yell<a/> and let me know!</p>
+
+  <h2>Stuff that was on the above list but is now done:</h2>
+  <ul>
+    <li>Geolocation. A service that sits on the bus and converts an address to latitude/longtitude. See <a href="https://github.com/craigw/geocoding-service">https://github.com/craigw/geocoding-service</a>.</li>
+  </ul>
 </body>
 </html>
