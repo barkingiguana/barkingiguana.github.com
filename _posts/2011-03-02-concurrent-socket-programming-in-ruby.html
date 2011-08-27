@@ -3,29 +3,31 @@ title: "Concurrent socket programming in Ruby"
 layout: post
 author: Craig
 ---
-<em>I was recently asked if I had the content of some articles that I posted a long time ago on a blog I used to run. After some searching I managed to scrape together the content using the way-back machine. It’s faithfully recreated here without changes, something I should have done when I first bought the barkingiguana.com domain.</em>
+<div class="foreword">
+  <p>I was recently asked if I had the content of some articles that I posted a long time ago on a blog I used to run. After some searching I managed to scrape together the content using the way-back machine. It’s faithfully recreated here without changes, something I should have done when I first bought the barkingiguana.com domain.</p>
+</div>
 
-Continuing my <a href="http://barkingiguana.com/2011/03/01/socket-programming-in-ruby/">previous adventure</a> in socket programming in Ruby, today I’ve attempted to communicate with multiple sockets concurrently.
+<p>Continuing my <a href="http://barkingiguana.com/2011/03/01/socket-programming-in-ruby/">previous adventure</a> in socket programming in Ruby, today I’ve attempted to communicate with multiple sockets concurrently.</p>
 
-<code>kawaii:~ craig$ irb
-irb(main):001:0> require 'socket'
-=> true
-irb(main):002:0> threads = []
-=> []
-irb(main):003:0> ports = [22,23,24,25,26,27,28,29,30].freeze
-=> [22, 23, 24, 25, 26, 27, 28, 29, 30]
-irb(main):004:0> for port in ports
-irb(main):005:1>   threads << Thread.new(port) { |p|
+<pre><code>kawaii:~ craig$ irb
+irb(main):001:0&gt; require 'socket'
+=&gt; true
+irb(main):002:0&gt; threads = []
+=&gt; []
+irb(main):003:0&gt; ports = [22,23,24,25,26,27,28,29,30].freeze
+=&gt; [22, 23, 24, 25, 26, 27, 28, 29, 30]
+irb(main):004:0&gt; for port in ports
+irb(main):005:1&gt;   threads &lt;&lt; Thread.new(port) { |p|
 irb(main):006:2*     puts "Checking if port " + p.to_s + " is open..."
-irb(main):007:2>     begin                 
+irb(main):007:2&gt;     begin
 irb(main):008:3*       t = TCPSocket.new('xeriom.net', p)
-irb(main):009:3>       t.close
-irb(main):010:3>       puts "Port " + p.to_s + " is open."
-irb(main):011:3>     rescue
-irb(main):012:3>       puts "Port " + p.to_s + " is not open."
-irb(main):013:3>     end
-irb(main):014:2>   }
-irb(main):015:1> end
+irb(main):009:3&gt;       t.close
+irb(main):010:3&gt;       puts "Port " + p.to_s + " is open."
+irb(main):011:3&gt;     rescue
+irb(main):012:3&gt;       puts "Port " + p.to_s + " is not open."
+irb(main):013:3&gt;     end
+irb(main):014:2&gt;   }
+irb(main):015:1&gt; end
 Checking if port 22 is open...Checking if port 23 is open...Checking if port 24 is open...
 Checking if port 25 is open...
 Checking if port 26 is open...
@@ -34,17 +36,17 @@ Port 22 is open.Checking if port 28 is open...
 Checking if port 29 is open...
 
 Checking if port 30 is open...
-=> [22, 23, 24, 25, 26, 27, 28, 29, 30]
-irb(main):016:0>
+=&gt; [22, 23, 24, 25, 26, 27, 28, 29, 30]
+irb(main):016:0&gt;
 
 Port 24 is not open.Port 23 is not open.Port 29 is not open.Port 28 is not open.Port 25 is open.
 
-Port 27 is not open.Port 26 is not open.Port 30 is not open.</code>
+Port 27 is not open.Port 26 is not open.Port 30 is not open.</code></pre>
 
-It produces a bit of a mess, but that’s not what we care about just now – we can see that many sockets can be checked with with ease; ports 22 and 25 are open (ssh and smtp respectively). I’ve just created a simple port scanner in only 15 lines of Ruby and while it’s not exactly pretty, it works.
+<p>It produces a bit of a mess, but that’s not what we care about just now – we can see that many sockets can be checked with with ease; ports 22 and 25 are open (ssh and smtp respectively). I’ve just created a simple port scanner in only 15 lines of Ruby and while it’s not exactly pretty, it works.</p>
 
-The <a href="http://www.rubycentral.com/book/tut_threads.html">Ruby thread tutorial</a> at <a href="http://www.rubycentral.com/">Ruby Central</a> mentions a fairly large caveat: if a thread executes something at the OS level that takes a long time to return, it can freeze the entire interpreter. Not good.
+<p>The <a href="http://www.rubycentral.com/book/tut_threads.html">Ruby thread tutorial</a> at <a href="http://www.rubycentral.com/">Ruby Central</a> mentions a fairly large caveat: if a thread executes something at the OS level that takes a long time to return, it can freeze the entire interpreter. Not good.</p>
 
-Weirdly, it doesn’t seem like this applies to TCPSockets: adding in a few checks (which are left as an exercise to the reader), it seems that the only thing limiting the number of active threads in this program is the overhead of creating the threads; there are up to 10 running at any one time with the above code and I believe that there could be a lot more if creation was faster.
+<p>Weirdly, it doesn’t seem like this applies to TCPSockets: adding in a few checks (which are left as an exercise to the reader), it seems that the only thing limiting the number of active threads in this program is the overhead of creating the threads; there are up to 10 running at any one time with the above code and I believe that there could be a lot more if creation was faster.</p>
 
-Tomorrow (or maybe later today) I’ll be attempting to use <a href="http://rubyonrails.org/api/classes/ActiveRecord/Base.html">ActiveRecord</a> outside of <a href="http://rubyonrails.org/">Rails</a>. I know it can be done, I just don’t know how hard it is yet.
+<p>Tomorrow (or maybe later today) I’ll be attempting to use <a href="http://rubyonrails.org/api/classes/ActiveRecord/Base.html">ActiveRecord</a> outside of <a href="http://rubyonrails.org/">Rails</a>. I know it can be done, I just don’t know how hard it is yet.</p>

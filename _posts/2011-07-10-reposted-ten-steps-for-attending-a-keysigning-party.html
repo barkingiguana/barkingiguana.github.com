@@ -3,102 +3,105 @@ title: "Reposted: Ten Steps for Attending a Keysigning Party"
 layout: post
 author: Craig
 ---
-<em>This is a copy of the post which could be found at <a href="http://commandline.org.uk/command-line/2007/sep/7/ten-steps-for-attending-a-keysigning-party/">http://commandline.org.uk/command-line/2007/sep/7/ten-steps-for-attending-a-keysigning-party/</a>. The original post appears to have disappeared into the ether and the URL now returns a 404. This work is not my own and I'm not trying to claim it as such, I just link to it in a few places and want a permanent archive of the work. Thanks to <a href="http://vic.demuzere.be/">Vic Demuzere</a> who let me know that the work I was linking to had gone missing.</em>
 
-<em>Update: the original post appears to be archived at <a href="http://old.commandline.org.uk/command-line/ten-steps-for-attending-a-keysigning-party/">http://old.commandline.org.uk/command-line/ten-steps-for-attending-a-keysigning-party/</a>.</em>
+<div class="foreword">
+  <p>This is a copy of the post which could be found at <a href="http://commandline.org.uk/command-line/2007/sep/7/ten-steps-for-attending-a-keysigning-party/">http://commandline.org.uk/command-line/2007/sep/7/ten-steps-for-attending-a-keysigning-party/</a>. The original post appears to have disappeared into the ether and the URL now returns a 404. This work is not my own and I'm not trying to claim it as such, I just link to it in a few places and want a permanent archive of the work. Thanks to <a href="http://vic.demuzere.be/">Vic Demuzere</a> who let me know that the work I was linking to had gone missing.</p>
 
-<em>A key signing party can be an event of its own, or it might be at a user group meeting, or at a conference, or at a workplace. The idea is to increase the 'web of trust' and thus strengthen the system as a whole, as well as making your own key more trusted. Alex Willmer explains what you need to do to participate in a key signing party, using GNU Privacy Guard.</em>
+  <p>Update: the original post appears to be archived at <a href="http://old.commandline.org.uk/command-line/ten-steps-for-attending-a-keysigning-party/">http://old.commandline.org.uk/command-line/ten-steps-for-attending-a-keysigning-party/</a>.</p>
+</div>
 
-You can use either the command line gpg tool or a GUI front end such as seahorse. The command line approach goes as follows:
+<p class="introduction">A key signing party can be an event of its own, or it might be at a user group meeting, or at a conference, or at a workplace. The idea is to increase the 'web of trust' and thus strengthen the system as a whole, as well as making your own key more trusted. Alex Willmer explains what you need to do to participate in a key signing party, using GNU Privacy Guard.</p>
 
-<strong>0. Generate a key</strong>
+<p>You can use either the command line gpg tool or a GUI front end such as seahorse. The command line approach goes as follows:/p>
 
-If you've not already done so, generate a key pair:
+<h2>0. Generate a key</h2>
 
-<tt class="docutils literal"><span class="pre">$</span> <span class="pre">gpg</span> <span class="pre">--gen-key</span></tt>
+<p>If you've not already done so, generate a key pair:</p>
 
-<strong>1. Get your key ID</strong>
+<pre><code>$ gpg --gen-key</code></pre>
 
-Find your public key, by typing this:
+<h2>1. Get your key ID</h2>
 
-<tt class="docutils literal"><span class="pre">$</span> <span class="pre">gpg</span> <span class="pre">--list-keys</span></tt>
+<p>Find your public key, by typing this:</p>
 
-This gives the results as below, the uid should match your name and chosen email address. Note the id, on the line labelled 'pub':
-<div class="highlight">
-<pre>&gt; /home/alex/.gnupg/pubring.gpg
+<pre><code>$ gpg --list-keys</code></pre>
+
+<p>This gives the results as below, the uid should match your name and chosen email address. Note the id, on the line labelled 'pub':</p>
+
+<pre><code>&gt; /home/alex/.gnupg/pubring.gpg
 -----------------------------
 pub 1024D/5A6F95BE 2007-02-08
 uid Alex Willmer &lt;alex at moreati.org.uk&gt;
-sub 2048g/63329941 2007-02-08</pre>
-</div>
-<strong>2. Upload your key</strong>
+sub 2048g/63329941 2007-02-08</code></pre>
 
-Publish your public key to a keyserver, use the keyserver option:
+<h2>2. Upload your key</h2>
 
-<tt class="docutils literal"><span class="pre">$</span> <span class="pre">gpg</span> <span class="pre">--keyserver</span> <span class="pre">ldap://keyserver.pgp.com</span> <span class="pre">--send-keys</span> <span class="pre">5A6F95BE</span></tt>
+<p>Publish your public key to a keyserver, use the keyserver option:</p>
 
-Which should respond as follows:
+<pre><code>$ gpg --keyserver ldap://keyserver.pgp.com --send-keys 5A6F95BE</code></pre>
 
-<tt class="docutils literal"><span class="pre">&gt;</span> <span class="pre">gpg:</span> <span class="pre">sending</span> <span class="pre">key</span> <span class="pre">5A6F95BE</span> <span class="pre">to</span> <span class="pre">ldap</span> <span class="pre">server</span> <span class="pre">keyserver.pgp.com</span></tt>
+<p>Which should respond as follows:</p>
 
-<strong>3. Print your key fingerprint</strong>
+<pre><code>&gt; gpg: sending key 5A6F95BE to ldap server keyserver.pgp.com</code></pre>
 
-Type the following, using the id from step 1.
+<h2>3. Print your key fingerprint</h2>
 
-<tt class="docutils literal"><span class="pre">$</span> <span class="pre">gpg</span> <span class="pre">--fingerprint</span> <span class="pre">5A6F95BE</span></tt>
+<p>Type the following, using the id from step 1.</p>
 
-The result is your keyfingerprint of your public key, as shown below.
-<div class="highlight">
-<pre>&gt; pub 1024D/5A6F95BE 2007-02-08
+<pre><code>$ gpg --fingerprint 5A6F95BE</code></pre>
+
+<p>The result is the fingerprint of your public key:</p>
+
+<pre><code>&gt; pub 1024D/5A6F95BE 2007-02-08
 Key fingerprint = C9CD 3335 C138 7291 2022 F30D 2E51 C57B 5A6F 95BE
 uid Alex Willmer &lt;alex at moreati.org.uk&gt;
-sub 2048g/63329941 2007-02-08</pre>
-</div>
-Print your fingerprint onto paper, you should be able to get quite a few on a page, which you can then cut into slips. This also may be achieved with the command gpg-key2ps.
+sub 2048g/63329941 2007-02-08</code></pre>
 
-<strong>4. Go to the party!</strong>
+<p>Print your fingerprint onto paper, you should be able to get quite a few on a page, which you can then cut into slips. This also may be achieved with the command <code>gpg-key2ps</code>.</p>
 
-Bring the slips and credentials that prove your identity to the key signing party. Normally parties require you to bring credentials that include a photo (e.g. your passport or drivers licence).
+<h2>4. Go to the party!</h2>
 
-<strong>5. Give out slips</strong>
+<p>Bring the slips and credentials that prove your identity to the key signing party. Normally parties require you to bring credentials that include a photo (e.g. your passport or drivers licence).</p>
 
-Give a fingerprint slip to anybody you wish to sign your key, and allow them to verify your identity using your credentials.
+<h2>5. Give out slips</h2>
 
-<strong>6. Take slips</strong>
+<p>Give a fingerprint slip to anybody you wish to sign your key, and allow them to verify your identity using your credentials.</p>
 
-Verify in person, the identity of anybody you accept a slip from. Ensure the slip has a uid matching their name.
+<h2>6. Take slips</h2>
 
-<em>Note that it is anti-social to take slips and just throw them away or forget about them. If you take a slip from someone then it is polite to actually use it by doing steps 7+8.</em>
+<p>Verify in person, the identity of anybody you accept a slip from. Ensure the slip has a uid matching their name.</p>
 
-<strong>7. Verify the key fingerprints of your acquaintances</strong>
+<p><em>Note that it is anti-social to take slips and just throw them away or forget about them. If you take a slip from someone then it is polite to actually use it by doing steps 7+8.</em></p>
 
-Once home, using the id from each slip, download and verify the fingerprint of each person's key:
+<h2>7. Verify the key fingerprints of your acquaintances</h2>
 
-<tt class="docutils literal"><span class="pre">$</span> <span class="pre">gpg</span> <span class="pre">--keyserver</span> <span class="pre">ldap://keyserver.pgp.com</span> <span class="pre">--recv-keys</span> <span class="pre">[key_id]</span></tt>
+<p>Once home, using the id from each slip, download and verify the fingerprint of each person's key:</p>
 
-<tt class="docutils literal"><span class="pre">$</span> <span class="pre">gpg</span> <span class="pre">--fingerprint</span> <span class="pre">[key_id]</span></tt>
+<pre><code>$ gpg --keyserver ldap://keyserver.pgp.com --recv-keys [key_id]</code></pre>
 
-<strong>8. Upload your acquaintances' keys</strong>
+<pre><code>$ gpg --fingerprint [key_id]</code></pre>
 
-Sign each of the verified keys, upload them to a keyserver:
+<h2>8. Upload your acquaintances' keys</h2>
 
-<tt class="docutils literal"><span class="pre">$</span> <span class="pre">gpg</span> <span class="pre">--sign-key</span> <span class="pre">[key_id]</span></tt>
+<p>Sign each of the verified keys, upload them to a keyserver:</p>
 
-<tt class="docutils literal"><span class="pre">$</span> <span class="pre">gpg</span> <span class="pre">--keyserver</span> <span class="pre">ldap://keyserver.pgp.com</span> <span class="pre">--send-key</span> <span class="pre">[key_id]</span></tt>
+<pre><code>$ gpg --sign-key [key_id]</code></pre>
 
-<strong>9. Use GPG!</strong>
+<pre><code>$ gpg --keyserver ldap://keyserver.pgp.com --send-key [key_id]</code></pre>
 
-You can now sign emails and anybody who signed your key can verify that email was sent by you and has not been modified. Additionally, you can encrypt anything you send to a person whose key you have signed.
+<h2>9. Use GPG!</h2>
 
-<strong>10. Advanced usage</strong>
+<p>You can now sign emails and anybody who signed your key can verify that email was sent by you and has not been modified. Additionally, you can encrypt anything you send to a person whose key you have signed.</p>
 
-There are optional, additional steps such as encrypting a signed key and sending it to the listed uid. By receiving the signed key and decrypting it, they prove access to the email address and control of the private key.
+<h2>10. Advanced usage</h2>
 
-<strong>More Information</strong>
+<p>There are optional, additional steps such as encrypting a signed key and sending it to the listed uid. By receiving the signed key and decrypting it, they prove access to the email address and control of the private key.</p>
+
+<h2>More Information</h2>
 <ul class="simple">
-	<li><a class="reference external" href="http://www.gnupg.org/">GNU Privacy Guard</a></li>
-	<li><a class="reference external" href="http://cryptnet.net/fdp/crypto/keysigning_party/en/keysigning_party.html">The Keysigning Party HowTo</a></li>
-	<li><a class="reference external" href="http://debaday.debian.net/2007/02/18/signing-party-complete-toolkit-for-efficient-key-signing/">Signing-party - complete toolkit for efficient key-signing</a></li>
-	<li><a class="reference external" href="http://www.gentoo.org/doc/en/gnupg-user.xml">GnuPG Gentoo User Guide</a></li>
-	<li><a class="reference external" href="https://help.ubuntu.com/community/GnuPrivacyGuardHowto">Ubuntu Gnu Privacy Guard Howto</a></li>
+  <li><a class="reference external" href="http://www.gnupg.org/">GNU Privacy Guard</a></li>
+  <li><a class="reference external" href="http://cryptnet.net/fdp/crypto/keysigning_party/en/keysigning_party.html">The Keysigning Party HowTo</a></li>
+  <li><a class="reference external" href="http://debaday.debian.net/2007/02/18/signing-party-complete-toolkit-for-efficient-key-signing/">Signing-party - complete toolkit for efficient key-signing</a></li>
+  <li><a class="reference external" href="http://www.gentoo.org/doc/en/gnupg-user.xml">GnuPG Gentoo User Guide</a></li>
+  <li><a class="reference external" href="https://help.ubuntu.com/community/GnuPrivacyGuardHowto">Ubuntu Gnu Privacy Guard Howto</a></li>
 </ul>

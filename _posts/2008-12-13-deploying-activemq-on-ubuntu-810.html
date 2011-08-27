@@ -14,13 +14,14 @@ author: Craig
 <h4>Installing ActiveMQ</h4>
 
 <ol>
-<li>Grab the latest stable release using wget. I used 5.2.0.
-<pre><code>wget http://www.apache.org/dist/activemq/apache-activemq/5.2.0/apache-activemq-5.2.0-bin.tar.gz</code></pre></li>
-<li>Unpack it somewhere. I use <code>/usr/local</code> although I believe this may be bad practice. Leave a comment if there's somewhere better for this!
-<pre><code>sudo tar -xzvf apache-activemq-5.2.0-bin.tar.gz -C /usr/local/</code></pre></li>
-<li>Configure the broker name in <code>/usr/local/apache-activemq-5.2.0/conf/activemq.xml</code> (replace all instances of "localhost" with the actual machine name)</li>
-<li>Start ActiveMQ by running <code>/usr/local/apache-activemq-5.2.0/bin/activemq</code>
-<li>Fire up a browser and browse to http://brokername:8161/admin. You should see the ActiveMQ admin console.</li>
+  <li>Grab the latest stable release using wget. I used 5.2.0.
+  <pre><code>wget http://www.apache.org/dist/activemq/apache-activemq/5.2.0/apache-activemq-5.2.0-bin.tar.gz</code></pre></li>
+  <li>Unpack it somewhere. I use <code>/usr/local</code> although I believe this may be bad practice. Leave a comment if there's somewhere better for this!
+  <pre><code>sudo tar -xzvf apache-activemq-5.2.0-bin.tar.gz -C /usr/local/</code></pre></li>
+  <li>Configure the broker name in <code>/usr/local/apache-activemq-5.2.0/conf/activemq.xml</code> (replace all instances of "localhost" with the actual machine name)</li>
+  <li>Start ActiveMQ by running <code>/usr/local/apache-activemq-5.2.0/bin/activemq</code>
+  <li>Fire up a browser and browse to http://brokername:8161/admin. You should see the ActiveMQ admin console.</li>
+</ol>
 
 <h4>Keeping ActiveMQ running</h4>
 
@@ -38,7 +39,7 @@ sudo chown -R activemq /usr/local/apache-activemq-5.2.0/data</code></pre>
 <p><code>/usr/local/apache-activemq-5.2.0/service/activemq/run</code> should look like this.</p>
 
 <pre><code>#!/bin/sh
-exec 2>&1
+exec 2&gt;&amp;1
 
 USER=activemq
 
