@@ -1,0 +1,374 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Getting started with node.js</title>
+  <!-- metadata -->
+  <meta name="generator" content="Craig R Webster" />
+  <meta name="version" content="S5 1.1" />
+  <meta name="presdate" content="201001" />
+  <meta name="author" content="Craig R Webster" />
+  <meta name="company" content="Agency.com" />
+  <!-- configuration parameters -->
+  <meta name="defaultView" content="slideshow" />
+  <meta name="controlVis" content="hidden" />
+  <!-- style sheet links -->
+  <link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+  <link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+  <link rel="stylesheet" href="../ui/default/print.css" type="text/css" media="print" id="slidePrint" />
+  <link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+  <!-- S5 JS -->
+  <script src="../ui/default/slides.js" type="text/javascript"></script>
+  <script src="../ui/default/tracker.js" type="text/javascript" defer="defer"></script>
+</head>
+<body>
+  <div class="layout">
+    <div id="controls"><!-- DO NOT EDIT --></div>
+    <div id="currentSlide"><!-- DO NOT EDIT --></div>
+    <div id="header"></div>
+    <div id="footer">
+      <h1>London Javascript Meetup</h1>
+      <h2>Getting started with node.js</h2>
+    </div>
+  </div>
+
+  <div class="presentation">
+    <div class="slide">
+      <h1>Getting started with node.js</h1>
+      <h2>A brief introduction</h2>
+      <h3>Craig R Webster</h3>
+      <h4>Senior Software Engineer, Agency.com</h4>
+      <div class="handout">
+        <p>Hi, I'm Craig and I'm a senior software engineer at
+        Agency.com. Mostly I look after the Rails projects there, but
+        when Rails is your hammer everything looks like a thumb. Rails
+        is nice but it isn't always the right tool for the job. It's
+        good to have a decent idea of the technologies available
+        outside the Rails and Ruby world.</p>
+        <p>I've been using Javascript to support work that I do for the
+        past 8 or so years but I started to get really interested in
+        what Javascript could do about three years ago when I saw Rails
+        spit out some mangled code to make a link POST some data...
+        Basically thought "this is horrible, there has to be a better
+        way". Through that I got into unobtrusive enhancement using
+        Javascript and from there into reverse-http for more complex
+        communication than would normally be available to a web browser.
+        I'd seen a few applications use Javascript in environments
+        outside the browser but hadn't really played with it.</p>
+        <p>Recently I've been hearing whispers about node.js being the
+        new hotness and figured I'd take a look. I had originally
+        assumed it was something like reverse-http. Totally wrong.</p>
+        <p>I've been using node.js for a few weeks now for toy projects
+        and I'd like to show you how I got started and what I found
+        out - a very brief introduction.</p>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>What is node.js?</h1>
+      <ul>
+        <li class="incremental">Javascript framework for building scalable network programs</li>
+        <li class="incremental">Efficient - evented, (mostly) non-blocking I/O</li>
+        <li class="incremental">Simple - easy to learn, easy to use</li>
+        <li class="incremental">Extensible - by wider community, uses <a href="http://commonjs.org/">CommonJS</a></li>
+        <li class="incremental">Scalable - uses evented I/O</li>
+      </ul>
+      <div class="handout">
+        <p>This talk is about node.js so a description of node.js would
+        be handy. Unfortunately there's no one-line slogan on the
+        nodejs.org site and the documentation is a little unclear about
+        exactly what node.js is, prefering instead to talk about what
+        it allows us to do, and giving examples of how to do that.
+        After a little digging I found out that it's a Javascript
+        framework geared towards building servers. I guess it's a little
+        like Erlang/OTP's gen_server behavior... just without process
+        supervision and hot code swapping.</p>
+        <p>It's pretty simple to learn and use. The documentation is
+        easily read and generally understandable in less than 30
+        minutes.</p>
+        <p>Node can be extended pretty easily too. By moving towards
+        using the CommonJS specification for modules, node.js is
+        allowing wider re-use of code developed for node.js
+        applications elsewhere - and easing the process of bringing
+        that code to be brought into node.js projects.</p>
+        <p>One node process can easily handle many hundreds or
+        thousands of connections because it uses evented I/O.</p>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Evented I/O</h1>
+      <p>Traditional I/O:</p>
+      <pre><code>data = file.read("/foo/bar");
+  // wait...
+  doSomething(data);</pre></code>
+      <p>Evented I/O:</p>
+      <pre><code>file.read("/foo/bar", function(data) {
+  // called after data is read
+  doSomething(data);
+});
+otherThing(); // execute immediately;</code></pre>
+      <div class="handout">
+        <p>In case you haven't come across evented I/O before, here's
+        difference between that and regular I/O.</p>
+        <p>With traditional I/O when you read a file you have to
+        wait for the data to be read before you can do anything else.
+        You ask for the data, you wait for it to be read, you do
+        something with the data.</p>
+        <p>By using evented I/O you can register callbacks which are
+        called when an event - such as data having been read - has
+        completed. After registering a callback the program continues
+        with no wait. When an event occurs node.js wakes up and
+        executes the appropriate callback for that event. Callbacks
+        are developer defined Javascript functions - nice and
+        simple.</p>
+        <p>It's not impossible to do this with most languages, but it
+        can get pretty complex and CPU or memory intensive. Node.js
+        uses epoll, kqueue, or /dev/poll) and non-blocking I/O calls
+        like select so it doesn't need a bunch of native or green
+        threads to avoid blocking. You don't have to worry about
+        handling all that stuff.</p>
+        <p>In node.js most of the I/O operations emit something called
+        a promise which you then define your callbacks on.</p>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Promises, promises</h1>
+      <p>Naive rename and delete:</p>
+      <pre><code class="javascript">posix.rename("/tmp/hello", "/tmp/world");
+posix.unlink("/tmp/world");</code></pre>
+      <p>Might fail - no guarantee which operation will complete
+      first.</p>
+      <p>Instead:</p>
+      <pre><code class="javascript">var promise = posix.rename("/tmp/hello", "/tmp/world");
+promise.addCallback(function() {
+  posix.unlink("/tmp/world");
+};</code></pre>
+      <div class="handout">
+        <p>Since most operations are no-blocking there's no guarantee
+        which operation will complete first so the first example here
+        may fail because the unlink completes first, before the rename
+        operation completes.</p>
+        <p>rename returns a promise though, and we can set the callback
+        on that to unlink the file once the rename has completed -
+        whenever that may be.</p>
+        <p>In general a promise is an object that will do something
+        when the operation it was created from has completed or failed
+        - a promise to do something at some point later.</p>
+        <p>Anyway, evented I/O isn't particularly big news if you've
+        used EventMachine (or Twisted I believe), so what makes node.js
+        worth looking at? Why shouldn't you just use Erlang/OTP,
+        EventMachine, Twisted or whatever? Those tackle a similar set
+        of problems, are well tested and generally well regarded in
+        this area.</p>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Why is it exciting?</h1>
+      <ul>
+        <li>Many people know Javascript</li>
+        <li>Closures are familiar in Javascript</li>
+        <li>Asynchronous programming fairly widespread</li>
+        <li>Widely taught - courses are readily available</li>
+        <li>Low enterprise impedance - already widely used and
+        generally accepted</li>
+        <li>Helps heal divided "front end" and "back end" teams</li>
+      </ul>
+      <div class="handout">
+        <p>Well, mainly it's about Javascript. The others are seen as a
+        hard to get into because they're different to what most people
+        are used to working with. For Javascript this isn't a problem
+        since many people already use Javascript day-to-day.
+        <p>When using Javascript you're used to the idea of closures
+        (in Javascript: anonymous functions) being passed around.</p>
+        <p>Thanks to Ajax most Javascript developers have at least a basic
+        idea of what programming asynchronously is like, and unlike
+        other languages Javascript isn't plagued by an abundance of
+        libraries that rely on blocking calls.</p>
+        <p>Javascript training courses are readily available.</p>
+        <p>There's also very little to worry about in terms of company
+        adoption since Javascript is most likely already used elsewhere
+        in the company. It's a smaller step to adopt Javascript as a
+        server-side language than it is to introduce something like Go
+        or Erlang.</p>
+        <p>Since it's Javascript we should hopefully have less of a
+        divide between those who work on the client-side and those who
+        work on the server-side. We're all talking the same language
+        now, and while we'll continue to have specialities there's no
+        reason that a client-side developer can't work side-by-side
+        with a server-side developer.</p>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>CommonJS Modules</h1>
+      <p>A simple, standardised way of providing Javascript
+      libraries.</p>
+      <p>Define methods to make available to the world using
+      <code>exports</code>.</p>
+      <pre><code class="javascript">exports.sum = function(a, b) {
+  return a + b;
+}</pre></code>
+      <p>Import modules using <code>require</code>.</p>
+      <pre><code class="javascript">var math = require("./math");
+math.sum(1, 2); // => 3</code></pre>
+      <div class="handout">
+        <p>In a previous slide I mentionded that node.js is easily
+        extensible because it makes use of CommonJS. So what's
+        that?</p>
+        <p>CommonJS is an attempt to expand the standard library
+        provided by the Javascript specification into something that is
+        useful beyond the browser-based world that Javascript is
+        normally confined to. It's been around for about a year and V8
+        is just one of many places that it's being implemented.</p>
+        <p>This code example shows how CommonJS can be used. require is
+        a construct used to import Javascript modules. It takes as an
+        argument the module name that you wish to load.
+        <code class="javascript">sys</code> is a built-in node.js
+        module for printing to standard out ("puts"), printing
+        debugging information (which it does synchronously unlike most
+        other I/O operations), inspection of objects, and external
+        command execution.</p>
+        <p>There are other built-in modules for handling things like
+        file I/O (the POSIX module), HTTP servers (there's a server and
+        a client implementation in the HTTP module), generic TCP
+        servers (the TCP module), DNS lookups (the DNS module) and
+        several others. It's also possible to write your own according
+        to the CommonJS specification.</p>
+        <p>To write your own you define properties on the exports object
+        which are then returned from a <code>require()</code> on that
+        file. This slide is a very simple example of how that would
+        work. There are plenty of libraries out there already, and
+        node.js comes with a few built-in.</p>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Hello, World!</h1>
+      <p>Canonical first program is pretty easy to implement.</p>
+      <p><pre><code class="javascript">var sys = require('sys');
+sys.puts('Hello, World!');</code></pre><p>
+      <p>Running it is simple too.</p>
+      <p><pre><code class="bash">node hello-world.js</code></pre></p>
+      <div class="handout">
+        <p>Now we've got an idea of how CommonJS works, let's take a
+        look at a node.js program. This is a typical first program
+        which simply prints "Hello, World!" on the screen.</p>
+        <p>Node.js programs are run pretty much the same as shell
+        scripts.</p>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Hello, Interwebs!</h1>
+      <p>Node.js helps us build servers. Here's a simple HTTP server.</p>
+      <p><pre><code class="javascript">var sys  = require("sys"),
+    http = require("http");
+http.createServer(function(request, response) {
+  var headers = { "Content-Type": "text/plain" };
+  response.sendHeader(200, headers);
+  response.sendBody("Hello, World!\n");
+  response.finish();
+}).listen(8000);
+sys.puts("&gt; Running at http://127.0.0.1:8000/");</code></pre><p>
+    <p><pre><code class="bash">node hello-interwebs.js
+&gt; Running at http://127.0.0.1:8000/</code></pre></p>
+      <div class="handout">
+        <p>Printing to the screen is a bit boring. Node.js is meant to
+        help us build networked programs. Here's how node.js can be
+        used to produce a simple web server. Run the code and you'll
+        get a server listening on port 8000 that'll say "Hello, World!"
+        to anyone that connects. Simple, huh?</p>
+        <p>Already it can handle silly amounts of connections - I
+        exceeded the number of available outgoing ports when testing it
+        and it didn't break a sweat.</p>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Hello, Internets!</h1>
+      <p>Here's a simple TCP server (the echo service).</p>
+      <p><pre><code class="javascript">var tcp  = require("tcp");
+tcp.createServer(function(socket) {
+  socket.addListener('receive', function(data) {
+    socket.send(data);
+  })
+}).listen(8001);</code></pre><p>
+      <p><pre><code class="bash">node hello-interwebs.js</code></pre></p>
+      <div class="handout">
+        <p>Networked programs are a little more than just HTTP servers
+        though. There's service called echo that is meant to just
+        repeat back whatever data you send it. Here's how to implement
+        it in node.js.</p>
+        <p>We've seen HTTP and TCP servers built easily using built-in
+        modules. These modules can also create clients, and other
+        built-in modules include POSIX (for working with files),
+        Multipart for parsing submitted form-data, DNS for working with
+        names and IP addresses, Assert for writing tests, path for
+        working with filesystem paths, URL for parsing URIs and Query
+        String for doing the same with query-strings. I won't
+        demonstrate all of those, but you can see that there's plenty
+        of helpful things there for building your own services and it's
+        easy to add more.</p>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Installing</h1>
+      <ul>
+        <li>Takes ~2 minutes</li>
+        <li><code>git clone git://github.com/ry/node.git</code></li>
+        <li><code>cd node</code></li>
+        <li><code>./configure</code></li>
+        <li><code>make</code></li>
+        <li><code>make test</code> (optional)</li>
+        <li><code>make install</code></li>
+      </ul>
+      <div class="handout">
+        <p>Well, that's the brief run-down. Hopefully you're thinking
+        that it seems pretty simple to get started building network
+        services with node. If so, installing node.js takes just a
+        couple of minutes. Clone the repository, do the traditional
+        compilation dance and you're good to go. All dependencies are
+        included in the repository. Please do let me know how you get
+        on.</p>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Questions and contact details</h1>
+      <p>Any questions?</p>
+      <dl>
+        <dt>Twitter</dt><dd><a href="http://twitter.com/craigwebster">@craigwebster</a></dd>
+        <dt>Email</dt><dd><a href="mailto:craig@barkingiguana.com">craig@barkingiguana.com</a></dd>
+        <dt>My blog</dt><dd><a href="http://barkingiguana.com/">http://barkingiguana.com/</a></dd>
+        <dt>These slides</dt><dd><a href="http://barkingiguana.com/~craig/talks/2010/javascript-london/getting-started-with-node-js">http://barkingiguana.com/~craig/talks/2010/javascript-london/getting-started-with-node-js</a></dd>
+        <dt>All my talks (version controlled!)</dt><dd>git clone <a href="http://barkingiguana.com/~craig/talks.git">http://barkingiguana.com/~craig/talks.git</a></dd>
+        <div class="handout">
+          <p>I've only been using node.js for a very short while so I'm
+          not sure I'll be able to answer them, but are there any
+          questions?</p>
+        </div>
+      </div>
+    </div>
+
+    <!--
+      <div class="slide">
+        <h1>[slide title]</h1>
+        <ul>
+          <li>[point one]</li>
+          <li>[point two]</li>
+          <li>[point three]</li>
+          <li>[point four]</li>
+          <li>[point five]</li>
+        </ul>
+        <div class="handout">
+          [any material that should appear in print but not on the slide]
+        </div>
+      </div>
+    -->
+  </div>
+</body>
+</html>

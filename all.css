@@ -11,6 +11,10 @@ a:hover { background-color: #ffc; }
 
 .notice { background-color: #eee; padding: 1em 0; text-align: center; }
 
+.page .content dl { margin-left: 1em; margin-bottom: 1em; }
+.page .content dl dt { margin-left: 1em; font-weight: bold; }
+.page .content dl dd { margin-left: 1em; }
+
 .post .meta { display: block; text-align: right; margin-top: 1em; }
 .post .meta .property { display: none; }
 .post .meta .value { font-weight: bold; display: inline; }

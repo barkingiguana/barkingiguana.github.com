@@ -1,0 +1,205 @@
+These are a bunch of guidelines that I use when coding. Since they're
+just guidelines and not rules they can be broken or bent where
+necessary, but I very rarely find a good reason to do so.
+
+PROJECT RELATED
+
+Deployment
+  * Set it up early - before any other part of your project if you can.
+    It's hard to release early, release often if you can't release...
+  * Automate deployment - make it one-step if possible. Deployment is
+    error-prone and a list of commands to be typed by a human *will*
+    cause problems.
+  * Automate syncing of data from production to staging early. You'll
+    want real data there to play with and it's a bitch to get this at
+    the last minute before a release.
+  * Get releases out to a staging platform where the client can play
+    with them even if they're still very rough or functionally
+    incomplete. The client will want to ask for changes and see
+    progress.
+
+
+CLIENT SIDE
+
+Images
+  * No bigger than they need to be.
+  * Use Sprites where possible.
+  * Images live at /images/ in the URL schema. Use these absolute paths
+    wheverever you reference the image.
+  * Names are important. img_btn_204_500x600.png means nothing, edit.png 
+    does.
+
+CSS
+  * Always include the YUI reset, fonts and grids (ie the YUI
+    Foundation) stylesheets.
+    - you should develop a base style built on top of these.
+  * Use YUI grids where possible for layout.
+  * Measure in em's rather than pixels.
+  * Fonts sizes are in percentages.
+  * Use clear, meaningful identifiers and class names.
+    #bookmarks .bookmark rather than div ul .bk
+  * Use Sprites where appropriate.
+  * In production your CSS will be minified and served as one file,
+    all.css. Use body classes and identifiers to differentiate.
+  * Don't use a separate stylesheets for IE6, 7, 8, etc. Use conditional
+    comments to add a class to the body tag.
+  * Stylesheets live at /stylesheets/ in the URL schema. Use these
+    absolute paths wherever you reference the stylesheets.
+
+Javascript
+  * Pick a library. I like Prototype but I don't really care which one
+    is used as long as we're consistent.
+  * Enhancement using Javascript should be progressive. That is, the
+    mechanism should work without Javascript and Javascript should be
+    used only to add shine or increase usability.
+  * Javascript should be unobtrusive - use the event handling mechanism
+    provided by the library to hook into a load event and edit the DOM
+    to do what you want there.
+  * In production all Javascript will be served as one file, all.js.
+    Make sure your JS works like this.
+  * Don't pollute the global namespace. Unless you have a *very* good
+    reason, your Javascript should be wrapped in an anonymous function
+    that is called immediately.
+  * Javascripts live at /scripts/ in the URL schema. Use these absolute
+    paths when you reference the javascripts.
+  * Ajax
+    - Present a clear indicator that something is happening.
+    - Handle errors gracefully - and tell the client something went
+      wrong!
+
+
+SERVER SIDE
+
+HTTP/URLs/Security
+  * Accept requests on www.domain.com but redirect (301 - moved
+    permanently) to domain.com.
+  * Consider E-Tags, Expires and Last-Modified headers carefully -
+    they'll make a lot of difference to the cacheability of the page.
+  * Consider turning off sessions if they're not being used (they're not
+    a lot of the time)
+  * Try to avoid uppercase characters and anything outside a-z, 0-9, -
+    or _ in URLs, folders or filenames. We're using a case-sensitive
+    filesystem to serve files, let's not make life any more complicated.
+  * Protect login pages using SSL - not just the form submission but the
+    request for the form too.
+  * Protect session identifiers using SSL - this means that any time
+    someone is logged in they should be accessing the page using SSL.
+
+User Generated Content
+  * Keep it in a cloud somewhere, not on-disk. I've been caught out by
+    this so many times when trying to scale an application it's unreal.
+    If you want to manage the data locally use MogileFS, if not use S3.
+
+Backups
+  * Automate backups. Do it now. Backup the database, the code, the
+    configuration, the data.
+  * Monitor your backup process.
+  * Monitor your backup recency.
+  * Monitor your backup retention.
+  * Document your backup and restore process.
+  * Practice restoring regularly.
+  * Where practical, make restoring automatic.
+  * Backup before deploying.
+  * Keep a reasonably recent offline, off-site backup in case of
+    Apocalypse.
+
+Application architecture
+  * Since I generally use Rails I follow the MVC pattern, but I tend to
+    add a presenter layer between my models and views. Models deal
+    directly with the database and validating the data model, presenters
+    deal with the messy stuff - showing addresses as several form
+    fields, composing several models into one resource - and leave the
+    database models uncluttered.
+
+    The two advantages I get from this are that the data source and the
+    view are decoupled. I can change the database schema or swap out the
+    database for a web service and the views don't need to change at
+    all, just the presenter... and the data model remains pure and
+    unconcerned about how the view is trying to present for example
+    people's names as just initials.
+
+System architecture
+  * Think decoupled services for scalability and reuse. I usually build
+    web applications so this usually means a thin client to the service
+    bus in the application server.
+
+    [ web client ] --- [ load balancer ] --- [ app ] -- [ db ]
+                                             /  |  \       |
+                                        [ service layer ]--/
+
+    The service layer does all the work - processing images, sending
+    emails, whatever. The app just adds tiny messages to the queue and
+    returns a response to the user... fast and not much work.
+
+    If a service is becoming backed up with requests it's very easy to
+    scale it out.
+
+    If another application needs to send emails, process images,
+    whatever... well, that part of the application is already written.
+    Win!
+
+
+DEVELOPMENT
+
+Workstation
+  * /You/ are responsible for your work station. If you don't know how 
+    it works then you shouldn't be using it. Asking for help now and 
+    again is fine, stopping development for a day while you work out how 
+    to install native packages properly isn't.
+
+    VMWare and Cygwin provide ways to access other environments where 
+    necessary. Adapt your workstation as required.
+
+Indentation and gutter
+  * Agree something with the team and stick to it. In general I'd go for 
+    something like this:
+      - Two spaces, not a tab.
+      - Wrap at 72 characters unless it'll make the code less clear.
+      - No trailing whitespace.
+      - Braces on the same line.
+
+        var foo = function() {
+          // ...
+        }
+        
+        rather than
+
+        var foo = function()
+        {
+          // ...
+        }
+
+    It really doesn't matter what you agree on as long as you're 
+    consistent.
+
+Version Control
+  * Clear commit messages make it easy to see who did what, when and
+    importantly, why. There's a great guide to writing commit messages
+    here:
+      http://rubyurl.com/OcHy
+
+   If you're working on something related to a ticket, link to the ticket.
+   If you're using a ticketing system like Trac link to the changeset when 
+   closing the ticket.
+ 
+Ticketing
+  * One issue to a ticket. If you're writing a list of issues in one
+    ticket then they should be broken into several different tickets.
+  * Set a realistic priority. The most important things should be done
+    first.
+  * Don't assign tickets to a person - the most appropriate person on the 
+    team will accept it when starting the work.
+
+Developer workflow
+  * Accept the ticket that you're going to work on to avoid someone else
+    doing duplicate work.
+  * Create a branch for your work.
+  * Hack hack hack
+    1. Add a test to expose the feature, feature-step or bug that you're
+       trying to implement.
+    2. Make the test pass.
+    3. Commit with a clear commit message, referencing the issue (see
+       Subversion, above).
+    4. Goto 1 unless done.
+  * Merge with a clear commit message, closing the issue (see
+    Version Control, above).

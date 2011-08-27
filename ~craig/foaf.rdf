@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE rdf:RDF>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:wot="http://xmlns.com/wot/0.1/"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:ev="http://purl.org/rss/1.0/modules/event/">
+
+  <rdf:Description rdf:about="">
+    <wot:assurance rdf:resource="http://barkingiguana.com/~craig/foaf.rdf.asc" />
+  </rdf:Description>
+
+  <foaf:PersonalProfileDocument rdf:about="">
+    <foaf:maker rdf:resource="#me" />
+    <foaf:primaryTopic rdf:resource="#me" />
+  </foaf:PersonalProfileDocument>
+
+  <foaf:Person rdf:ID="me">
+    <foaf:name>Craig Webster</foaf:name>
+    <foaf:givenname>Craig</foaf:givenname>
+    <foaf:family_name>Webster</foaf:family_name>
+    <foaf:img rdf:resource="http://barkingiguana.com/~craig/me.jpg" />
+    <foaf:based_near rdf:resource="http://sws.geonames.org/2643743/" />
+    <dc:description>
+      I'm a software engineer living in London. My primary tool is Ruby although sometimes I use Erlang, JavaScript, PHP or whatever else happens to be appropriate.
+      In my spare time I go rock climbing, snowboarding, skating, I play with my camera and I code.
+    </dc:description>
+    <foaf:gender>male</foaf:gender>
+    <foaf:geekcode>
+      Version: 3.1
+      GCS d-(+) s++: a- C++(++++)$ UL++++$ P(+)>++ L+++$>++++
+      !E--(-)>++$ W+++$ !N !o? K-()? w(-) !O M+(+)$>++ !V- !PS? !PE?
+      Y+()>$ PGP+(++)>++ t(+) 5+(++) !X !R tv--(-)?>-- b+++(++++)>++++
+      DI+(+++) D+ G-() e++>++++ h(+) r++>+++ y+ 
+    </foaf:geekcode>
+
+    <foaf:jabberID>craig@xeriom.net</foaf:jabberID>
+
+    <foaf:mbox>craig@barkingiguana.com</foaf:mbox>
+    <foaf:mbox>craig@xeriom.net</foaf:mbox>
+    <foaf:mbox>craig.webster@bcs.org.uk</foaf:mbox>
+
+    <foaf:homepage rdf:resource="http://barkingiguana.com/~craig" />
+    <foaf:openid rdf:resource="http://barkingiguana.com/~craig" />
+    <foaf:weblog rdf:resource="http://barkingiguana.com/" />
+
+    <wot:pubkeyAddress rdf:resource="http://barkingiguana.com/~craig/key.asc" />
+
+    <foaf:workplaceHomepage rdf:resource="https://www.thecarbonhub.com/" />
+    <foaf:workplaceHomepage rdf:resource="http://xeriom.net/" />
+
+    <foaf:currentProject rdf:resource="#notonthehighstreet.com" />
+    <foaf:currentProject rdf:resource="#ruck" />
+    <foaf:currentProject rdf:resource="#foaf" />
+    <foaf:currentProject rdf:resource="#caniusehtml5.com" />
+    <foaf:currentProject rdf:resource="#london2" />
+    <foaf:currentProject rdf:resource="#smqueue" />
+    <foaf:currentProject rdf:resource="#htmldoc" />
+    <foaf:currentProject rdf:resource="#craigw.github.com" />
+
+    <foaf:pastProject rdf:resource="#picklive" />
+    <foaf:pastProject rdf:resource="#xeriom-scripts" />
+    <foaf:pastProject rdf:resource="#payment_processing" />
+    <foaf:pastProject rdf:resource="#nagiru" />
+    <foaf:pastProject rdf:resource="#natter" />
+    <foaf:pastProject rdf:resource="#carbonhub" />
+    <foaf:pastProject rdf:resource="#metrotwin" />
+    <foaf:pastProject rdf:resource="#greatbritons" />
+    <foaf:pastProject rdf:resource="#opportunity_iframe" />
+    <foaf:pastProject rdf:resource="#grants_uk" />
+    <foaf:pastProject rdf:resource="#grants_hk" />
+    <foaf:pastProject rdf:resource="#grants_in" />
+    <foaf:pastProject rdf:resource="#grants_sa" />
+    <foaf:pastProject rdf:resource="#grants_ua" />
+    <foaf:pastProject rdf:resource="#imagerunner" />
+    <foaf:pastProject rdf:resource="#thousand_days" />
+    <foaf:pastProject rdf:resource="#winanathlete" />
+    <foaf:pastProject rdf:resource="#comic_relief" />
+    <foaf:pastProject rdf:resource="#visualising_radio" />
+    <foaf:pastProject rdf:resource="#pit" />
+    <foaf:pastProject rdf:resource="#photo_tool" />
+    <foaf:pastProject rdf:resource="#orkell" />
+    <foaf:pastProject rdf:resource="#golfgrid" />
+    <foaf:pastProject rdf:resource="#activecouch" />
+    <foaf:pastProject rdf:resource="#irc-server.js" />
+    <foaf:pastProject rdf:resource="#spectacular" />
+    <foaf:pastProject rdf:resource="#irc-client.js" />
+    <foaf:pastProject rdf:resource="#email.js" />
+    <foaf:pastProject rdf:resource="#node-smtp" />
+    <foaf:pastProject rdf:resource="#jira" />
+    <foaf:pastProject rdf:resource="#dns-zonefile" />
+    <foaf:pastProject rdf:resource="#opencv-toys" />
+    <foaf:pastProject rdf:resource="#attachment_fu" />
+    <foaf:pastProject rdf:resource="#xeriom-nagios-snmp-agents" />
+    <foaf:pastProject rdf:resource="#http_tools" />
+    <foaf:pastProject rdf:resource="#form_builder" />
+    <foaf:pastProject rdf:resource="#xeriom-nagios-checks" />
+    <foaf:pastProject rdf:resource="#porox" />
+    <foaf:pastProject rdf:resource="#active_service" />
+    <foaf:pastProject rdf:resource="#clirc" />
+    <foaf:pastProject rdf:resource="#snmp-tools" />
+    <foaf:pastProject rdf:resource="#smarty-cake" />
+    <foaf:pastProject rdf:resource="#callback_after_commit" />
+    <foaf:pastProject rdf:resource="#expand-url-service" />
+    <foaf:pastProject rdf:resource="#cache-access" />
+    <foaf:pastProject rdf:resource="#gtweeter" />
+    <foaf:pastProject rdf:resource="#email-spec" />
+    <foaf:pastProject rdf:resource="#geocoding-service" />
+    <foaf:pastProject rdf:resource="#spam-classification-service" />
+    <foaf:pastProject rdf:resource="#cruisecontrol.rb" />
+    <foaf:pastProject rdf:resource="#feedback" />
+    <foaf:pastProject rdf:resource="#simple_deployment" />
+    <foaf:pastProject rdf:resource="#sprinkles" />
+    <foaf:pastProject rdf:resource="#bbc_podcast_notifier" />
+    <foaf:pastProject rdf:resource="#cached_asset_names" />
+    <foaf:pastProject rdf:resource="#rspec-on-rails-matchers" />
+
+    <foaf:interest rdf:resource="http://dbpedia.org/page/Software_development" />
+    <foaf:interest rdf:resource="http://dbpedia.org/resource/World_Wide_Web" />
+    <foaf:interest rdf:resource="http://dbpedia.org/resource/Ruby_%28programming_language%29" />
+    <foaf:interest rdf:resource="http://dbpedia.org/resource/Music" />
+    <foaf:interest rdf:resource="http://dbpedia.org/resource/Food" />
+    <foaf:interest rdf:resource="http://dbpedia.org/resource/Wine" />
+    <foaf:interest rdf:resource="http://dbpedia.org/resource/Beer" />
+    <foaf:interest rdf:resource="http://dbpedia.org/resource/Pizza" />
+    <foaf:interest rdf:resource="http://dbpedia.org/resource/Climbing" />
+    <foaf:interest rdf:resource="http://dbpedia.org/resource/Snowboarding" />
+
+    <foaf:knows rdf:resource="#yves" />
+    <foaf:knows rdf:resource="#patrick" />
+    <foaf:knows rdf:resource="#nick" />
+    <foaf:knows rdf:resource="#duncan" />
+
+    <owl:sameAs rdf:resource="http://last.fm/user/GigaHertz" />
+    <owl:sameAs rdf:resource="http://www.facebook.com/craig.r.webster" />
+    <owl:sameAs rdf:resource="http://twitter.com/craigwebster" />
+    <owl:sameAs rdf:resource="http://runkeeper.com/user/craigwebster" />
+    <owl:sameAs rdf:resource="http://corporate.picklive.com/fame#craigwebster" />
+  </foaf:Person>
+
+  <!-- Other people -->
+
+  <foaf:Person rdf:ID="yves">
+    <owl:sameAs rdf:resource="http://moustaki.org/foaf.rdf#moustaki" />
+  </foaf:Person>
+
+  <foaf:Person rdf:ID="patrick">
+    <owl:sameAs rdf:resource="http://metade.org/foaf.rdf#me" />
+  </foaf:Person>
+
+  <foaf:Person rdf:ID="nick">
+    <owl:sameAs rdf:resource="http://www.aelius.com/njh/foaf.rdf#me" />
+  </foaf:Person>
+
+  <foaf:Person rdf:ID="duncan">
+    <owl:sameAs rdf:resource="http://foafbuilder.qdos.com/people/whomwah.com/foaf.rdf#me" />
+  </foaf:Person>
+
+  <!-- Projects -->
+
+  <foaf:Project rdf:ID="notonthehighstreet.com">
+    <foaf:name>NotOnTheHighstreet.com</foaf:name>
+    <foaf:homepage rdf:resource="http://notonthehighstreet.com/" />
+    <dc:description>Helping people seek out the makers of the unusual, the inspired and just plain 'out there'</dc:description>
+    <ev:startdate>2011-06-27</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="ruck">
+    <foaf:name>Ruck</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/ruck" />
+    <dc:description>A mobile app to track and improve running performance</dc:description>
+    <ev:startdate>2011-06-10</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="picklive">
+    <foaf:name>Picklive</foaf:name>
+    <foaf:homepage rdf:resource="https://picklive.com/" />
+    <dc:description>Real-time gaming</dc:description>
+    <ev:startdate>2010-04-12</ev:startdate>
+    <ev:enddate>2011-06-24</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="nagiru">
+    <foaf:name>Nagiru</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/nagiru" />
+    <dc:description>Manipulating Nagios configuration using Ruby.</dc:description>
+    <ev:startdate>2010-03-25</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="natter">
+    <foaf:name>Natter</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/natter" />
+    <dc:description>A transport-agnostic bot framework.</dc:description>
+    <ev:startdate>2009-01-04</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="carbonhub">
+    <foaf:name>Carbon Hub</foaf:name>
+    <foaf:homepage rdf:resource="http://carbon-hub.com/" />
+    <foaf:depiction rdf:resource="http://skitch.com/cwebster/n7rxr/carbon-hub-dashboard" />
+    <foaf:depiction rdf:resource="http://skitch.com/cwebster/n7rxq/carbon-hub-graphs" />
+    <dc:description>A web-based carbon reduction service to help organisations implement carbon and cost-saving programs.</dc:description>
+    <ev:startdate>2010-03-01</ev:startdate>
+    <ev:enddate>2010-04-08</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="metrotwin">
+    <foaf:name>Metrotwin</foaf:name>
+    <foaf:homepage rdf:resource="http://metrotwin.com/" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-e7sdhg68cmktrew22923ufe962.jpg" />
+    <dc:description>Twinning places in New York and London to encourage exploration of the other city.</dc:description>
+    <ev:startdate>2009-03</ev:startdate>
+    <ev:enddate>2010-02-28</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="greatbritons">
+    <foaf:name>Great Britons</foaf:name>
+    <foaf:homepage rdf:resource="http://greatbritons.ba.com/" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-eq2mwshu4ca9rhjpm4exjpc5g8.jpg" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-1gd296afabka4fifkux4te49ar.jpg" />
+    <dc:description>Awarding flights to help talented individuals and groups that exhibit the values associated with Olympics achieve their best.</dc:description>
+    <ev:startdate>2009-03</ev:startdate>
+    <ev:enddate>2010-02-28</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="opportunity_iframe">
+    <foaf:name>World of Opportunity</foaf:name>
+    <foaf:homepage rdf:resource="http://ba.com/opportunity" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-gxn117pipq48fct1pbeks8mg3e.jpg" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-n9rmidcwyyhrdbmxsy67134iph.jpg" />
+    <dc:description>Find and buy flights to destinations that have events relevant to your interests.</dc:description>
+    <ev:startdate>2009</ev:startdate>
+    <ev:enddate>2010-02-28</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="grants_uk">
+    <foaf:name>Business Grants (United Kingdom)</foaf:name>
+    <foaf:homepage rdf:resource="http://uk.grants.ba.com/" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-chsu5fe1defdnsrq7tyxef3dhu.jpg" />
+    <dc:description>Awarding flights to SME's based in the United Kingdom to prove the value of face-to-face communication.</dc:description>
+    <ev:startdate>2009</ev:startdate>
+    <ev:enddate>2010-02-28</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="grants_hk">
+    <foaf:name>Business Grants (Hong Kong)</foaf:name>
+    <foaf:homepage rdf:resource="http://hk.grants.ba.com/" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-dwj4gj71rqywd1qnrf6n1kiphc.jpg" />
+    <dc:description>Awarding flights to SME's based in Hong Kong to prove the value of face-to-face communication.</dc:description>
+    <ev:startdate>2009</ev:startdate>
+    <ev:enddate>2010-02-28</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="grants_in">
+    <foaf:name>Business Grants (India)</foaf:name>
+    <foaf:homepage rdf:resource="http://ind.grants.ba.com/" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-te2awt6rg27wempabeuceyfgat.jpg" />
+    <dc:description>Awarding flights to SME's based in India to prove the value of face-to-face communication.</dc:description>
+    <ev:startdate>2009</ev:startdate>
+    <ev:enddate>2010-02-28</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="grants_sa">
+    <foaf:name>Business Grants (South Africa)</foaf:name>
+    <foaf:homepage rdf:resource="http://saf.grants.ba.com/" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-8aa46k4kjw9mty6mbyughiwdeu.jpg" />
+    <dc:description>Awarding flights to SME's based in South Africa to prove the value of face-to-face communication.</dc:description>
+    <ev:startdate>2009</ev:startdate>
+    <ev:enddate>2010-02-28</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="grants_ua">
+    <foaf:name>Business Grants (United Arab Emirates)</foaf:name>
+    <foaf:homepage rdf:resource="http://uae.grants.ba.com/" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-ncjxhuf7ehrjektagpgi29a8r4.jpg" />
+    <dc:description>Awarding flights to SME's based in the United Arab Emirates to prove the value of face-to-face communication.</dc:description>
+    <ev:startdate>2009</ev:startdate>
+    <ev:enddate>2010-02-28</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="imagerunner">
+    <foaf:name>Canon Image Runner</foaf:name>
+    <foaf:homepage rdf:resource="http://www.canon.se/imagerunner_advance/" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100226-g88iuf8xyeuwnqh9tfgnfkjy9x.jpg" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100226-r9hrg8bd49ybm6emicwx4rc5e5.jpg" />
+    <dc:description>Created a simple script to email details sent from a Flash client to selected Canon personnel.</dc:description>
+    <ev:startdate>2010-02-28</ev:startdate>
+    <ev:enddate>2010-02-29</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="thousand_days">
+    <foaf:name>1000 Days until the Olympics</foaf:name>
+    <foaf:homepage rdf:resource="http://1000days.ba.com/" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-gn3temuaqk8qex6ijkk288mmqj.jpg" />
+    <dc:description>Script that gathers details and adds them to a database.</dc:description>
+    <ev:startdate>2009-10</ev:startdate>
+    <ev:enddate>2009-11</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="winanathlete">
+    <foaf:name>Win An Athlete</foaf:name>
+    <foaf:homepage rdf:resource="http://winanathlete.ba.com/" />
+    <dc:description>Script that gathers details and adds them to a database. Similar to the 1000 days project but the winner won a day with Denise Lewis for the organisation of their choice.</dc:description>
+    <ev:startdate>2009-10</ev:startdate>
+    <ev:enddate>2009-11</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="comic_relief">
+    <foaf:name>Grants Management System</foaf:name>
+    <foaf:homepage rdf:resource="http://gms.comicrelief.com/" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-jutcqqxiykkdys1cpt2a8q2rhx.jpg" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-gx19qh6bfqktycy6ftdefc7mbw.jpg" />
+    <dc:description>Maintained newly launched site while development team were on holiday. Fixed several small bugs.</dc:description>
+    <ev:startdate>2009</ev:startdate>
+    <ev:enddate>2010-02-28</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="visualising_radio">
+    <foaf:name>Visualising Radio (Phase 1)</foaf:name>
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-8453s2haxqej1ns1pgfpt6wafj.jpg" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-n37kmm4mhe3he86cc362natn5h.jpg" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-1ejgk5qiwxe6n9u86mpatear63.jpg" />
+    <rdfs:seeAlso rdf:resource="http://www.bbc.co.uk/blogs/radiolabs/2008/01/visualising_radio.shtml#entry-22093" />
+    <rdfs:seeAlso rdf:resource="http://www.bbc.co.uk/blogs/radiolabs/2009/01/visual_radio_launches.shtml#entry-52455" />
+    <rdfs:seeAlso rdf:resource="http://www.bbc.co.uk/blogs/radiolabs/2009/01/visual_radio_phase_1_final_tho.shtml#entry-54630" />
+    <rdfs:seeAlso rdf:resource="http://www.bbc.co.uk/blogs/radiolabs/2009/01/how_visual_radio_works.shtml#entry-53420" />
+    <rdfs:seeAlso rdf:resource="http://www.bbc.co.uk/blogs/radiolabs/2009/01/visualising_radio_delivering_v.shtml#entry-53752" />
+    <rdfs:seeAlso rdf:resource="http://whomwah.com/2009/01/12/visualising-radio-pushing-not-pulling/#port-907" />
+    <rdfs:seeAlso rdf:resource="http://www.fridayforward.com/2009/01/12/tv-on-the-radio/" />
+    <dc:description>A trial service for the BBC - adding at-a-glance information to your favourite radio programmes.</dc:description>
+    <ev:startdate>2008-11</ev:startdate>
+    <ev:enddate>2009-01</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="pit">
+    <foaf:name>Programme Information Tool</foaf:name>
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-8xfeeb21j3iwe7qbdne9uqkx5p.jpg" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-tmu813kkj7rjpdr8jurh7y8yxc.jpg" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-fkqg1n5f9hpe53633in6hwcj1q.jpg" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-kmmtmw66g8yfcrwmh4j3whtktx.jpg" />
+    <dc:description>An editor for the BBC metadata database. Metadata for radio programmes and images for all programmes that ended up on iPlayer, BBC /programmes and some metadata that ended up on BBC /music were edited through PIT.</dc:description>
+    <ev:startdate>2007-12</ev:startdate>
+    <ev:enddate>2009-03</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="photo_tool">
+    <foaf:name>Photo Tool</foaf:name>
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-q4cdm9j3mdhd7cr3yqr7y6j41c.jpg" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-dx85qrb7gx54xmnp9mjgf2sqie.jpg" />
+    <foaf:depiction rdf:resource="http://img.skitch.com/20100225-qwcc66uphy2s24xrp457usw83b.jpg" />
+    <dc:description>Fixed some bugs in an internal tool used by BBC staff to upload pictures to the various websites under http://bbc.co.uk/radio/</dc:description>
+    <ev:startdate>2007-11</ev:startdate>
+    <ev:enddate>2007-12</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="orkell">
+    <foaf:name>Orkell CPD Platform</foaf:name>
+    <dc:description>A platform to create and licence CPD courses to institutions and orgnaisations.</dc:description>
+    <ev:startdate>2007-01</ev:startdate>
+    <ev:enddate>2007-11</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="golfgrid">
+    <foaf:name>Golf Grid</foaf:name>
+    <dc:description>An engine for finding and reserving tee times at golf clubs around the UK.</dc:description>
+    <ev:startdate>2006-09</ev:startdate>
+    <ev:enddate>2006-11</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="foaf">
+    <foaf:name>foaf</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/foaf" />
+    <ev:startdate>2010-02</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="caniusehtml5.com">
+    <foaf:name>caniusehtml5.com</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/caniusehtml5.com" />
+    <ev:startdate>2010-02</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="london2">
+    <foaf:name>london2</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/london2" />
+    <ev:startdate>2010-02</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="xeriom-scripts">
+    <foaf:name>xeriom-scripts</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/xeriom-scripts" />
+    <ev:startdate>2009-12</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="smqueue">
+    <foaf:name>smqueue</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/smqueue" />
+    <ev:startdate>2009-01</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="activecouch">
+    <foaf:name>activecouch</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/activecouch" />
+    <ev:startdate>2009-01</ev:startdate>
+    <ev:enddate>2010-02</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="irc-server.js">
+    <foaf:name>irc-server.js</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/irc-server.js" />
+    <ev:startdate>2010-01</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="spectacular">
+    <foaf:name>spectacular</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/spectacular" />
+    <ev:startdate>2010-01</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="irc-client.js">
+    <foaf:name>irc-client.js</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/irc-client.js" />
+    <ev:startdate>2010-01</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="email.js">
+    <foaf:name>email.js</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/email.js" />
+    <ev:startdate>2010-01</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="node-smtp">
+    <foaf:name>node-smtp</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/node-smtp" />
+    <ev:startdate>2009-01-25</ev:startdate>
+    <ev:startdate>2009-01-31</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="jira">
+    <foaf:name>jira</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/jira" />
+    <dc:description>Patched lib/jira/ext/hash.rb to provide consistent ordering of query string parameters in Hash#to_query.</dc:description>
+    <ev:startdate>2010-01-31</ev:startdate>
+    <ev:enddate>2010-01-31</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="dns-zonefile">
+    <foaf:name>dns-zonefile</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/dns-zonefile" />
+    <dc:description>A library to read and manipulate DNS zonefiles.</dc:description>
+    <ev:startdate>2009-10-18</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="opencv-toys">
+    <foaf:name>opencv-toys</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/opencv-toys" />
+    <ev:startdate>2010-01-13</ev:startdate>
+    <ev:enddate>2010-01-13</ev:enddate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="attachment_fu">
+    <foaf:name>attachment_fu</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/attachment_fu" />
+    <dc:description>Added support for the ! flag to the ImageScienceProcessor based on instructions provided by Andy Croll.</dc:description>
+    <ev:startdate>2009-</ev:startdate>
+    <rdfs:seeAlso rdf:resource="http://andycroll.com/writing/cropped-thumbnails-in-attachment-fu-using-imagescience" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="htmldoc">
+    <foaf:name>htmldoc</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/htmldoc" />
+    <dc:description>I'm the maintainer for the HTMLDoc rubygem.</dc:description>
+    <ev:startdate>2009-05-18</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="xeriom-nagios-snmp-agents">
+    <foaf:name>xeriom-nagios-snmp-agents</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/xeriom-nagios-snmp-agents" />
+    <dc:description>A bunch of SNMP agents that extent SNMP to allow me to monitor stuff like Xen VM configuration files.</dc:description>
+    <ev:startdate>2009-11</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="http_tools">
+    <foaf:name>http_tools</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/http_tools" />
+    <dc:description>Tools to profile and debug HTTP related things (also, an excuse for me to play with Erlang)</dc:description>
+    <ev:startdate>2009-11-16</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="form_builder">
+    <foaf:name>form_builder</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/form_builder" />
+    <dc:description>Provide a consistent, easy to style way of marking up HTML forms in a Rails application.</dc:description>
+    <ev:startdate>2009-04-02</ev:startdate>
+    <ev:startdate>2009-06-18</ev:startdate>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="xeriom-nagios-checks">
+    <foaf:name>xeriom-nagios-checks</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/xeriom-nagios-checks" />
+    <dc:description>A bunch of Nagios checks that I find useful.</dc:description>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="porox">
+    <foaf:name>porox</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/porox" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="payment_processing">
+    <foaf:name>payment_processing</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/payment_processing" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="active_service">
+    <foaf:name>active_service</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/active_service" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="clirc">
+    <foaf:name>clirc</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/clirc" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="snmp-tools">
+    <foaf:name>snmp-tools</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/snmp-tools" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="smarty-cake">
+    <foaf:name>smarty-cake</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/smarty-cake" />
+    <dc:description>Making Cake and Smarty play nicely together.</dc:description>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="craigw.github.com">
+    <foaf:name>craigw.github.com</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/craigw.github.com" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="callback_after_commit">
+    <foaf:name>callback_after_commit</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/callback_after_commit" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="expand-url-service">
+    <foaf:name>expand-url-service</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/expand-url-service" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="cache-access">
+    <foaf:name>cache-access</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/cache-access" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="gtweeter">
+    <foaf:name>gtweeter</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/gtweeter" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="email-spec">
+    <foaf:name>email-spec</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/email-spec" />
+    <dc:description>A tiny patch to make email-spec run on my machine. See http://github.com/craigw/email-spec/commit/dadcc1ae1d3da5b7c493fa75046212581d5746c9</dc:description>
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="geocoding-service">
+    <foaf:name>geocoding-service</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/geocoding-service" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="spam-classification-service">
+    <foaf:name>spam-classification-service</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/spam-classification-service" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="cruisecontrol.rb">
+    <foaf:name>cruisecontrol.rb</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/cruisecontrol.rb" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="feedback">
+    <foaf:name>feedback</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/feedback" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="simple_deployment">
+    <foaf:name>simple_deployment</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/simple_deployment" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="sprinkles">
+    <foaf:name>sprinkles</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/sprinkles" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="bbc_podcast_notifier">
+    <foaf:name>bbc_podcast_notifier</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/bbc_podcast_notifier" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="cached_asset_names">
+    <foaf:name>cached_asset_names</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/cached_asset_names" />
+  </foaf:Project>
+
+  <foaf:Project rdf:ID="rspec-on-rails-matchers">
+    <foaf:name>rspec-on-rails-matchers</foaf:name>
+    <foaf:homepage rdf:resource="http://github.com/craigw/rspec-on-rails-matchers" />
+  </foaf:Project>
+</rdf:RDF>

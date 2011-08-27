@@ -1,0 +1,136 @@
+Craig Richard Webster
+
+ADDRESS  : 43 Pattison House, Redcross Way, London. SE1 1EY.
+TELEPHONE: 07921 217445
+EMAIL    : craig@barkingiguana.com
+
+EMPLOYMENT
+
+04/2010 - 02/2011: Senior Software Engineer, Picklive
+02/2011 - Present: Technical Architect, Picklive
+  Real-time online gambling site built predominantly using Ruby on Rails.
+
+  Introduced message-oriented SOA to split large monolothic application into
+  several small maintanable applications and reduce the amount of work done
+  during the HTTP request-response cycle.
+
+  Responsible for credit card processing, fraud detection, PCI DSS
+  compliance, deployment platform setup and maintenance, building a CI and
+  deployment pipeline, scaling the application to allow many concurrent
+  real-time connections, investigating user play patterns, load and
+  performance testing, interviewing candidates, internal hackdays.
+
+03/2010 - 04/2010: Software Developer, Carbon Hub
+  Working on a complex Ruby on Rails application aimed to help large
+  companies and governmemt agencies reduce their carbon emissions.
+
+  Part of a geographically diverse team, delivered and deployed features
+  required to aid sales of the software. Built deployment platform on EC2.
+
+03/2009 - 03/2010: Senior Software Engineer, Agency.com
+  Responsible for hosting, implementation and maintenance of
+  public-facing projects for large clients such as British Airways.
+
+  Included building interfaces from mock-ups using Javascript (usually
+  Prototype or jQuery), CSS and HTML, and either CakePHP or Ruby on
+  Rails. Built hosting platform on EC2 using CentOS and Ubuntu Linux
+  with S3 used as a filestore and EBS for database store.
+
+  Revived infrequently used Continuous Integration solution and applied
+  it to the majority of our projects, increased and maintained test
+  coverage and development of existing projects, developed and
+  maintained new projects according to client requirements, encouraged
+  use of version control, introduced Capistrano and native packages as
+  a deployment mechanism and started hosting hackdays to increase our
+  engagement both internally as a team and externally with the wider
+  community. Helped emphasise the importance of software security.
+
+11/2007 - 03/2009: Software Engineer, BBC
+  Implemented internal tools using Ruby on Rails and plain Ruby.
+
+  Responsible for a central component in iPlayer for Radio which
+  controls the content and media availability for BBC iPlayer,
+  BBC /programmes and parts of BBC /music. Worked closely with all
+  three of these teams to develop suitable solutions. Introduced a
+  scalable hosting platform for business applications and educated the
+  team on its use. Aided adoption of upcoming pan-BBC infrastructure
+  such as a message-oriented middleware (ActiveMQ). Introduced
+  Continuous Integration and encouraged uptake of RSpec and Cucumber to
+  test-drive development. Rewrote portions of code to remove potential
+  for SQL injection attacks. Worked with local operations team to
+  create a stable deployment environment. Introduced story-driven
+  development to the Visualising Radio prototype.
+
+  The DDA and accessibility in general is very important to the BBC and
+  at every stage we had to take reasonable steps to ensure compliance.
+
+  Scrum and some XP principles were applied to drive our development
+  and release cycle, manage client requirements and set project
+  deliverables to meet extremely tight deadlines.
+
+01/2007 - 11/2007: Systems Developer, Orkell
+  Part of a three strong Ruby on Rails team tasked with building a
+  complex hosted content management system which was be used by several
+  professional bodies and academic institutions to market and provide
+  training courses and related content to their members.
+
+  Maintained the production environment, provided clear concise
+  documentation, ensured high continuing quality of Rails code,
+  modified YUI-JS and YUI-CSS based interface, conducted user-testing,
+  maintained the RSpec test suite.
+
+  Behaviour driven development and a Scrum/XP-like methodology were
+  adopted to drive this project. Ajax (through Prototype) was used
+  where appropriate to improve the user experience.
+
+09/2006 - 11/2006: Freelance Software Engineer, Tee Genius
+  Built an integration platform in J2EE which offered a SOAP API to
+  book golf tee times. Worked alongside another developer to integrate
+  the platform with the Tee Genius website and offer this functionality
+  to their members.
+
+  Responsibilities included writing the test suite (jUnit), building
+  and maintaining the production environment (Apache and Tomcat), and
+  managing application deployment (using Ant).
+
+01/2006 - 08/2006: Freelance Software Engineer, Various Companies
+  Collaborated with external design agencies to create several
+  websites in a variety of languages and frameworks such as Rails and
+  PHP (Zend Framework). Sites included eCommerce sites, content
+  management systems and simple contact-us adverts.
+
+  Built and maintained hosting platform and introduced TDD with
+  Test::Unit and PHPUnit. Educated developers in use of Subversion and
+  Capistrano.
+
+07/2005 - 11/2005: Software Developer, Attacat
+  Used PHP (tested with PHPUnit) to created in-house tools for a
+  startup company specialising in search engine marketing. Tools
+  included automated reports, search engine keyword suggestion, search
+  engine pay-per-click account management and included integration with
+  several external SOAP services and several legacy systems.
+
+EDUCATION
+  2001 - 2005: Edinburgh University B.Eng(Hons.) Software Engineering
+  1995 - 2001: Bathgate Academy     6 Higher Grades, 1 Advanced Higher
+
+SKILLS AND EXPERIENCE
+  Proficient with Ruby, Rails, Git, Subversion, Javascript, Test and
+  Behaviour Driven Development, TextMate, OS X, Linux, Sysadmin.
+
+  Working knowledge Bash, CSS, Semantic markup, LaTeX, SQL, Agile
+  development methodologies, SMTP, HTTP, Nagios, ActiveMQ, PHP.
+
+  Basic knowledge of Erlang, Node.js.
+
+HOBBIES
+  Snowboarding, skating, photography, swimming, rock climbing.
+
+MISCELLANEOUS
+  My Projects: http://github.com/craigw
+  My Blog    : http://barkingiguana.com/
+  Flickr     : http://www.flickr.com/photos/craigwebster
+  Twitter    : @craigwebster
+
+REFERENCES
+  Available on request.

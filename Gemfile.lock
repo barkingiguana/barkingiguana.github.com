@@ -26,5 +26,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  RedCloth
+  RedCloth (= 4.2.8)
   jekyll (= 0.11.0)
