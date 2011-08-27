@@ -19,7 +19,9 @@
   <h1>Craig R Webster</h1>
   <h2>See also:</h2>
   <ul>
-    <li><a href="http://barkingiguana.com/~craig">my homepage</a></li>
+    <li><a href="http://barkingiguana.com/">my homepage</a></li>
+    <li><a href="http://barkingiguana.com/~craig">my contact details</a></li>
+    <li><a href="http://barkingiguana.com/blog">my blog</a></li>
     <li><a href="http://github.com/craigw">my projects on GitHub</a>
   </ul>
 
@@ -33,12 +35,21 @@
     <li>Pseudo-application: expose a queue or topic via XMPP PubSub. Seems like <a href="http://camel.apache.org/components.html">Apache Camel</a> can bridge between various queue implementations (thanks @<a href="http://twitter.com/jstrachan">jstrachan</a>).</li>
     <li>A service that searches hashtags and puts the results on the bus.</li>
     <li>Application that allows people to search for NXER trains by price rather than date: <q>When can I travel to Edinburgh and back for less than &pound;50?</q></li>
-    <li>A PHP implementation of <a href="http://github.com/seanohalpin/smqueue">SMQueue</a>.</li>
+    <li>A PHP implementation of <a href="http://github.com/seanohalpin/smqueue">SMQueue</a> (once the transport layer is refactored).</li>
+    <li>An Erlang implementation of <a href="http://github.com/seanohalpin/smqueue">SMQueue</a> (once the transport layer is refactored).</li>
     <li>Separate out the transport layer for SMQueue and provide a reference plugin for JSON.</li>
     <li>Asynchronous attachment_fu. A backend that will push image resizes / thumbnailing / uploading to the blob store onto the queue.</li>
     <li>One-step deploy. Turn it on, wait a few minutes, your application is ready. @<a href="http://twitter.com/mathie">mathie</a> is interested. Looking at <a href="http://wiki.opscode.com/display/chef/Home">Chef</a>.</li>
     <li>A service that sits on the bus which takes a list of email addresses and an email and sends the email to the addresses.</li>
+    <li>A gnome-notify client that reports the status of builds a la CCMenu. Broken builds are sticky.</li>
     <li>An application that will aggregate music libraries on the same network into one large library then allow people to vote for which track is next iTunes DJ style. Look into using mDNS to discover libraries. Music should be streamed and not copied over the network.</li>
+    <li>A service which takes a bunch of text and converts all necessary characters to HTML entities - useful for processing documents written in Word where smart-quotes and fancy dashes are commonly inserted automatically.</li>
+    <li>A service which takes a bunch of code and identifies the language it's written in.</li>
+    <li>A service which takes a bunch of code and classifies each construct using structured XML - eg picking out language keywords, arguments, comments, strings.</li>
+    <li>A service which takes a bunch of code and converts it to something suitable for use in an HTML document.</li>
+    <li>Make the URL expanding service follow all links and resolve them as much as possible - eg http://is.gd/w -&gt; http://google.com/ -&gt; http://www.google.com/. Follow the Location headers as far as possible.</li>
+    <li>A service which sits on the ESB and converts word documents to plain text.</li>
+    <li>A web-facing front-end to the word-to-plain-text service.</li>
   </ul>
   <p>If you'd be interested in hacking on any of these things with me, if you've already implemented all or part of one of these projects, or even if you're just interested in using one of them... please <a href="http://barkingiguana.com/~craig/contact">give me a yell<a/> and let me know!</p>
 
