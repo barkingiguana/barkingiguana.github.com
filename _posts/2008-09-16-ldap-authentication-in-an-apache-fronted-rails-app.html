@@ -1,0 +1,93 @@
+---
+title: "LDAP authentication in an Apache fronted Rails app"
+layout: post
+author: Craig
+---
+<p>If you manage anything but the simplest of setups you've probably got an 
+LDAP server setup providing directory services to your network. If you don't 
+you should probably stop reading now ;)</p>
+
+<h4>Authenticate using LDAP</h4>
+
+<p>The first step to getting your Rails application authenticating using LDAP is to get Apache to authenticate all requests before they reach the application. This stuff is tricky and Apache already has a rather lovely module, <code>mod_authnz_ldap</code>, that does all the heavy lifting for us.</p>
+
+<pre><code>&lt;VirtualHost 193.219.108.xxx:443&gt;
+  # I've used port 443 above because I'm dealing with passwords.
+  # [...snip...]
+  &lt;Directory /var/www/foo.example.com/current/public&gt;
+    AuthType Basic
+    AuthName "Foo Application Control Panel"
+    AuthBasicAuthoritative off
+    AuthBasicProvider ldap
+    AuthLDAPUrl ldap://ldap.example.com/ou=people,dc=example,dc=com?userid?one
+    Require valid-user
+  &lt;/Directory&gt;
+  # [...snip...]
+  # Your normal Rails HTTP configuration goes here
+&lt;/VirtualHost&gt;</code></pre>
+
+<h4>Look up the user in Rails</h4>
+
+<p>Okay, so any request that hits your application is now authenticated against your LDAP directory. Next, tell Rails to look for the user. For authentication I wrote a rather funky (if I do say so myself) mixin, <code class="ruby">Xeriom::Acts::ProtectedSystem</code>.</p>
+
+<pre><code class="ruby">module Xeriom # :nodoc:
+  module Acts # :nodoc:
+    module ProtectedSystem # :nodoc:
+      def self.included(base)
+        base.send(:extend, ClassMethods)
+      end
+
+      module ClassMethods
+        def acts_as_protected_system
+          include InstanceMethods
+          send(:before_filter, :ensure_user_is_logged_in)
+          send(:helper_method, :current_user)
+          send(:helper_method, :logged_in?)
+        end
+      end
+
+      module InstanceMethods
+        def ensure_user_is_logged_in
+          if !logged_in?
+            authenticate_user
+          end
+        end
+
+        def logged_in?
+          !current_user.blank?
+        end
+
+        def current_user
+          @current_user ||= User.find_by_id(session[:user_id])
+        end
+
+        def current_user=(user)
+          @current_user = user
+          session[:user_id] = user.blank? ? nil : user.id
+        end
+
+        def authenticate_user
+          authenticate_or_request_with_http_basic("Protected Area") do |username, password|
+            # Lock your application servers down to listen to only
+            # the web tier or this will kick your ass.
+            send(:current_user=, User.find_by_username(username))
+          end
+        end
+      end
+    end
+  end
+end
+
+ActionController::Base.send(:include, Xeriom::Acts::ProtectedSystem)</code></pre>
+
+<p>Like the <em>code licence</em> section in the sidebar says: this code is totally public domain, just don't sue me. To use it just drop the code in your <code>lib/</code> directory and then call <code>acts_as_protected_system</code> in your <code>ApplicationController</code>.</p>
+
+<pre><code class="ruby">class ApplicationController &lt; ActionController::Base
+  helper :all # include all helpers, all the time
+  protect_from_forgery # because CSRF sucks!
+  acts_as_protected_system # lock the door
+end</code></pre>
+
+<h4>For bonus points...</h4>
+
+<p>If you found this article useful, give me some love over at <a href="http://www.workingwithrails.com/recommendation/new/person/7241-craig-webster">Working With Rails</a>.</p>

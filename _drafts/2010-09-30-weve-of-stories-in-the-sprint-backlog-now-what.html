@@ -1,0 +1,38 @@
+---
+title: "We've got a bunch of stories in the Sprint Backlog... now what?"
+layout: post
+author: Craig
+---
+<p>Stories have been generated for your project features, the Sprint has a goal set, the Scrum Team has picked stories that work towards that goal and added them to the Sprint Backlog... now what?</p>
+
+<p>This post is aimed towards developers in the Scrum Team: it'll show how I'd work with stories, going into some technical detail about version control, pairing, and unit and acceptance testing.</p>
+
+<h4>Picking a story</h4>
+
+<p>As a developer you should be looking to maximise business value. Your Product Owner should have rated the business value of all stories that have been picked out for this sprint. Pick <em>one</em> story from the Spring Backlog. Pick the one that's been rated as most valuable to the business. Put it somewhere visible (a whiteboard near where the Daily Scrum takes place is ideal) and put your name (and your pairs name) beside it so the team know you're working on it.</p>
+
+<p>You are now committed to delivering that story. All work you do should be focused on delivering that story until the story is complete. Check the story frequently to make sure you're not working on something that's unrelated.</p>
+
+<h4>Branch</h4>
+
+<p>Branch-and-merge development stops your changes from affecting the mainline of development (which should <em>always</em> be deployable).</p>
+
+<p>Create a new branch named after the story. All your work will be done on that branch.</p>
+
+<h4>Define acceptance test</h4>
+
+<p>While working out the complexity of the story you should have captured a bunch of scenarios. Now is the time to start turning them into acceptance tests. How you do this is up to the team - it's fine to write them into a document and hand them to the test team - but I'd suggest using <a href="http://barkingiguana.com/2008/11/11/getting-started-with-story-driven-development-for-rails-with-cucumber">Cucumber</a> to create an automated acceptance suite that'll tell you how far from completing a feature you are and help prevent regressions on that feature.</p>
+
+<h4>Test first!</h4>
+
+<p>You should now run the tests to watch them fail. If they don't fail then either your test is meaningless or the required functionality has already been implemented.</p>
+
+<p>Pick one failing step in a scenario and discuss with your pair what you need to do to make it pass. Write a unit test for that and watch it fail. Implement the code then watch the test pass. Commit the code. Repeat until the scenario passes then move onto the next scenario. When there are no more failing scenarios you've completed the story.</p>
+
+<h4>Merge</h4>
+
+<p>Now you've got a complete feature and all your tests pass you can safely merge back into the master branch to deliver it. Make sure you use a clear commit message and mention the story that you're completing.</p>
+
+<h4>And you're done</h4>
+
+<p>Pick your next story. Rinse, wash, repeat as desired.</p>

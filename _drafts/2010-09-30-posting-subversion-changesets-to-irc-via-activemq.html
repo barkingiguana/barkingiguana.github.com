@@ -1,0 +1,30 @@
+---
+title: "Posting Subversion changesets to IRC via ActiveMQ"
+layout: post
+author: Craig
+---
+[SVN to ActiveMQ script]
+
+<pre><code class="ruby">#! /usr/bin/env ruby
+
+require 'rubygems'
+require 'smqueue'
+require 'yaml'
+require 'socket'
+
+puts "Starting..."
+
+changesets = SMQueue(:name =&gt; "/topic/svn.commit", :host =&gt; "mq.domain.com", :reliable =&gt; true, :durable =&gt; true, :client_id =&gt; "irc.changeset", :subscription_name =&gt; "main", :adapter =&gt; "StompAdapter")
+irc = SMQueue(:name =&gt; "/queue/irc.outgoing", :host =&gt; "mq.domain.com", :reliable =&gt; true, :adapter =&gt; "StompAdapter")
+
+changesets.get do |message|
+  changeset = YAML.parse(message.body).transform
+  puts "Processing changeset #{changeset["revision"]}."
+
+  summary = changeset["log"].to_s.split(/[\r|\n]/)[0]
+  text = "Commit \##{changeset["revision"]} by #{changeset["author"]} on #{changeset["date"]}: #{summary} -- http://trac.domain.com/repository/changeset/#{changeset["revision"]}".gsub(/"/, '\"')
+  packet = { :text =&gt; text }
+  irc.put packet.to_yaml
+
+  puts "Done with #{changeset["revision"]}."
+end</code></pre>

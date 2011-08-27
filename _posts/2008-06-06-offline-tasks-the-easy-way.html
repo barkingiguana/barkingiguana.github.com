@@ -1,0 +1,36 @@
+---
+title: "Offline tasks the easy way"
+layout: post
+author: Craig
+---
+<p>There's been quite a lot of chat recently about various job scheduling systems and process managers for offlining expensive tasks on the <a href="http://lrug.org/">LRUG</a> list. BackgrounDRb, Beanstalk, Starling, BackgroundJob and other similar solutions have been discussed. These systems can be useful, but most of the time they're just adding unnecessary complexity.</p>
+
+<p>One instance where I feel these solutions are unnecessary is where you need to strip data from an external service in a way that's totally disconnected from the <a href="http://perl.plover.com/yak/presentation/samples/security/slide012.html">HTTP request-response cycle</a>.</p>
+
+<p>Say you want to pull the most recent article from this blog every 15 minutes and create a file that could then be served statically to your visitors. A naive implementation of that functionality would look something like this:</p>
+
+<pre><code class="ruby">require 'net/http'
+require 'hpricot'
+
+barking_iguana = URI.parse('http://barkingiguana.com/')
+loop do
+  articles = Hpricot(Net::HTTP.get(barking_iguana))
+  title = (articles / "div.article a[@rel=bookmark] text()").first
+  link = (articles / "div.article a[@rel=bookmark]").first['href']
+
+  # Of course, this should have a real file path in it.
+  File.open("/.../.../.../barking_iguana.ssi", "w+") do |f|
+    f.write("#{title}: #{link}")
+    f.flush
+  end
+
+  sleep 900 # 15 minutes
+end</code></pre>
+
+<p>Doesn't that look nice? No screwing around with complex tools to handle the scheduling - just run it and it'll go forever.</p>
+
+<p>"Ah," I hear you say, "but what if it crashes?" Well, in the unlikely event that such a simple script does crash I'd have something like <a href="http://god.rubyforge.org/">God</a> monitoring the processes so it would be restarted. You've got something monitoring your processes anyway (right?) so it should be pretty simple to add another process to that list.</p>
+
+<h4>Love me!</h4>
+
+<p>If you've found this article useful I'd appreciate recommendations at <a href="http://www.workingwithrails.com/recommendation/new/person/7241-craig-webster">Working With Rails</a>.</p>

@@ -1,0 +1,74 @@
+---
+title: "Fail Silently with Memcache Client"
+layout: post
+author: Craig
+---
+<p>For web applications <a href="http://www.ukgeocachers.co.uk/catalog/cache-king-44mm-button-badge-p-391.html">caching is king</a> and I've recently been playing with <a href="http://danga.com/memcached/">memcached</a> to cache the results of expensive queries in a Rails application. As a client I've chosen Seattle RB's <a href="http://seattlerb.rubyforge.org/memcache-client/">memcache-client</a>.</p>
+
+<p>The memcache-client library is rather lovely, but it does seem to have the opinion that if a memcached instance fails it should throw an exception which your code has to deal with. I don't agree with that: when a cache fails <em>it doesn't matter</em>. Either the application can continue running in an uncached mode - slow, but possible - or there are other memcache instances that can be used. Switching to either of these should require no special effort in code that uses the library.</p>
+
+<p>Ruby, being awesome, lets me change the behaviour of the client library very easily. Monkey patching may be frowned upon, but it does have a use.</p>
+
+<pre><code class="ruby"># A simple monkey-patch of MemCache so that broken memcached instances don't 
+# cause fatal errors in the application. Performance may be severaly degraded
+# but it should be possible to use the app anyway!
+# 
+# A typical use would look something like:
+# 
+#   result = if cache.alive?
+#     fetch = cache.get(:foo)
+#     if !fetch
+#       fetch = calculate(:foo)
+#       cache.set(:foo, fetch)
+#     end
+#     fetch
+#   else
+#     calculate(:foo)
+#   end
+# 
+class MemCache
+  # Does the cache configuration contain any memcached instances that can 
+  # currently be used?
+  # 
+  # Author: Conor Curran [http://forwind.net/]
+  # 
+  def alive?
+    !!cache.servers.detect{ |s| s.alive? }
+  end
+
+  # Rescue from MemCache::MemCacheError -- we want the cache to fail silently
+  # (at least from the point of view of the application - you should still
+  # monitor memcached).
+  # 
+  def get_with_rescue(*args)
+    get_without_rescue(*args)
+  rescue MemCache::MemCacheError
+  end
+  alias_method :get_without_rescue, :get
+  alias_method :get, :get_with_rescue
+  alias_method :[], :get
+  
+  # Rescue from MemCache::MemCacheError -- we want the cache to fail silently
+  # (at least from the point of view of the application - you should still
+  # monitor memcached).
+  # 
+  def set_with_rescue(*args)
+    set_without_rescue(*args)
+  rescue MemCache::MemCacheError
+  end
+  alias_method :set_without_rescue, :set
+  alias_method :set, :set_with_rescue
+  alias_method :[]=, :set
+  alias_method :add, :set
+
+  # Rescue from MemCache::MemCacheError -- we want the cache to fail silently
+  # (at least from the point of view of the application - you should still
+  # monitor memcached).
+  # 
+  def delete_with_rescue(*args)
+    delete_without_rescue(*args)
+  rescue MemCache::MemCacheError
+  end
+  alias_method :delete_without_rescue, :delete
+  alias_method :delete, :delete_with_rescue
+end</code></pre>

@@ -1,0 +1,25 @@
+---
+title: "Verify database connections in long-running idle Rails processes"
+layout: post
+author: Craig
+---
+<p>I've interfaced one of my <a href="http://barkingiguana.com/2008/05/28/xmpp4r-simple-makes-xmpp-in-ruby-uhh-simple">xmpp4r bots</a> with the Xeriom Networks control panel. I had intended to write a post about it to show how easy it is, but I've been <a href="http://rubypond.com/articles/2008/06/26/make-your-own-im-bot-in-ruby-and-interface-it-with-your-rails-app">beaten to it</a>. I can, however, offer one piece of advice that will stop the bot dying after a few hours of idling: periodically verify your database connections.</p>
+
+<pre><code class="ruby">RAILS_DEFAULT_LOGGER.debug "Launching database connection verifier"
+Thread.new do
+  loop do
+    sleep 1800 # Half an hour
+    RAILS_DEFAULT_LOGGER.debug "Verifying database connections"
+    ActiveRecord::Base.verify_active_connections!
+  end
+end</code></pre>
+
+<p>Adding the above code to a script will stop database connections getting dropped (or, at least, will reconnect them if it happens).</p>
+
+<del><p>To see it in action, add support@xeriom.net to your XMPP roster and have a chat. It's not hugely intelligent, but it does support <a href="http://wiki.xeriom.net/w/XeriomAlertService">a few useful commands</a>.</p></del>
+
+<ins><p>Update: the support bot is no longer running. It was fun, but not hugely useful in this context.</p></ins>
+
+<h4>Love me!</h4>
+
+<p>If you've found this article useful I'd appreciate beer and recommendations at <a href="http://www.workingwithrails.com/recommendation/new/person/7241-craig-webster">Working With Rails</a>.</p>

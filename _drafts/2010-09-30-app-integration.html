@@ -1,0 +1,27 @@
+---
+title: "App integration"
+layout: post
+author: Craig
+---
+Problems
+* Large project
+* Slow test
+
+Try: Multiple Apps.
+Problems: roll-out. Versions need to match.
+Code-duplication - solve by sharing plugins (on texperts site somewhere)
+Deployment. Capistrano.
+Communication.
+  Server-side: REST.
+  Client-side: UI / JS framework.
+
+Integrated UI. gives one URI, one login, one window, appears as single tool. Problem: client-side communication inefficient, Single Origin Policy (js / cookies).
+
+Rewrite /(.+)(/.*)$ -> $1.domain.com$2
+
+Single portal app which other apps insert themselves into via widgets. Widgets loaded via Ajax - load time all on client side, nice feedback for user. App doesn't have fixed size (real-estate) on portal page - can choose different sized. JS UI composes and enacts the services on backend apps.
+
+[ svc1 (Rails) ] --\
+[ svc2 (Rails) ] ------ [ portal ] ---- [ Foo Widget (JS) ].
+
+Services need not be Rails - as long as can talk REST. Thinking PipsCache, /music, /programmes, BBC User login thingy.

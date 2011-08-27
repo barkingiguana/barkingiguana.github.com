@@ -1,0 +1,20 @@
+---
+title: "When should a merge be squashed?"
+layout: post
+author: Craig
+---
+<p>I'm still somewhat new to Git so now and again I come up with a question that's so obvious to other developers that it doesn't seem to be answered anywhere. One such question is "when should a merge be squashed?"</p>
+
+<p>Squashing a merge means taking all the commits that would normally be replayed individually on your target branch and replaying them as one large commit.</p>
+
+<p>Well, as far as I can tell, here's the answer: squashing a merge is appropriate when all the commits in the merge deal with one topic.</p>
+
+<p>As an example, consider having a branch that deals with the performance of one particular method. Each time you increase the performance you commit your changes. After a few days of this you have several commits in your branch and a lovely fast implementation that you want to merge back to the master branch. The merge from your branch to master should be a squashed commit and your commit message should explain what you did to speed up the implementation.</p>
+
+<pre><code>git merge --squash speed-up-the-method</code></pre>
+
+<p>An unsquashed commit could be more appropriate if you're merging from a development branch since in this case the branch should be composed of a nicely formatted series of commits based on topic relevant to the development branch.</p>
+
+<pre><code>git merge dev/v1.2.3</code></pre>
+
+<p>When doing an unsquashed commit your repository will use the original commit messages.</p>

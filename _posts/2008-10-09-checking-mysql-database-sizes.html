@@ -1,0 +1,22 @@
+---
+title: "Checking MySQL database sizes"
+layout: post
+author: Craig
+---
+<p>Quick tip: use the below query to check how large each of your MySQL 5 databases is.</p>
+
+<pre><code class="sql">mysql&gt; SELECT
+  table_schema,
+  concat(round(sum(table_rows)/1000000,2),'M') as rows,
+  concat(round(sum(data_length)/(1024*1024*1024),2),'G') as data,
+  concat(round(sum(index_length)/(1024*1024*1024),2),'G') as idx,
+  concat(round(sum((data_length+index_length))/(1024*1024*1024),2),'G') as total_size
+FROM information_schema.TABLES
+GROUP BY table_schema;
++-----------------------------+-------+-------+-------+------------+
+| table_schema                | rows  | data  | idx   | total_size |
++-----------------------------+-------+-------+-------+------------+
+| information_schema          | NULL  | 0.00G | 0.00G | 0.00G      | 
+| xxxxxxxxx_xxxx_xxxx_staging | 0.93M | 0.08G | 0.01G | 0.09G      | 
++-----------------------------+-------+-------+-------+------------+
+2 rows in set (0.03 sec)</code></pre>

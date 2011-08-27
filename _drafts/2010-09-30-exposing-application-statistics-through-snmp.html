@@ -1,0 +1,201 @@
+---
+title: "Exposing application statistics through SNMP"
+layout: post
+author: Craig
+---
+<p>Simple Network Management Protocol. Most famously used for MRTG (eg http://monitor.xeriom.net/mrtg/craig-01.vm.xeriom.net_traffic.html). In general great for historical data. What about application historical data? Don't re-invent wheel. All we need to do is expose data through SNMP then use MRTG to collect data and somehow graph it. This post covers exposing your application data through SNMP.</p>
+
+<p><code>pass_persistent</code> snmpd.conf runs script. Script returns OIDs to snmpd... but there are no allocated OIDs for our application. Luckily it's pretty easy to expose our own OIDs although they do require a bit of thought up-front (because they're a pain in the ass to change after they're published).</p>
+
+<p>Here's an example that I prepared (with help from <a href="http://djce.org.uk/">Dave Evans</a>) for exposing Memcache statistics through SNMP. The enterprise number below is 32919 which is allocated to me. You can use .1.3.6.1.4.1.32919.1 to monitor memcache if you're going to use exactly my setup below. If you're going to change it at all then you should request your own enterprise number from IANA.</p>
+
+<table>
+	<tr>
+		<td><abbr title="Object Identifier">O.I.D.</abbr></td>
+		<td>Description</td>
+		<td>Type</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919</td>
+		<td><strong>Barking Iguana</strong></td>
+		<td>N/A</td>
+		<td>N/A</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1</td>
+		<td><strong>Memcached</strong></td>
+		<td>N/A</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1</td>
+		<td><strong>Instances</strong></td>
+		<td>N/A</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n</td>
+		<td><strong>Instance N</strong></td>
+		<td>N/A</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.1</td>
+		<td>Identifying tag / name</td>
+		<td>eg app1-development, app3-staging</td>
+		<td>String</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.2</td>
+		<td>Process ID</td>
+		<td>String</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.3</td>
+		<td>Seconds since process start-up</td>
+		<td>Counter</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.4</td>
+		<td>Current system time</td>
+		<td>Counter</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.5</td>
+		<td>Memcached Version</td>
+		<td>String</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.6</td>
+		<td>Pointer size</td>
+		<td>Gauge</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.7</td>
+		<td>User time</td>
+		<td>Counter</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.8</td>
+		<td>System time</td>
+		<td>Counter</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.9</td>
+		<td>Items currently stored</td>
+		<td>Gauge</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.10</td>
+		<td>Items stored since start-up</td>
+		<td>Counter</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.11</td>
+		<td>Current number of bytes stored</td>
+		<td>Gauge</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.12</td>
+		<td>Connections currently active</td>
+		<td>Gauge</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.13</td>
+		<td>Con`nections since start-up</td>
+		<td>Counter</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.14</td>
+		<td>Connection structures allocated</td>
+		<td>Counter</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.15</td>
+		<td>Number of gets</td>
+		<td>Counter</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.16</td>
+		<td>Number of sets</td>
+		<td>Counter</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.17</td>
+		<td>Number of hits</td>
+		<td>Counter</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.18</td>
+		<td>Number of misses</td>
+		<td>Counter</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.19</td>
+		<td>Number of evictions</td>
+		<td>Counter</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.20</td>
+		<td>Number of bytes read from the network</td>
+		<td>Counter</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.21</td>
+		<td>Number of bytes written to the network</td>
+		<td>Counter</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.22</td>
+		<td>Maximum number of bytes for storage</td>
+		<td>Gauge</td>
+	</tr>
+	<tr>
+		<td>.1.3.6.1.4.1.32919.1.1.n.23</td>
+		<td>Number of threads requested</td>
+		<td>Gauge</td>
+	</tr>
+</table>
+
+<p>Code to retrieve data from memcache in previous post. Code to actually expose data (requires DJCE's SnmpPassPersistentAgent) TODO: Get this onto GitHub and gemify it.</p>
+
+<pre><code class="ruby">process = SnmpdPassPersistAgent.new do |set|
+  oid_base = ".1.3.6.1.4.1.32919.1.1.1"
+
+  stats = %x[/usr/bin/memcache-stats].strip.split(/\n/).map { |l| l.split(/ /)[-1] }
+
+  set.push(SnmpTriple.new("#{oid_base}.1", "string", File.read("/etc/memcache.tag").strip))
+  set.push(SnmpTriple.new("#{oid_base}.2", "string", stats[0]))
+  set.push(SnmpTriple.new("#{oid_base}.3", "counter", stats[1]))
+  set.push(SnmpTriple.new("#{oid_base}.4", "counter", stats[2]))
+  set.push(SnmpTriple.new("#{oid_base}.5", "string", stats[3]))
+  set.push(SnmpTriple.new("#{oid_base}.6", "gauge", stats[4]))
+  set.push(SnmpTriple.new("#{oid_base}.7", "counter", stats[5]))
+  set.push(SnmpTriple.new("#{oid_base}.8", "counter", stats[6]))
+  set.push(SnmpTriple.new("#{oid_base}.9", "gauge", stats[7]))
+  set.push(SnmpTriple.new("#{oid_base}.10", "counter", stats[8]))
+  set.push(SnmpTriple.new("#{oid_base}.11", "gauge", stats[9]))
+  set.push(SnmpTriple.new("#{oid_base}.12", "gauge", stats[10]))
+  set.push(SnmpTriple.new("#{oid_base}.13", "counter", stats[11]))
+  set.push(SnmpTriple.new("#{oid_base}.14", "counter", stats[12]))
+  set.push(SnmpTriple.new("#{oid_base}.15", "counter", stats[13]))
+  set.push(SnmpTriple.new("#{oid_base}.16", "counter", stats[14]))
+  set.push(SnmpTriple.new("#{oid_base}.17", "counter", stats[15]))
+  set.push(SnmpTriple.new("#{oid_base}.18", "counter", stats[16]))
+  set.push(SnmpTriple.new("#{oid_base}.19", "counter", stats[17]))
+  set.push(SnmpTriple.new("#{oid_base}.20", "counter", stats[18]))
+  set.push(SnmpTriple.new("#{oid_base}.21", "counter", stats[19]))
+  set.push(SnmpTriple.new("#{oid_base}.22", "gauge", stats[20]))
+  set.push(SnmpTriple.new("#{oid_base}.23", "gauge", stats[21]))
+end
+
+process.run</code></pre>
+
+Query using `echo DUMP | /usr/bin/memcache-snmp-agent`. Did it work?
+
+Now configure SNMPD. 
+
+<pre><code>pass_persist .1.3.6.1.4.1.32919.1 /usr/bin/memcache-snmp-agent</code>
+
+Query using snmpwalk to see if it worked. snmpget will probably freak because we haven't written an MIB so it doesn't the OIDs we're asking for.
+
+Possible difficulties: too slow to respond. Not sure best way around that yet.
+
+Might be interested in querying this data without using the command-line or sharing results or whatever. See blog post: "Query with your applications using IRC"

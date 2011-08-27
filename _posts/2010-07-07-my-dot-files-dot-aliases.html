@@ -1,0 +1,45 @@
+---
+title: "My Dot Files: Dot Aliases"
+layout: post
+author: Craig
+---
+<p>This is the first part of a series in which I'll document the various dotfiles I use to support my work, making it easier and more enjoyable.</p>
+
+<p>I use <a href="http://git-scm.com/">Git</a> and <a href="http://rubyonrails.org/">Rails</a> every day at work. To stop my fingers wearing down I've created short aliases for the most common tasks I need to do.</p>
+
+<p>Stick these in <code class="bash">~/.aliases</code>.</p> 
+
+<pre><code class="bash"># ~/.aliases
+# Record how much I've used various Git commands:
+#   <a href="http://github.com/icefox/git-achievements">http://github.com/icefox/git-achievements</a>
+alias git="git-achievements"
+
+# Working with Git
+alias g='git'
+alias gs='git status'
+alias gc='git commit'
+alias gca='git commit -a'
+alias ga='git add'
+alias gco='git checkout'
+alias gb='git branch'
+alias gm='git merge'
+alias gd="git diff"
+
+# Working with Rails
+alias s='script/server'
+alias c='script/console'
+alias m='rake db:migrate'
+alias r='rake'
+
+# Open the current directory in TextMate
+alias e='mate .'
+
+# Serve the contents of the current directory over HTTP
+alias serve="ruby -rwebrick -e\"s = WEBrick::HTTPServer.new(:Port => 3000, :DocumentRoot => Dir.pwd); trap('INT') { s.shutdown }; s.start\""</code></pre>
+
+<p>Now source the aliases file from your <code class="bash">~/.profile</code> to use them.</p>
+
+<pre><code class="bash"># ~/.profile
+for I in aliases; do
+  [ -f ~/.$I ] && . ~/.$I
+done</code></pre>

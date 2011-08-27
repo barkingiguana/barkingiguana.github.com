@@ -1,0 +1,48 @@
+---
+title: "Content_for is the new GOTO"
+layout: post
+author: Craig
+---
+<p>I don't like <code class="ruby">content_for</code>. Your view code jumps around up and down files and makes it hard to work out what's going on. It smells a lot like GOTO. When was the last time you saw someone recommend you use a GOTO?</p>
+
+<h4>content_for :javascript and content_for :css</h4>
+
+<p>Use of <code class="ruby">content_for</code> can be easily avoided, at least for including CSS and Javascript files. Include the controller name and action name in the body tag in your layout and properly qualify your CSS declarations.</p>
+
+<pre><code class="rails-html">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+&lt;head&gt;
+  &lt;title&gt;&lt;%= page_title %&gt;&lt;/title&gt;
+  &lt;meta http-equiv="Content-Language" content="English" /&gt;
+  &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
+  &lt;link rel="stylesheet" type="text/css" href="/stylesheets/simple.css" media="screen" /&gt;
+&lt;/head&gt;
+&lt;body id="&lt;%= "#{controller.controller_name.tableize.singularize}_#{controller.action_name}" %&gt; class="&lt;%= "#{controller.controller_name.tableize.singularize} #{controller.action_name}" %&gt;"&gt;
+  &lt;%= yield %&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+<p>Say you were looking at the Posts views in your app, you can now style these using something like this.</p>
+
+<pre><code class="css">.post.index .article .title { 
+  font-size: 1.25em;
+}
+
+.post.show .article .title { 
+  font-size: 0.9em;
+}</code></pre>
+
+<p>Or, in case you need to support browsers that don't let you specify two classes as a selector for a single element, you can write it like this.</p>
+
+<pre><code class="css">#post_index .article .title { 
+  font-size: 1.25em;
+}
+
+#post_show .article .title { 
+  font-size: 0.9em;
+}</code></pre>
+
+<p>Since all your Javascript is unobtrusive anyway (right?), it should be pretty easy to qualify the selectors used there with the same CSS selectors shown above.</p>
+
+<p>As an added bonus, by specifying your Javascript / CSS like the above you can package it all in one Javascript or CSS file on deployment to your production environment and save yourself a bunch of HTTP requests.</p>

@@ -1,0 +1,33 @@
+---
+title: "A gateway for your home or small office network"
+layout: post
+author: Craig
+---
+Building a gateway that performs NAT for a small network can seem a daunting task, but it's actually incredibly easy. All you need is an old (preferably small and quiet) Linux box with two network interfaces, an internet connection, a switch
+
+
+ * Install Ubuntu
+ * https://help.ubuntu.com/community/Router
+    - eth0 is the LAN on 192.168.0.1
+    - eth1 is the WAN on 10.100.2.100
+ * https://help.ubuntu.com/community/dhcp3-server
+    - Share 192.168.0.0/24 on eth0 (.100 to .199 are DHCP addresses)
+ * http://www.ubuntugeek.com/dns-server-setup-using-bind-in-ubuntu.html
+   (just adding the forwarders; ignore the zone setup)
+
+We don't have enough wires to all use it yet, but it seems to be a
+touch faster than wiring into the normal office router. Win.
+
+Next week I'll be:
+ * moving the router into the server room
+ * locking it down to only provide recognised MAC addresses with IP addresses
+ * trying to firewall it so only recognised IP/MAC combos can use it
+ * firewalling a bunch of stuff to prevent most things getting in/out
+of our network
+   - if you want a service to continue working, tell me now (by email
+so I have a list) ;)
+     -> Spotify, Skype, anything else? Don't really care what it is,
+just need to know about it.
+ * sticking a switch in the server room
+ * wiring the rest of the patch panels under the desk so we can all use them
+ * asking you all really nicely not to use the wireless at White Bear Yard

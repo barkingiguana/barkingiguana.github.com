@@ -1,0 +1,8 @@
+---
+layout: base
+---
+<div class="post">
+  <h1>{{ page.title }}</h1>
+  <p class="meta">written by <span class="author">{{ page.author }}</span> on <span class="publication_date">{{ page.date | date_to_string }}</span></span>
+  {{ content }}
+</div>

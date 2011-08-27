@@ -1,0 +1,63 @@
+---
+title: "Moving projects from one large Subversion repository to many self-contained Git repositories"
+layout: post
+author: Craig
+---
+<p>Big title, eh?</p>
+
+<h4>What Went Before</h4>
+
+<p>Like many organisations we had one Subversion repository under which each project lived. It was setup something like shown in the awesome ASCII art below although, y'know, with real names and stuff...</p>
+
+<pre><code>/svn
+  /trunk
+    /project1
+    /project2
+  /tags
+    /project1
+      /release-1.2.6
+      /release-1.2.7
+    /project2
+      /release-0.0.1
+  /branches
+    /project1
+    /project2
+      /grozzle-the-fromits
+      /brozzle-the-hoojits</code></pre>
+
+<p>We've started using Git a whole lot recently and find that going back to Subversion is almost painful. Long story short, we migrated to Git. Here's how we did it.</p>
+
+<h4>Turn the key, let's go</h4>
+
+<p>First we need a list of Subversion usernames and a matching list of Git authors. Stick them into a file and save them somewhere - I used <code>~/Desktop/users.txt</code>. Make it look like this, one name per line:</p>
+
+<pre><code>subversion_name = Full Name &lt;email@address.com&gt;</code></pre>
+
+<p>For example, my entry looks like this:</p>
+
+<pre><code>craig = Craig R Webster &lt;craig@barkingiguana.com&gt;</code></pre>
+
+<p>Now create an empty directory somewhere. This directory is going to be a throw-away Git repository.</p>
+
+<pre><code>mkdir -t ~/tmp/project1.svn
+cd ~/tmp/project1.svn</code></pre>
+
+<p>Now use <code>git-svn</code> to initialise the repository, set the source file for the author names, and fetch the repository. Use the full URL to your trunk, tags and branch directories for your Subversion repository.</p>
+
+<pre><code>git-svn init --trunk="https://.../svn/trunk/project1" \
+  --tags="https://.../svn/tags/project1" \
+  --branches="https://.../svn/branches/project1" \
+  --no-metadata
+git config svn.authorsfile ~/Desktop/users.txt
+git svn fetch</code></pre>
+
+<p>Git-svn will now fetch your repository. This might take a while. Go make a cup of coffee.</p>
+
+<p>With the repository now on your hard drive you should clone it to get rid of all the special stuff added to allow Subversion integration.</p>
+
+<pre><code>cd ..
+git clone project1.svn project1.git</code></pre>
+
+<h4>All done</h4>
+
+<p><code>project1.git</code> now contains a Git repository equivalent to your previous Subversion repository. Enjoy!</p>

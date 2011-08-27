@@ -1,0 +1,17 @@
+---
+title: "Avoiding pointless merge commits"
+layout: post
+author: Craig
+---
+Merge branch 'development' of github.com:craigw/whatever into development
+
+Caused by Git automatically merging your changes with upstream changes on pull. Not a very nice commit message, adds almost no value, totally not needed. Do this:
+
+1. Check out tracking branch
+2. Create & check out local branch from this.
+3. Hack hack hack.
+4. Check out tracking branch
+5. Pull from remote
+6. Rebase local branch onto tracking branch
+7. Merge local branch into tracking branch
+8. Push to remote

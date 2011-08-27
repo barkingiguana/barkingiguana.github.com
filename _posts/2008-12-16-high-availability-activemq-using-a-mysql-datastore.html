@@ -1,0 +1,28 @@
+---
+title: "High Availability ActiveMQ using a MySQL datastore"
+layout: post
+author: Craig
+---
+<p>Now that we have <a href="http://barkingiguana.com/2008/12/13/deploying-activemq-on-ubuntu-810">ActiveMQ deployed</a> it'd be quite nice to reduce the impact of a broker being unavailable - perhaps because it's dropped off the network, or because we want to upgrade the kernel or ActiveMQ install. Let's setup a High Availability ActiveMQ cluster.</p>
+
+<h4>High Availability Options</h4>
+
+<p>There are <a href="http://activemq.apache.org/masterslave.html">lots of ways</a> to run ActiveMQ as master / slave cluster for HA but we already have an <a href="http://barkingiguana.com/2008/07/20/load-balanced-highly-available-mysql-on-ubuntu-804">HA MySQL setup</a> so I'd like to use that as the datatstore. In ActiveMQ terms that means I'd like to setup a <a href="http://activemq.apache.org/jdbc-master-slave.html">JDBC master / slave</a> cluster.</p>
+
+<h4>Setting up ActiveMQ to use a MySQL Datastore</h4>
+
+<p>It turns out that this is <em>really</em> easy to setup. First, <a href="http://note19.com/2007/06/23/configure-activemq-with-mysql/">configure ActiveMQ to use MySQL</a> then <a href="http://note19.com/2008/01/26/activemq-50-jdbc-masterslave-requires-innodb-table/">make sure you're using InnoDB</a>. The only change I made to these instructions was to change <code>dataDirectory="${activemq.base}/activemq-data"</code> to <code>dataDirectory="${activemq.base}/data"</code>. Remember to change the broker name in activemq.xml to match the machine name. You've now got one broker running with a  MySQL datastore.</p>
+
+<h4>Adding a slave for failover</h4>
+
+<p>To setup the slave a slave, install a second instance of ActiveMQ doing exactly the same as above - make sure the broker name is unique. Umm... that's it!</p>
+
+<h4>Starting the cluster</h4>
+
+<p>Start the DaemonTools services. It doesn't really matter which broker is master so it doesn't matter which order you start them in.</p>
+
+<pre><code>svc -u /etc/service/activemq</code></pre>
+
+<p>When you tail the logs of both brokers you should see one stop after loading the database driver. It's trying to acquire the lock on the datastore and will stay here until the master fails and the lock is released. At that point it will take over as the master.</p>
+
+<p>You can test failover by shutting down the current master. Success is shown in the logs of the slave that's taking over as master: it'll say it's acquired the lock.</p>

@@ -1,0 +1,43 @@
+---
+title: "Installing the native MySQL Ruby driver on OS X 10.5"
+layout: post
+author: Craig
+---
+I keep forgetting this:
+
+After installing MySQL from the official MySQL / OS X package I need to do this to install the Ruby/MySQL bindings.
+
+sudo gem install mysql -- --with-mysql-config=/usr/local/mysql/bin/mysql_config
+
+See also http://wonko.com/post/how-to-install-the-mysqlruby-gem-on-mac-os-x-leopard
+
+*** Install the 32-bit version on 10.5 since the Ruby with Leopard only has support for 32-bit gems.***
+
+If you see this then the 64-bit version has been installed.
+
+<code>dyld: lazy symbol binding failed: Symbol not found: _mysql_init
+  Referenced from: /Library/Ruby/Gems/1.8/gems/mysql-2.7/lib/mysql.bundle
+  Expected in: dynamic lookup
+
+dyld: Symbol not found: _mysql_init
+  Referenced from: /Library/Ruby/Gems/1.8/gems/mysql-2.7/lib/mysql.bundle
+  Expected in: dynamic lookup
+
+Trace/BPT trap</code>
+
+Uninstall MySQL from OS X by doing this:
+
+    sudo rm /usr/local/mysql
+    sudo rm -rf /usr/local/mysql*
+    sudo rm -rf /Library/StartupItems/MySQLCOM
+    sudo rm -rf /Library/PreferencePanes/My*
+    # edit /etc/hostconfig and remove the line MYSQLCOM=-YES-
+    sudo rm -rf /Library/Receipts/mysql*
+    sudo rm -rf /Library/Receipts/MySQL*
+
+Force installation of 32-bit gem (after installing 32-bit MySQL) by running this:
+
+sudo env ARCHFLAGS="-arch i386" gem install mysql -- --with-mysql-config=/usr/local/mysql/bin/mysql_config
+
+
+See also http://www.macruby.org/trac/wiki/Troubleshooting

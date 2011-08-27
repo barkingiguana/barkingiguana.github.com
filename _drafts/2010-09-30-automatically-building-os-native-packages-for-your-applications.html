@@ -1,0 +1,101 @@
+---
+title: "Automatically building OS native packages for your applications"
+layout: post
+author: Craig
+---
+Sysadmins talk RPM or DEB. Rarely Capistrano. Call at 3am... no thanks. Wouldn't it be nice to give them what they need and dream the night away?
+
+Fairly manual process. Building DEB covered here: http://wiki.xeriom.net/w/CreatingPackagesForUbuntu (RPM fairly similar but uses `rpm` and `mock` and such things).
+
+According to our Subversion use policy we tag all release code. Wouldn't it be nice to tag a release and not worry about all that effort building native packages?
+
+Hey, we introduced a Subversion changeset topic a few posts back... we could use that to detect new tags like this:
+
+<pre><code class="ruby">#! /usr/bin/env ruby
+
+require 'rubygems'
+require 'smqueue'
+require 'yaml'
+
+puts "Starting..."
+
+changesets = SMQueue(:name => "/topic/svn.commit", :host => "mq.domain.com", :reliable => true, :durable => true, :client_id => "builder.release_filter", :subscription_name => "main", :adapter => "StompAdapter")
+releases = SMQueue(:name => "/topic/svn.tags.created", :host => "mq.domain.com", :adapter => "StompAdapter")
+
+changesets.get do |message|
+  begin
+    changeset = YAML.parse(message.body).transform
+    new_release = changeset["changed"].size == 1 && changeset["changed"][0]["type"] == "A" && changeset["changed"][0]["path"] =~ /^tags\/.+\/.+/
+
+    puts "Processing changeset #{changeset["revision"]}."
+    if new_release
+      puts "Changeset #{changeset["revision"]} contains a new release tag"
+      releases.put changeset.to_yaml
+    end
+  rescue => e
+    puts "Couldn't process change: #{e.message}: #{e.backtrace.join("\n")}"
+  end
+end
+</code></pre>
+
+Oh, and that work that we do looks like it might be automated...
+
+RPM:
+
+<pre><code class="ruby">#! /usr/bin/env ruby
+
+require 'rubygems'
+require 'smqueue'
+require 'yaml'
+require 'net/http'
+require 'erb'
+
+puts "Starting..."
+
+BUILDER_HOME = "/home/rpmbuild"
+
+releases = SMQueue(:name => "/queue/svn.releases.created", :host => "mq-devel.ips.radio.bbc.co.uk", :reliable => true, :adapter => "StompAdapter")
+
+releases.get do |message|
+  changeset = YAML.parse(message.body).transform
+  puts "Processing #{changeset["revision"]}"
+
+  release = changeset["changed"][0]
+  @project_name = release["path"].split(/\//)[2].gsub(/[^a-zA-Z0-9\_\-]/, '_')
+  @project_version = release["path"].split(/\//)[3]
+  @project_svn_path = release["path"].split(/\//)[0..3].join("/")
+  @project_svn_root = "#{changeset["repository_url"]}/#{@project_svn_path}"
+  @rpm_name = "#{@project_name}-#{@project_version}"
+  @changeset = changeset["revision"]
+  spec_file_name = "#{@project_name}.spec"
+  %W(#{@project_svn_root}/config/#{spec_file_name}.erb #{@project_svn_root}/#{spec_file_name}.erb).each do |project_spec_file|
+    spec_file_request = Net::HTTP.get_response(URI.parse(project_spec_file))
+    if spec_file_request.kind_of? Net::HTTPOK
+      puts "Found RPM spec file template at #{project_spec_file}"
+      spec_file_template = ERB.new(spec_file_request.body)
+      spec_file = spec_file_template.result(binding)
+      File.open("/tmp/#{spec_file_name}", 'w') do |f|
+        f.puts spec_file
+        f.flush
+      end
+
+      `mv /tmp/#{spec_file_name} #{BUILDER_HOME}/rpmbuild/SPECS/#{spec_file_name}`
+
+      command = %Q(cd #{BUILDER_HOME}/rpmbuild \
+      && rpmbuild -bs #{BUILDER_HOME}/rpmbuild/SPECS/#{spec_file_name} \
+      && mock -r ips #{BUILDER_HOME}/rpmbuild/SRPMS/#{@rpm_name}-0.src.rpm \
+      && mkdir -p #{BUILDER_HOME}/tmp/ \
+      && mv /var/lib/mock/rhel-5-i386-xeriom/result/*.rpm #{BUILDER_HOME}/tmp/ \
+      && mv #{BUILDER_HOME}/tmp/#{@rpm_name}-0.rhel5.xeriom.src.rpm #{BUILDER_HOME}/rpmbuild/SRPMS \
+      && mv #{BUILDER_HOME}/tmp/#{@rpm_name}-0.rhel5.xeriom.*.rpm #{BUILDER_HOME}/rpmbuild/RPMS \
+      && rm -rf #{BUILDER_HOME}/tmp/)
+
+      puts "Running command: `#{command}`"
+      %x[#{command}]
+      break
+    end
+  end
+  puts "Processed #{changeset["revision"]}"
+end</code></pre>
+
+Running both processes will automatically build RPMs when we create a tag /tags/application_name/1.2.3. Woo.

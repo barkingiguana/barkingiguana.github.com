@@ -1,0 +1,16 @@
+---
+title: "Git: calculating the short sha1 hash of a commit"
+layout: post
+author: Craig
+---
+<p>I frequently find myself referring to commits in a repository managed by Git. Until tonight I didn't know how to get the short version of the commit hash so I had to refer to the full thing. <code>f328b61397cd8a7dfddb005d4d0a3280a0777a46</code>. Yuck.</p>
+
+<p>To get the short version use <code>git rev-parse --short --verify [commit-id]</code>.</p>
+
+<pre><code>git rev-parse --short --verify f328b61397cd8a7dfddb005d4d0a3280a0777a46
+f328b61</code></pre>
+
+<p>If you'd like to transform that back to the long commit hash again just drop the <code>--short</code> option.</p>
+
+<pre><code>git rev-parse --verify f328b61
+f328b61397cd8a7dfddb005d4d0a3280a0777a46</code></pre>

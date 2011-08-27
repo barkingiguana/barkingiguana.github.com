@@ -1,0 +1,30 @@
+---
+title: "Working with Ruby Arrays: Map with Index"
+layout: post
+author: Craig
+---
+A simple method that I'm finding I use a fair amount these days is <code>map_with_index</code>. It works the same way as <code>each_with_index</code> except with the behaviour of <code>map</code>, ie every element of the resulting array is what's returned by the block when the element is yielded to it.
+
+<pre><code>module BarkingIguana
+  module ArrayExt
+    def map_with_index &block
+      index = 0
+      map do |element|
+        result = yield element, index
+        index += 1
+        result
+      end
+    end
+  end
+end
+
+Array.class_eval do
+  include BarkingIguana::ArrayExt
+end</code></pre>
+
+Great for situations where eg the first N elements of an array have to be slightly different from the rest of the elements:
+
+<pre><code>[1, 2, 3, 4, 5].map_with_index do |element, index|
+  model = Model.new element
+  model.unlock if index < 3
+end</code></pre>

@@ -1,0 +1,39 @@
+---
+title: "Testing CSS @imports"
+layout: post
+author: Craig
+---
+<p>I previously wrote a script to <a href="http://barkingiguana.com/2008/11/03/make-sure-youre-importing-files-that-exist">check files that are @imported exist</a> in CSS stylesheets. I've turned that into a set of examples for our RSpec-based test suite. Fire the code into something like <code>spec/views/stylesheets/import_spec.rb</code>.</p>
+
+<pre><code class="ruby">require File.dirname(__FILE__) + '/../../spec_helper'
+
+describe "Stylesheet" do
+  stylesheet_root = File.expand_path(RAILS_ROOT + '/public')
+  stylesheets = Dir[File.join(stylesheet_root, "**", "*.css")]
+
+  stylesheets.each do |stylesheet|
+    describe stylesheet do
+      it "should not @import files that don't exist" do
+
+        missing_imports = []
+        imports = File.read(stylesheet).split(/\n|\r/).grep(/\@import url\((.*)\)/)
+        imports.each do |import|
+          desired_path = import.scan(/url\((["'\ ])?(.*)\1\)/).to_a.first.to_a.last
+          desired_root = desired_path[0,1] == "/" ? stylesheet_root : File.dirname(stylesheet)
+          filesystem_path = File.expand_path(File.join(desired_root, desired_path))
+          if !File.exists?(filesystem_path)
+            missing_imports << { :path => filesystem_path, :directive => import }
+          end
+        end
+
+        if missing_imports.any?
+          exception = []
+          missing_imports.each do |import|
+            exception << "Missing @import file (#{import[:path]}) required for #{import[:directive]}"
+          end
+          raise exception.join("\n")
+        end
+      end
+    end
+  end
+end</pre></code>

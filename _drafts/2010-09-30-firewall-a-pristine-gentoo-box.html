@@ -1,0 +1,25 @@
+---
+title: "Firewall a pristine Gentoo box"
+layout: post
+author: Craig
+---
+<p>I previously posted about <a href="http://barkingiguana.com/2008/06/22/firewall-a-pristine-ubuntu-804-box">firewalling a Ubuntu box</a> - here's how to do the same thing with a Gentoo box. Follow these simple instructions to block all traffic but SSH to your box. Once you have these rules running you can punch more holes as required. Remember to sync your portage tree first using <code>emerge --sync</code>.</p>
+
+<pre><code class="bash">sudo emerge iptables
+sudo iptables -A INPUT -i lo -j ACCEPT
+sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport ssh -j ACCEPT
+sudo iptables -A INPUT -j DROP
+sudo sh -c "iptables-save -c > /etc/iptables.rules"</code></pre>
+
+<p>If you'd like to save your current rules when you stop - or load the rules when you start the box, run the <code>iptables</code> script at startup by adding it to the default runlevels.</p>
+
+<pre><code>sudo rc-update add iptables default</code></rep>
+
+<p>If you're hosted at <a href="http://xeriom.net/">Xeriom Networks</a> and would like to be monitored by the <a href="http://wiki.xeriom.net/w/XeriomAlertService">monitoring service</a> there, allow ICMP Type 8 from <code>monitor.xeriom.net</code>.</p>
+
+<pre><code>sudo iptables -I INPUT 4 -s 193.219.108.245 -p icmp -m icmp --icmp-type 8 -j ACCEPT</code></pre>
+
+<p>Remember to save the new rules to the <code>iptables.rules</code>.</p>
+
+<pre><code>sudo /etc/init.d/iptables save</code></pre>

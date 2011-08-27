@@ -1,0 +1,51 @@
+---
+title: "Make sure you're @importing files that exist"
+layout: post
+author: Craig
+---
+<p>A few people near me have heard the start of my rumblings about optimising the number of HTTP requests required for each page. There are a variety of reasons that you might want to do this, but that discussion is for another post. For now simply assume that I don't like unnecessary HTTP requests. Extrapolating from that you would reasonably assume that I <em>really</em> don't like wasted HTTP requests such as might happen when the url in a CSS <code class="css">@import</code> directive 404's. If you assumed that, you'd be right.</p>
+
+<p>I got fed up of tracking down the source of these errors in a few applications that I maintain so I fired up a <a href="http://macromates.com/">TextMate</a> session and scraped together this nasty little snippet of Ruby to do my dirty work for me.</p>
+
+<pre><code class="ruby">#! /usr/bin/env ruby
+
+css_root = File.expand_path(`pwd`.strip)
+css_files = Dir[File.join(css_root, "**", "*.css")]
+
+missing_imports = Hash.new([])
+css_files.each_with_index do |css_file, index|
+  imports = File.read(css_file).split(/\n|\r/).grep(/\@import url\((.*)\)/)
+  imports.each do |import|
+    desired_path = import.scan(/url\((["'\ ])?(.*)\1\)/).to_a.first.to_a.last
+    desired_root = desired_path[0,1] == "/" ? css_root : File.dirname(css_file)
+    filesystem_path = File.expand_path(File.join(desired_root, desired_path))
+    if !File.exists?(filesystem_path)
+      missing_imports[css_file] += [{ :path => filesystem_path, :directive => import }]
+    end
+  end
+end
+
+if missing_imports.any?
+  puts "Missing files declared as imports in CSS:\n\n"
+
+  missing_imports.keys.each do |origin|
+    puts "Origin:               #{origin}"
+    missing_imports[origin].each do |import|
+      puts "Missing @import file: #{import[:path]}"
+      puts "Directive:            #{import[:directive]}"
+    end
+    puts ""
+  end
+else
+  puts "No imported files are missing. Well done."
+end</code></pre>
+
+<p>Run it in the directory which serves your document root - for Rails applications this would be <code>RAILS_ROOT/public/</code> - and it'll either spit out a list of missing files you've tried to <code class="css">@import</code> or tell you that you've done well.</p>
+
+<pre><code>Missing files declared as imports in CSS:
+
+Origin:               /Users/craig/projects/1.8/public/stylesheets/.../find_by_service.css
+Missing @import file: /Users/craig/projects/1.8/public/stylesheets/.../a_to_z.css
+Directive:            @import url('.../a_to_z.css');</code></pre>
+
+<p>Now, just to be clear, I don't like <code class="css">@import</code> directives. I'd prefer they were completely removed from the CSS. They are popular with a lot of people though so I'll compromise for the moment: if you must use them, please make sure they're going to work.</p>

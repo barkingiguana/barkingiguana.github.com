@@ -1,0 +1,140 @@
+---
+title: "Getting started with CouchDB: A simple address book application"
+layout: post
+author: Craig
+---
+<p>I've recently <a href="barkingiguana.com/2008/06/28/installing-couchdb-080-on-ubuntu-804">installed CouchDB</a> but, still being pretty new to this whole document store thing, don't really know what they can do or how to make CouchDB do it.</p>
+
+<p>The best way to learn, of course, is to <em>do</em>. I've decided that I'll implement a simple address-book implementation.</p>
+
+<h4>Investigation and technology choice</h4>
+
+<p>Since CouchDB talks JSON I figure that I'll write the address book in Javascript and HTML, and because CouchDB includes a web server I'll serve the application from the same place I store the data. I'll call the file that contains that addressbook application <code>addressbook.html</code>.</p>
+
+<p>Taking a peek at the CouchDB configuration in <code>/usr/local/etc/couchdb/couch.ini</code> I see that the document root for the web server can be found at <code>/usr/local/share/couchdb/www</code> - that's where the <code>addressbook.html</code> file will go.</p>
+
+<p>I'll need a database to store people's contact details in. There's a pretty nice interface to do this at <code>/_utils/</code> which is accessible using a web browser by pointing it at the CouchDB server's IP address and port.</p>
+
+<p>CouchDB comes with a Javascript wrapper which can be found at <code>/_utils/script/couch.js</code> but it only talks to a local server and I'm accessing the page across the internet so I'll steal some code from it and change it to work for my setup.</p>
+
+<h4>Implementation</h4>
+
+<p>First off, create the database. Jump into the interface at <code>/_utils/</code> and create a database called "addressbook". That's where we'll store our data.</p>
+
+<p>The user interface is going to be a webpage using Javascript which makes things pretty simple. I'll whip up a really simple page to start with.</p>
+
+<pre><code class="html">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+&lt;head&gt;
+  &lt;!-- The javascript will live in addressbook.js --&gt;
+  &lt;script src="http://aaa.bbb.ccc.ddd:5984/_utils/addressbook.js"&gt;&lt;/script&gt;
+  &lt;title&gt;Address Book&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Address Book&lt;/h1&gt;
+  &lt;div id="addressbook"&gt;
+    &lt;p id="loading"&gt;Loading... please wait...&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+<p>Since I've been spoiled by ActiveRecord I want to be able to say something like <code class="javascript">var people = Person.find("all");</code> in my code and have it return all Person records. I also want to be able to say <code class="javascript">Person.find("123456-1234-1234-123456");</code> to find an individual person.</p>
+
+<pre><code class="javascript">
+Person = {
+  // Push the implementation details of the database into a 
+  // different object to keep Person clean.
+  //
+  database: AddressBook,
+  find: function(id) {
+    if(id == "all") {
+      return this.database.allCards();
+    } else {
+      return this.database.openCard(id);
+    }
+  }
+}</code></pre>
+
+<p>I've chosen to implement an AddressBook object that will abstract the details of database connection from the Person object. It will provide two methods, <code class="javascript">allCards</code> and <code class="javascript">openCard(id)</code>. These methods talk to the CouchDB server and handle any and all data marshalling or other tricky bits and pieces.</p>
+
+<pre><code class="javascript">AddressBook = {
+  // Change this to point to your own CouchDB instance.
+  uri: "http://craig-01.vm.xeriom.net:5984/addressbook/",
+
+  _request: function(method, uri) {
+    var req = new XMLHttpRequest();
+    req.open(method, uri, false);
+    req.send();
+    return req;
+  },
+
+  // Fetch all address book cards.
+  allCards: function() {
+    var req = this._request("GET", this.uri + "_all_docs");
+    var result = JSON.parse(req.responseText);
+    if (req.status != 200)
+      throw result;
+    var allDocs = [];
+    for(var offset in result.rows) {
+      var id = result.rows[offset]["id"];
+      var doc = this.openCard(id);
+      allDocs[allDocs.length] = doc;
+    }
+    return allDocs;
+  },
+
+  // Fetch an individual address book card.
+  openCard: function(id) {    
+    var req = this._request("GET", this.uri + id);
+    if (req.status == 404)
+      return null;
+    var result = JSON.parse(req.responseText);
+    if (req.status != 200)
+      throw result;
+    return result;
+  }
+}</code></pre>
+
+<p>I push responsibility for parsing JSON off to another library. Luckily, Yahoo provide <a href="http://developer.yahoo.com/yui/json/">a rather nice JSON library</a> that does just what I'm looking for - I don't have to implement it, but I do need to pull it into the webpage, and make it appear in the global namespace.</p>
+
+<pre><code class="html">
+&lt;!-- Add this to the head of addressbook.html --&gt
+&lt;script src="http://yui.yahooapis.com/2.5.2/build/yahoo/yahoo-min.js"&gt;&lt;/script&gt;
+&lt;script src="http://yui.yahooapis.com/2.5.2/build/json/json-min.js"&gt;&lt;/script&gt;</code></pre>
+
+<pre><code class="javascript">
+// Make YUI JSON available in the global namespace.
+// Add this to addressbook.js
+JSON = YAHOO.lang.JSON;</code></pre>
+
+<p>The last piece of Javascript I need to show the address book is something to load all people from the address book and add them to the page. This uses <code class="javascript">window.onload</code> hook which is <a href="http://www.geekdaily.net/2007/07/27/javascript-windowonload-is-bad-mkay/">bad</a>, but for this little application is a quick and easy to kick off some code.</p>
+
+<pre><code class="javascript">// This is horrible, I know, but it's just a simple example.
+window.onload = function() {
+  var addressbook = document.getElementById("addressbook");
+  var personList = document.createElement("ul");
+  for(var offset in people) {
+    var person = people[offset];
+    var personNode = document.createElement("li");
+    var name = document.createTextNode(person.name);
+    personNode.appendChild(name);
+    personList.appendChild(personNode);
+  }
+  addressbook.removeChild(document.getElementById("loading"));
+  addressbook.appendChild(personList);
+}</code></pre>
+
+<p>That's it; the application is ready to go. Upload the <code>addressbook.html</code> and <code>addressbook.js</code> file to the document root of the CouchDB server, fire up your browser and navigate to <code>http://aaa.bbb.ccc.ddd:5984/_utils/addressbook.html</code> where <code>aaa.bbb.ccc.ddd</code> is the IP address of your CouchDB instance.</p>
+
+<p>A blank page that says "Address Book" should greet you. Not very impressive, right? What went wrong? Actually, nothing went wrong. There's just no data in the database.</p>
+
+<p>The interface that I pointed out before for browsing and creating databases can also be used to add documents to the database. Jump into it again, navigate to the addressbook database and add a document. When it asks you for an id, just leave the field blank: it'll create one automatically. Add a field to the document called name and click the little green checkbox beside the textbox, then double click on the value of the new field and set it to your own name in quotes eg &quot;Craig Webster&quot;. Click the green arrow beside the textbox then click "save document", jump back to the address book and hit refresh. The new record should now show up.</p>
+
+<h4>Moving forward</h4>
+
+<p>I've shown how to retrieve data from CouchDB using Javascript, but currently the data still has to be input using the CouchDB interface. Watch this space for an upcoming article on manipulating the database using Javascript so we can add cards to the addressbook.</p>
+
+<h4>Did this article help?</h4>
+
+<p>If this article helped you, I appreciate beer if you meet me, or recommendations at <a href="http://www.workingwithrails.com/recommendation/new/person/7241-craig-webster">Working With Rails</a>.</p>

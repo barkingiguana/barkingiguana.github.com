@@ -1,0 +1,18 @@
+---
+title: "Installing Collectd 4.4.1"
+layout: post
+author: Craig
+---
+# some .deb packages don't gzip collection.cgi so there are a few conditional statements below. Just copy/paste, it'll all be fine.
+
+sudo apt-get install collectd --yes
+sudo nano -w /etc/collectd/collectd.conf
+# enable / disable / configure plugins as desired.
+sudo /etc/init.d/collectd restart
+sudo cp /usr/share/doc/collectd/examples/collection.cgi* /usr/lib/cgi-bin
+cd /usr/lib/cgi-bin
+[ -f collection.cgi.gz] && sudo gunzip collection.cgi.gz
+sudo chmod +x ./collection.cgi
+sudo apt-get install librrds-perl libconfig-general-perl libhtml-parser-perl  libregexp-common-perl --yes
+Access http://ip.ad.re.ss/cgi-bin/collection.cgi
+Win!

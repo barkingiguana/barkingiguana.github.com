@@ -1,0 +1,8 @@
+rvm ruby-1.9.2-p180
+rvm ruby-1.9.2-p180@craigw-blog --create
+
+if ! command -v bundle; then
+  gem install bundler
+fi |egrep -v '/bundle'
+
+bundle | grep -v 'Using' | grep -v 'complete' | sed '/^$/d' |grep -v 'vendor/cache'

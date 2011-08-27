@@ -1,0 +1,55 @@
+---
+title: "Using NTPD in a Ubuntu 8.04 Xen Virtual Machine"
+layout: post
+author: Craig
+---
+<p>It's a good idea to have an accurate clock on any computer you access - apart from anything else it means your logs will be consistent making event replays easier. Unfortunately over time each computer will slowly drift away from the actual time. NTP - network time protocol - keeps the clock accurate by synchronising it with a group of computers elsewhere on the internet. Unfortunately, Xen guests such as those provided by <a href="http://xeriom.net/">Xeriom Networks</a> tend to be tied to the clock of the Xen host. This is a quick walk-through to show how to setup NTP and remove the dependence on the physical host.</p>
+
+<h4>Taking a shortcut</h4>
+
+<p>If you're running a Ubuntu based VM and you use the <a href="http://wiki.xeriom.net/w/XeriomUbuntuPackagesService">package host</a> at Xeriom Networks then you can run this simple command to setup NTP.</p>
+
+<pre><code>sudo apt-get install xeriom-ntp-client --yes --force-yes</code></pre>
+
+<h4>Gaining Independence</h4>
+
+<p>To stop your VM's clock being slaved to the hosts simply tell the kernel that the clock is independent.</p>
+
+<pre><code>sudo su -c "echo 1 > /proc/sys/xen/independent_wallclock"</code></pre>
+
+<p>To make sure that this persists over reboots, edit <code>/etc/sysctl.conf</code> to include <code>xen.independent_wallclock = 1</code>.</p>
+
+<h4>Installing and configuring NTPD</h4>
+
+<p>An NTP daemon can be installed using <code>apt-get</code>.</p>
+
+<pre><code>sudo apt-get install ntp --yes</code></pre>
+
+<p>If you're on one of Xeriom's VMs you can use <code>time.xeriom.net</code> as a timesource. Edit <code>/etc/ntp.conf</code> to use it, and perhaps a few other servers from the nearest NTP pool to you.</p>
+
+<pre><code>server time.xeriom.net prefer
+server 0.uk.pool.ntp.org
+server 1.uk.pool.ntp.org
+server 2.uk.pool.ntp.org</code></pre>
+
+<p>Restart NTP and you're done.</p>
+
+<pre><code>sudo /etc/init.d/ntp restart</code></pre>
+
+<h4>What's the time Mr. Wolf?</h4>
+
+<p>NTP will take maybe 15 minutes to settle down and select the best possible configured timesource to synchronise with. You can check how it's doing by using <code>ntpq -p</code>.</p>
+
+<pre><code>ntpq -p
+     remote           refid      st t when poll reach   delay   offset  jitter
+==============================================================================
+*time.xeriom.net 212.13.194.87    3 u   39   64  377    0.402  -45.729   7.496
++dns1.rmplc.co.u 195.66.241.3     2 u   39   64  377    3.443  -54.808   6.142
++ntpt1.core.thep 194.152.64.68    3 u   40   64  377    0.723  -53.765   5.965
++weevil.pwns.ms  249.240.53.144   2 u   38   64  377    9.110  -57.739  11.427</code></pre>
+
+<p>This output contains quite a bit of information - for more complete details check out <a href="http://www.novell.com/coolsolutions/trench/418.html">http://www.novell.com/coolsolutions/trench/418.html</a>.</p>
+
+<h4>Now there's no excuse for being late</h4>
+
+<p>If you found this article useful, give me some love over at <a href="http://www.workingwithrails.com/recommendation/new/person/7241-craig-webster">Working With Rails</a>.</p>

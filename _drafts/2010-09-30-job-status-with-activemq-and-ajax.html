@@ -1,0 +1,39 @@
+---
+title: "Job status with ActiveMQ and Ajax"
+layout: post
+author: Craig
+---
+Long running jobs, need feedback in UI, rather than have client -> app -> MQ (eats application resources - can tie up Mongrels, for instance), have client -> MQ. Allows general communication too, but that's another post.
+
+Get Tomcat. I used 6.0.18: http://tomcat.apache.org/
+Get Jetty. I used 6.1.12.
+Get ActiveMQ. I used 5.1.0. Get the binary package: http://activemq.apache.org/
+
+Add activemq's activemq-all-5.1.0.jar and lib/activemq-web-5.1.0.jar distribution to Tomcat lib directory.
+Add jetty's lib/jetty-*.jar to Tomcat lib directory.
+
+Add
+<pre><code>
+  <servlet>
+    <servlet-name>AjaxServlet</servlet-name>
+    <servlet-class>org.apache.activemq.web.AjaxServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>AjaxServlet</servlet-name>
+    <url-pattern>/amq/*</url-pattern>
+  </servlet-mapping>
+
+  <context-param> 
+        <param-name>org.apache.activemq.brokerURL</param-name> 
+        <param-value>tcp://your-activemq-ip-address:61616</param-value>
+        <description> 
+                The URL of the Message Broker to connect to 
+        </description> 
+  </context-param> 
+</code></pre>
+to Tomcat conf/web.xml
+
+Start Tomcat.
+
+Hit http://localhost:8080/amq/amq.js in a browser. If you see some Javascript then you're in business.

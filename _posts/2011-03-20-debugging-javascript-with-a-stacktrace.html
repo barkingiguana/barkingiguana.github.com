@@ -1,0 +1,38 @@
+---
+title: "Debugging Javascript with a Stacktrace"
+layout: post
+author: Craig
+---
+Trying to work with some Javascript that keeps popping up an alert box. The library is huge and not particularly well organised, so I wrapped the original <code>window.alert</code> in one that pops up another alert box with a stack trace just before the one the library pops up. You could use this to find out where any function is called be changing the function it wraps in the last four lines.
+
+I'm sure this isn't particularly pretty Javascript - if you know a more idiomatic way to write it, please let me know in the comments.
+
+<pre><code>var original_alert = window.alert;
+
+var stacktrace = function() {
+  var regex = /function\W+([\w-]+)/i;  
+
+  var callee = arguments.callee;  
+  var trace = "";  
+  while(callee) {  
+    trace += (regex.exec(callee))[1] + '(';   
+
+    for (i = 0; i < callee.arguments.length - 1; i++) {
+      trace += "'" + callee.arguments[i] + "', ";
+    }
+
+    if (arguments.length > 0) {
+      trace += "'" + callee.arguments[i] + "'";  
+    }
+
+    trace += ")\n\n";
+
+    callee = callee.arguments.callee.caller;  
+  }
+  original_alert(trace);
+}
+
+window.alert = function(msg) {
+  stacktrace();
+  original_alert(msg);
+}</code></pre>

@@ -1,66 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title>Craig R Webster</title>
-  <meta http-equiv="Content-Language" content="English" />
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta name="Robots" content="index,follow" />
-  <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/reset/reset-min.css">
-  <style type="text/css">
-  html { padding: 1em; color: #333; }
-  p { margin: 0 0 1em 0;}
-  ul { margin: 0.25em 0 1em 0;}
-  li { list-style-type: square; margin: 0 0 0 2em;}
-  h1 { font-size: 150%; margin: 0 0 1em 0; width: 100%; border-bottom: 1px dotted #333;}
-  h2 { font-size: 125%; margin: 0 0 0.5em 0;}
-  </style>
-</head>
-<body>
-  <h1>Craig R Webster</h1>
-  <h2>See also:</h2>
-  <ul>
-    <li><a href="http://barkingiguana.com/">my homepage</a></li>
-    <li><a href="http://barkingiguana.com/~craig">my contact details</a></li>
-    <li><a href="http://barkingiguana.com/blog">my blog</a></li>
-    <li><a href="http://github.com/craigw">my projects on GitHub</a>
-  </ul>
+---
+title: Collected Ramblings
+layout: base
+---
 
-  <h2>Things I want to write or do:</h2>
-  <ul>
-    <li>Bussy. An application skeleton generator for services that sit on the bus.</li>
-    <li>Blobby. An abstraction of various blob stores to allow them to be swapped out simply by changing a configuration file. Sort of like <a href="http://github.com/seanohalpin/smqueue">SMQueue</a> but for MogileFS, S3 and other such services.</li>
-    <li>An SRPM for ActiveMQ. I'm fed up of having to install this by hand.</li>
-    <li>An SRPM for DaemonTools. With sensible paths... /command does not work for me and I shouldn't need to be root to run <code>svstat</code> like the default instructions require.</li>
-    <li>HTML-to-PDF. A service that sits on the bus and converts incoming messages containing HTML (or perhaps a reference to an HTML document) to a PDF.</li>
-    <li>Pseudo-application: expose a queue or topic via XMPP PubSub. Seems like <a href="http://camel.apache.org/components.html">Apache Camel</a> can bridge between various queue implementations (thanks @<a href="http://twitter.com/jstrachan">jstrachan</a>).</li>
-    <li>A service that searches hashtags and puts the results on the bus.</li>
-    <li>Application that allows people to search for NXER trains by price rather than date: <q>When can I travel to Edinburgh and back for less than &pound;50?</q></li>
-    <li>A PHP implementation of <a href="http://github.com/seanohalpin/smqueue">SMQueue</a> (once the transport layer is refactored).</li>
-    <li>An Erlang implementation of <a href="http://github.com/seanohalpin/smqueue">SMQueue</a> (once the transport layer is refactored).</li>
-    <li>Separate out the transport layer for SMQueue and provide a reference plugin for JSON.</li>
-    <li>Asynchronous attachment_fu. A backend that will push image resizes / thumbnailing / uploading to the blob store onto the queue.</li>
-    <li>One-step deploy. Turn it on, wait a few minutes, your application is ready. @<a href="http://twitter.com/mathie">mathie</a> is interested. Looking at <a href="http://wiki.opscode.com/display/chef/Home">Chef</a>.</li>
-    <li>A service that sits on the bus which takes a list of email addresses and an email and sends the email to the addresses.</li>
-    <li>A gnome-notify client that reports the status of builds a la CCMenu. Broken builds are sticky.</li>
-    <li>An application that will aggregate music libraries on the same network into one large library then allow people to vote for which track is next iTunes DJ style. Look into using mDNS to discover libraries. Music should be streamed and not copied over the network.</li>
-    <li>A service which takes a bunch of text and converts all necessary characters to HTML entities - useful for processing documents written in Word where smart-quotes and fancy dashes are commonly inserted automatically.</li>
-    <li>A service which takes a bunch of code and identifies the language it's written in.</li>
-    <li>A service which takes a bunch of code and classifies each construct using structured XML - eg picking out language keywords, arguments, comments, strings.</li>
-    <li>A service which takes a bunch of code and converts it to something suitable for use in an HTML document.</li>
-    <li>Make the URL expanding service follow all links and resolve them as much as possible - eg http://is.gd/w -&gt; http://google.com/ -&gt; http://www.google.com/. Follow the Location headers as far as possible.</li>
-    <li>A service which sits on the ESB and converts word documents to plain text.</li>
-    <li>A web-facing front-end to the word-to-plain-text service.</li>
-  </ul>
-  <p>If you'd be interested in hacking on any of these things with me, if you've already implemented all or part of one of these projects, or even if you're just interested in using one of them... please <a href="http://barkingiguana.com/~craig/contact">give me a yell<a/> and let me know!</p>
-
-  <h2>Stuff that was on the above list but is now done:</h2>
-  <ul>
-    <li>Geolocation. A service that sits on the bus and converts an address to latitude/longtitude. See <a href="https://github.com/craigw/geocoding-service">https://github.com/craigw/geocoding-service</a>.</li>
-  </ul>
-
-  <h2>Stuff that's similar to something on the list:</h2>
-  <ul>
-    <li>Spam classification. A service that sits on the bus and determines if a document is spam or ham. See <a href="https://github.com/craigw/spam-classification-service">https://github.com/craigw/spam-classification-service</a>.</li>
-  </ul>
-</body>
-</html>
+<h1>Blog Posts</h1>
+<ul class="posts">
+{% for post in site.posts %}
+  <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a> by {{ post.author }}</li>
+{% endfor %}
+</ul>

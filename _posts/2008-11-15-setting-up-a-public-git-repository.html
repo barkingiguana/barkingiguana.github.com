@@ -1,0 +1,74 @@
+---
+title: "Setting up a public Git repository"
+layout: post
+author: Craig
+---
+<p>More and more these days I'm using Git as my version control system. I want to make code available to the general public. The easy choice would be to use a service like <a href="http://github.com/">GitHub</a> or <a href="http://repo.or.cz/">repo.or.cz</a> but I'm vain and want to serve my code from <a href="http://barkingiguana.com/">barkingiguana.com</a>. I don't need to support multiple committers and I'd like to learn more about how Git works so I don't want to use <a href="http://eagain.net/gitweb/?p=gitosis.git;a=summary">Gitosis</a>. It turns out that it's pretty easy to setup your own public repository. Here's how I did it if you'd like to try the same.</p>
+
+<h4>General Setup</h4>
+
+<p>I've already got Apache setup (serving my blog among other things) so I'll use that and serve code from repositories under <a href="http://barkingiguana.com/~craig/">http://barkingiguana.com/~craig/</a>. The easiest way to do this is to use <a href="http://httpd.apache.org/docs/2.2/mod/mod_userdir.html">mod_userdir</a>. Since I'm using Ubuntu it's really easy to enable this module.</p>
+
+<pre><code>sudo a2enmod userdir
+sudo /etc/init.d/apache2 restart</code></pre>
+
+<p>I'd like to keep my Git repositories under <code>~/code</code> since this will let me selectively link in this repositories that I'd like to be public.</p>
+
+<pre><code>mkdir ~/code</code></pre>
+
+<p>The SSH port for my VM is on a non-standard port so I needed to put that into <code>~/.ssh/config</code> on my local development machine. I also took the opportunity here to upload my SSH key to the VM.</p>
+
+<h4>Publishing a project</h4>
+
+<p>I've got a project that I'd like to publish. It's got a bit of work already done locally and I'd like to share that with the public. First I need to create a bare repository on the public machine.</p>
+
+<pre><code># On the public server
+mkdir -p ~/code/<em>project_name</em>.git
+cd ~/code/<em>project_name</em>.git
+git --bare init
+chmod +x hooks/post-update</code></pre>
+
+<p>Success looks like this:</p>
+
+<pre><code>Initialized empty Git repository in /home/<em>user_name</em>/code/<em> project_name </em>/</code></pre>
+
+<p>Next I setup my local development repository with an alias for the public repository because I'm going to push to this fairly regularly.</p>
+
+<pre><code># On the local development machine
+cd ~/sandbox/<em>project_name</em>
+git remote add public ssh://barkingiguana.com/~/code/<em>project_name</em>.git</code></pre>
+
+<p>Now push the local master branch to the public repository.</p>
+
+<pre><code># On the local development machine
+cd ~/sandbox/<em>project_name</em>
+git push public master
+</code></pre>
+
+<p>Ace, the code is on the public server and I can easily push changes that I've merged back into the local master branch to the remote repository by running <code>git push public master</code>. The code still isn't available to the public though since it's not in my <code>~/public_html</code>. Link it in now.</p>
+
+<pre><code>ln -s ~/code/<em>project_name</em>.git ~/public_html/</code></pre>
+
+<p>Bam, just like that the repository is available for public use.</p>
+
+<h4>Did it work?</h4>
+
+<p>To make sure everything went okay, try cloning the repository. If you're following along at home remember to replace http://barkingiguana.com/~craig/addressbook.git with wherever your repository lives.</p>
+
+<pre><code># On the local development machine
+mkdir ~/tmp/
+cd ~/tmp/
+git clone http://barkingiguana.com/~craig/addressbook.git</code></pre>
+
+<p>Success should look something like this:</p>
+
+<pre><code>Initialized empty Git repository in /Users/craig/tmp/addressbook/.git/
+got d0cc5f06e1d164ea6ada301dbd2e7c946d1ae532
+walk d0cc5f06e1d164ea6ada301dbd2e7c946d1ae532
+got b68d1319a780a776afdb60e3bba2985793a11f3e
+got 2baa33597deecfc3eb558c59bc69745e153f9b82
+got da7110115566b026c7316bd1be4cbf3d76c0f656</code></pre>
+
+<h4>Found this article useful?</h4>
+
+<p>If you enjoyed this article I'd appreciate recommendations at <a href="http://www.workingwithrails.com/recommendation/new/person/7241-craig-webster">Working with Rails</a>.</p>

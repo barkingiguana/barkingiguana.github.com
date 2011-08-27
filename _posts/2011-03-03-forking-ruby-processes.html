@@ -1,0 +1,80 @@
+---
+title: "Forking Ruby Processes"
+layout: post
+author: Craig
+---
+<em>I was recently asked if I had the content of some articles that I posted a long time ago on a blog I used to run. After some searching I managed to scrape together the content using the way-back machine. It’s faithfully recreated here without changes, something I should have done when I first bought the barkingiguana.com domain.</em>
+
+For todays adventure in Ruby, I’m going to be writing a simple daemon process. To start with this daemon won’t do anything too useful – every 1 second it’ll print the time to STDOUT.
+
+Once we have that working I’m going to use the code I created previously to check that a socket is open and increase the period to 15 seconds.
+
+First, the time process.
+
+<code>kawaii:~ craig$ irb
+irb(main):001:0> fork do # Fork a new process
+irb(main):002:1*   while true # Loop forever
+irb(main):003:2>     puts Time.now # Print the time
+irb(main):004:2>     sleep 1 # Sleep for a second
+irb(main):005:2>   end # while true
+irb(main):006:1> end # fork
+=> 15738
+irb(main):007:0> Sat Jun 03 11:31:09 BST 2006
+Sat Jun 03 11:31:10 BST 2006
+Sat Jun 03 11:31:11 BST 2006</code>
+
+Voilà. Easy.
+
+Next, we check for an open socket. For this I’ll check that Postfix is listening on port 25 for mail on the secondary MX, mx2.xeriom.net. We need to remember to include the socket library or we’ll always hit the rescue block (oops!)
+
+<code>irb(main):045:0> require 'socket'
+=> true
+irb(main):046:0> fork do
+irb(main):047:1*   while true
+irb(main):048:2>     begin
+irb(main):049:3*       t = TCPSocket.open('mx2.xeriom.net', 'smtp')
+irb(main):050:3>       puts Time.now.to_s + ": MX2 is listening on port 25."
+irb(main):051:3>       t.close
+irb(main):052:3>     rescue
+irb(main):053:3>       puts Time.now.to_s + ": MX2 is NOT listening on port 25."
+irb(main):054:3>     end
+irb(main):055:2>     sleep 15
+irb(main):056:2>   end
+irb(main):057:1> end
+=> 15759
+irb(main):058:0> Sat Jun 03 11:48:25 BST 2006: MX2 is listening on port 25.
+Sat Jun 03 11:48:41 BST 2006: MX2 is listening on port 25.
+Sat Jun 03 11:48:56 BST 2006: MX2 is NOT listening on port 25.
+Sat Jun 03 11:49:11 BST 2006: MX2 is listening on port 25.</code>
+
+Okay, that was a little too easy… How about we extend the problem: This time, let’s check an arbitrary number of sockets on an arbitrary number of hosts.
+
+<code>irb(main):107:0> host_sockets = { 'mx2.xeriom.net' => [ 25 ], 'kiwi.xeriom.net' => [ 21, 22, 25 ], 'guava.xeriom.net' => [ 21, 22, 25 ], 'mx1.xeriom.net' => [ 25 ] }       
+=> {'mx2.xeriom.net' => [ 25 ], 'kiwi.xeriom.net' => [ 21, 22, 25 ], 'guava.xeriom.net' => [ 21, 22, 25 ], 'mx1.xeriom.net' => [ 25 ]}
+irb(main):108:0> fork do
+irb(main):109:1*   while true
+irb(main):110:2>     host_sockets.each { |hostname, sockets|
+irb(main):111:3*       Thread.new(hostname, sockets) { |host, socks|
+irb(main):112:4*         socks.each { |socket|
+irb(main):113:5*           begin
+irb(main):114:6*             t = TCPSocket.new(host, socket)
+irb(main):115:6>             puts Time.now.to_s + ": " + host.to_s + " is listening on port " + socket.to_s
+irb(main):116:6>             t.close
+irb(main):117:6>           rescue
+irb(main):118:6>             puts Time.now.to_s + ": " + host.to_s + " is NOT listening on port " + socket.to_s
+irb(main):119:6>           end
+irb(main):120:5>         }
+irb(main):121:4>       }
+irb(main):122:3>     }
+irb(main):123:2>     sleep 15
+irb(main):124:2>   end
+irb(main):125:1> end
+=> 15784
+Sat Jun 03 12:16:56 BST 2006: kiwi.xeriom.net is listening on port 21Sat Jun 03 12:16:56 BST 2006: mx2.xeriom.net is listening on port 22
+
+Sat Jun 03 12:16:56 BST 2006: guava.xeriom.net is listening on port 22
+Sat Jun 03 12:16:56 BST 2006: kiwi.xeriom.net is listening on port 22Sat Jun 03 12:16:56 BST 2006: mx2.xeriom.net is listening on port 25
+
+Sat Jun 03 12:16:56 BST 2006: kiwi.xeriom.net is listening on port 25Sat Jun 03 12:16:56 BST 2006: guava.xeriom.net is listening on port 25 ...</code>
+
+Obviously I’d need to think about the architecture of this code if I was going to extend it to many millions of hosts – a thread for each host would have a lot of overhead – but for a small network it’s fine as it is.
