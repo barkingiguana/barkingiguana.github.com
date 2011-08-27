@@ -4,10 +4,17 @@ layout: page
 ---
 <ul class="posts" id="archive">
   {% for post in site.posts %}
-    <li class="post">
-      <a class="permalink" href="{{ post.url }}">{{ post.title }}</a>
-      <span class="author name">{{ post.author }}</a>
-      <span class="published date">{{ post.date | date_to_string }}</span>
-    </li>
+    {% if forloop.first %}
+      <li class="most_recent post{% if post.author != 'Craig' %} guest{% endif %}">
+	{% if post.author == 'Craig' %}My{% else %}The{% endif %} most recent post is <a class="permalink title" href="{{ post.url }}">{{ post.title }}</a> {% if post.author == 'Craig' %}which I wrote on{% else %}<span class="author name">{{ post.author }}</a> {% endif %}
+        <span class="published date">{{ post.date | date_to_string }}</span>
+      </li>
+    {% else %}
+      <li class="post{% if post.author != 'Craig' %} guest{% endif %}">
+	<a class="permalink title" href="{{ post.url }}">{{ post.title }}</a>
+	{% if post.author != 'Craig' %}<span class="author name">{{ post.author }}</a>{% endif %}
+	<span class="published date">{{ post.date | date_to_string }}</span>
+      </li>
+    {% endif %}
   {% endfor %}
 </ul>
