@@ -15,6 +15,9 @@ a:hover { background-color: #ffc; }
 .page .content dl dt { margin-left: 1em; font-weight: bold; }
 .page .content dl dd { margin-left: 1em; }
 
+.page #archive .post .author:before { content: ' by '; font-weight: normal; }
+.page #archive .post .published:before { content: ' on '; font-weight: normal; }
+
 .post .meta { display: block; text-align: right; margin-top: 1em; }
 .post .meta .property { display: none; }
 .post .meta .value { font-weight: bold; display: inline; }
