@@ -2,7 +2,28 @@
 layout: base
 ---
 <div class="post">
-  <h1>{{ page.title }}</h1>
-  <p class="meta">written by <span class="author">{{ page.author }}</span> on <span class="publication_date">{{ page.date | date_to_string }}</span></span>
-  {{ content }}
+  <div id="hd">
+    <h1>{{ page.title }}</h1>
+  </div>
+  <div id="bd">
+    <div class="content" id="content">
+    {{ content }}
+    </div>
+    <dl class="meta">
+      <dt class="property">written by</dt>
+      <dd class="author name value">{{ page.author }}</dd>
+      <dt class="property">published</dt>
+      <dd class="published date value">{{ page.date | date_to_string }}</dd>
+    </dl>
+    <p class="notice comments" id="comments">Disagree? Found a typo? Got a question? If you'd like to have a conversation about this post, <a href="mailto:craig@barkingiguana.com">email craig@barkingiguana.com</a>. I don't bite.</p>
+    <div class="related">
+      {% if page.previous.url %}
+        <a class="previous" href="{{ page.previous.url }}" rel="previous" title="{{ page.previous.title }}">{{ page.previous.title | truncatewords: 15 }}</a>
+      {% endif %}
+      <a class="up" href="/" rel="up">Home</a>
+      {% if page.next.url %}
+	<a class="next" href="{{ page.next.url }}" rel="next" title="{{ page.next.title }}">{{ page.next.title | truncatewords: 15 }}</a>
+      {% endif %}
+    </div>
+  </div>
 </div>
