@@ -1,0 +1,37 @@
+html { padding: 1em; color: #333; }
+p { margin: 0 0 1em 0; }
+ul { margin: 0.25em 0 1em 0; }
+li { list-style-type: square; margin: 0 0 0 2em; }
+h1 { font-size: 182%; border-bottom: 1px dotted #333; }
+h2 { font-size: 138.5%; margin-bottom: 0.5em; }
+h3, h4, h5, h6 { font-weight: bold; margin-bottom: 1em; }
+a:hover { background-color: #ffc; }
+
+#hd { margin-bottom: 1em; }
+
+.notice { background-color: #eee; padding: 1em 0; text-align: center; }
+
+.post .meta { display: block; text-align: right; margin-top: 1em; }
+.post .meta .property { display: none; }
+.post .meta .value { font-weight: bold; display: inline; }
+.post .meta .author:before { content: '-- Written by '; font-weight: normal; }
+.post .meta .published:before { content: ' on '; font-weight: normal; }
+
+.post .comments { margin-top: 1em; }
+
+.post .related { text-align: center; margin-top: 1em; }
+.post .related .previous:before { content: '« '; }
+.post .related .next:after { content: ' »'; }
+.post .related a { margin: 0 1em; }
+
+.post .content .foreword { background-color: #eee; font-style: italic; }
+.post .content .introduction { font-style: italic; }
+.post .content ol, .post .content dl { margin-left: 1em; margin-bottom: 1em; }
+.post .content dl dt { margin-left: 1em; font-weight: bold; }
+.post .content ol li, .post .content dl dd { margin-left: 1em; }
+.post .content table { width: 100%; margin: 1em; border: 1px solid #333; }
+.post .content table th, .post #content table td { border: 1px solid #333; padding: 0.5em; }
+.post .content table th { font-weight: bold; }
+.post .content pre { margin-bottom: 1em; margin-left: 1em; }
+.post .content .update { background-color: #eee; }
+.post .content .update .when { font-style: italic; }
