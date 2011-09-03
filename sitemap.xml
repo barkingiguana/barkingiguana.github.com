@@ -11,7 +11,7 @@
   </url>
   {% for post in site.posts %}
   <url>
-    <loc>http://barkingiguana.com{{ post.url }}/</loc>
+    <loc>http://barkingiguana.com{{ post.url }}</loc>
     <lastmod>{{ post.date | date_to_xmlschema }}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
