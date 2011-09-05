@@ -8,6 +8,7 @@ h3, h4, h5, h6 { font-weight: bold; margin-bottom: 1em; }
 a:hover { background-color: #ffc; }
 
 #hd { margin-bottom: 1em; }
+#ft { margin-top: 1em; }
 
 .notice { background-color: #eee; padding: 1em 0; text-align: center; }
 
