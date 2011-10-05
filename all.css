@@ -17,8 +17,6 @@ a:hover { background-color: #ffc; }
 .page .content dl dd { margin-left: 1em; }
 
 .page #archive .post.most_recent { font-size: 273%; margin: 2.5em 0 2.5em 0; list-style-type: none; }
-.page #archive .post .author:before { content: ' by '; font-weight: normal; }
-.page #archive .post .published:before { content: ' on '; font-weight: normal; }
 
 .post .meta { display: block; text-align: right; margin-top: 1em; }
 .post .meta .property { display: none; }
