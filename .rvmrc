@@ -1,5 +1,5 @@
-rvm ruby-1.9.2-p180
-rvm ruby-1.9.2-p180@craigw-blog --create
+rvm ruby-1.9.2-p290
+rvm ruby-1.9.2-p290@craigw-blog --create
 
 if ! command -v bundle; then
   gem install bundler
