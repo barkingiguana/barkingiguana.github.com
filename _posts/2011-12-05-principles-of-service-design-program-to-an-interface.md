@@ -147,5 +147,4 @@ of the service interface it becomes much harder.
 [4]: http://eaipatterns.com/Sequencer.html
 [5]: http://eaipatterns.com/MessageTranslator.html
 [6]: http://eaipatterns.com/DataEnricher.html
-[7]: http://barelyenough.org/blog/2008/05/versioning-rest-web-services/
-[8]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.7
+[7]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.7
