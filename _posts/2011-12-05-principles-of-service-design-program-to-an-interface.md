@@ -5,7 +5,7 @@ author: Craig
 ---
 
 I've been thinking a fair amount about service design recently, and one of the
-things that I've found difficult is deciding hot to implement and version a
+things that I've found difficult is deciding how to implement and version a
 service in such a way that makes it pretty trivial to support (or not) older
 versions of that service. Turns out that advice which was meant to be for
 writing code works for writing services too viz. Program to an Interface.
@@ -102,7 +102,7 @@ text description we want item ids. We don't want to force this change on our
 partners however, because their development cycle is slow and they're sending
 us loads of orders - we like their cash.
 
-We can now publishe a second version of our order interface,
+We can now publish a second version of our order interface,
 `application/vnd.acme.order-v2+json`, which defines messages which look like
 this:
 
