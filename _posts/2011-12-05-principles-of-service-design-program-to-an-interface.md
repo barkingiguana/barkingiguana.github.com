@@ -1,5 +1,5 @@
 ---
-title: Principles of Service Design: Program to an Interface
+title: "Principles of Service Design: Program to an Interface"
 layout: post
 author: Craig
 ---
@@ -63,9 +63,9 @@ Handily, versioning interfaces for these types of services is pretty much the
 ideal use for a mime-type, and most message transports support setting custom
 mime-types:
 
-  * [HTTP 1.1 supports a Content-Type header][0]
-  * As does [Stomp 1.1][1]
-  * And [AMQP 1.0][2] (search for 'content-type')
+* [HTTP 1.1 supports a Content-Type header][0]
+* As does [Stomp 1.1][1]
+* And [AMQP 1.0][2] (search for 'content-type')
 
 Mime types have a space reserved for vendor specific types, `application/vnd`,
 inside which we are free to define our own types, although thre are a few
