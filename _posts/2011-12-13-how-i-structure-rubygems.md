@@ -103,7 +103,7 @@ You can easily allow this by using the `NullLogger` if no logger is passed to yo
       end
     end
 
-Find out more about the NullLogger at [http://github.com/craigw/null_logger][http://github.com/craigw/null_logger].
+Find out more about the NullLogger at [http://github.com/craigw/null\_logger](http://github.com/craigw/null_logger).
 
 
 ## Dependencies
