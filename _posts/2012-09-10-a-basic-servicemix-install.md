@@ -109,6 +109,7 @@ I can see that the route is running in Camel by checking the logs:
 
 I can also hook up my Ruby client to listen to the destination in the route:
 
+{% highlight ruby linenos %}
     require 'rubygems'
     require 'stomp'
     
@@ -118,6 +119,7 @@ I can also hook up my Ruby client to listen to the destination in the route:
       puts m.headers.inspect
     end
     c.join
+{% endhighlight %}
 
 Running that gets a steady stream of messages appearing in my console:
 
