@@ -110,15 +110,15 @@ I can see that the route is running in Camel by checking the logs:
 I can also hook up my Ruby client to listen to the destination in the route:
 
 {% highlight ruby %}
-    require 'rubygems'
-    require 'stomp'
-    
-    STDOUT.sync = true
-    c = Stomp::Client.new 'stomp://127.0.0.1:61613'
-    c.subscribe '/topic/tick-tock' do |m|
-      puts m.headers.inspect
-    end
-    c.join
+require 'rubygems'
+require 'stomp'
+
+STDOUT.sync = true
+c = Stomp::Client.new 'stomp://127.0.0.1:61613'
+c.subscribe '/topic/tick-tock' do |m|
+  puts m.headers.inspect
+end
+c.join
 {% endhighlight %}
 
 Running that gets a steady stream of messages appearing in my console:
