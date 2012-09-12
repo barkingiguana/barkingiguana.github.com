@@ -75,30 +75,32 @@ Happily the default configuration sets up a Stomp transport on port 61613 which 
 
 Configuring Camel is a touch more complicated, I have to drop a `camel.xml` file into the `deploy/` subdirectory of my ServiceMix install:
 
-    <beans xmlns="http://www.springframework.org/schema/beans"
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:schemaLocation="
-    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-    http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.8.5.xsd">
+{% highlight xml %}
+<beans xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.8.5.xsd">
 
-      <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
-        <route id="tick-tock">
-          <from uri="timer://tick-tock-timer?fixedRate=true&amp;period=5000" />
-          <to uri="log:tick-tock-log" />
-          <to uri="activemq:topic:tick-tock" />
-        </route>
-      </camelContext>
+  <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+    <route id="tick-tock">
+      <from uri="timer://tick-tock-timer?fixedRate=true&amp;period=5000" />
+      <to uri="log:tick-tock-log" />
+      <to uri="activemq:topic:tick-tock" />
+    </route>
+  </camelContext>
 
-      <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent" >
-        <property name="connectionFactory">
-          <bean class="org.apache.activemq.ActiveMQConnectionFactory">
-            <property name="brokerURL" value="vm://zuu?create=false&amp;waitForStart=10000" />
-            <property name="userName" value="${activemq.username}"/>
-            <property name="password" value="${activemq.password}"/>
-          </bean>
-        </property>
+  <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent" >
+    <property name="connectionFactory">
+      <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+	<property name="brokerURL" value="vm://zuu?create=false&amp;waitForStart=10000" />
+	<property name="userName" value="${activemq.username}"/>
+	<property name="password" value="${activemq.password}"/>
       </bean>
-    </beans>
+    </property>
+  </bean>
+</beans>
+{% endhighlight %}
 
 I can see that the route is running in Camel by checking the logs:
 
