@@ -109,7 +109,7 @@ I can see that the route is running in Camel by checking the logs:
 
 I can also hook up my Ruby client to listen to the destination in the route:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
     require 'rubygems'
     require 'stomp'
     
