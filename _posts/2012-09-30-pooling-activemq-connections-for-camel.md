@@ -1,5 +1,6 @@
 ---
 title: Pooling ActiveMQ connections for Camel
+introduction: Pool connections between Camel to ActiveMQ to save time and resources
 layout: post
 author: Craig
 ---

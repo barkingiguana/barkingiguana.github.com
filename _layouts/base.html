@@ -1,20 +1,32 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <title>{% if page.title %}{{page.title}} &mdash; {% endif %}Barking Iguana</title>
     <meta http-equiv="Content-Language" content="English" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="Robots" content="index,follow" />
-    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.9.0/build/reset-fonts-grids/reset-fonts-grids.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script href="/all.js" type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" href="/all.css" />
   </head>
   <body>
-    <div class="container" id="doc4">
-      {{ content }}
-      <div id="ft">
-        <p class="notice">My opinions are my own and my employer can't have them.</p>
-      </div>
-    </div>
+    <header class="navbar navbar-fixed-top">
+      <nav class="navbar-inner">
+	<div class="container">
+          <a href="/" class="brand">Barking Iguana</a>
+	</div>
+      </nav>
+    </header>
+    <div id="main" role="main">
+      <div class="container">
+	<div class="content">
+	  {{ content }}
+	  <footer class="muted">
+	    Copyright &copy; 2012 Craig R Webster &lt;<a href="mailto:craig@barkingiguana.com">craig@barkingiguana.com</a>&gt;
+	  </footer>
+	</div>
+      </div> <!--! end of .container -->
+    </div> <!--! end of #main -->
     <script type="text/javascript">
       var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
       document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));

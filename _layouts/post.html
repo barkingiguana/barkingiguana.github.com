@@ -2,28 +2,30 @@
 layout: base
 ---
 <div class="post">
-  <div id="hd">
+  <div class="page-header">
     <h1>{{ page.title }}</h1>
   </div>
-  <div id="bd">
-    <div class="content" id="content">
+  <div>
     {{ content }}
-    </div>
+  </div>
+  <div>
     <dl class="meta">
       <dt class="property">written by</dt>
       <dd class="author name value">{{ page.author }}</dd>
       <dt class="property">published</dt>
       <dd class="published date value">{{ page.date | date_to_string }}</dd>
     </dl>
-    <p class="notice comments" id="comments">Disagree? Found a typo? Got a question? If you'd like to have a conversation about this post, <a href="mailto:craig@barkingiguana.com">email craig@barkingiguana.com</a>. I don't bite.</p>
-    <div class="related">
-      {% if page.previous.url %}
-        <a class="previous" href="{{ page.previous.url }}" rel="previous" title="{{ page.previous.title }}">{{ page.previous.title | truncatewords: 15 }}</a>
-      {% endif %}
-      <a class="up" href="/" rel="up">Home</a>
-      {% if page.next.url %}
-	<a class="next" href="{{ page.next.url }}" rel="next" title="{{ page.next.title }}">{{ page.next.title | truncatewords: 15 }}</a>
-      {% endif %}
-    </div>
+  </div>
+  <div>
+    <p class="alert alert-info comments" id="comments">Disagree? Found a typo? Got a question? If you'd like to have a conversation about this post, <a href="mailto:craig@barkingiguana.com">email craig@barkingiguana.com</a>. I don't bite.</p>
+  </div>
+  <div class="related btn-group">
+    {% if page.previous.url %}
+      <a class="previous btn" href="{{ page.previous.url }}" rel="previous" title="{{ page.previous.title }}"><i class="icon-backward"></i> {{ page.previous.title | truncatewords: 15 }}</a>
+    {% endif %}
+    <a class="up btn" href="/" rel="up"><i class="icon-home"></i> Home</a>
+    {% if page.next.url %}
+      <a class="next btn" href="{{ page.next.url }}" rel="next" title="{{ page.next.title }}"><i class="icon-forward"></i> {{ page.next.title | truncatewords: 15 }}</a>
+    {% endif %}
   </div>
 </div>
