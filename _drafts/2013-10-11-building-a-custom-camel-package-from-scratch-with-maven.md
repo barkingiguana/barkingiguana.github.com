@@ -100,7 +100,7 @@ public class ExampleTest
   extends CamelTestSupport {
 
   // My route will start with a call to the endpoint at direct:start
-  // so let's attach a producer which we cna control to that.
+  // so let's attach a producer which we can control to that.
   @Produce(uri = "direct:start")
   protected ProducerTemplate template;
 
