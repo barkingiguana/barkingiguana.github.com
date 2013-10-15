@@ -47,14 +47,14 @@ iWe can avoid the packaging to JAR step completely by adding the Maven build plu
 
     <build>
       <plugins>
-	<plugin>
-	  <groupId>org.apache.camel</groupId>
-	  <artifactId>camel-maven-plugin</artifactId>
-	  <version>2.12.1</version>
-	  <configuration>
-	    <mainClass>com.barkingiguana.blog.activemq.App</mainClass>
-	  </configuration>
-	</plugin>
+        <plugin>
+          <groupId>org.apache.camel</groupId>
+          <artifactId>camel-maven-plugin</artifactId>
+          <version>2.12.1</version>
+          <configuration>
+            <mainClass>com.barkingiguana.blog.activemq.App</mainClass>
+          </configuration>
+        </plugin>
       </plugins>
     </build>
 
@@ -112,33 +112,33 @@ I've already pulled in `camel-testng` as a dependency so let's use that. I've ad
         //
         // I should probably do this in a setUp method.
         //
-	context.getRouteDefinitions().get(0).adviceWith(context, new RouteBuilder() {
-	    @Override
-	    public void configure() throws Exception {
+        context.getRouteDefinitions().get(0).adviceWith(context, new RouteBuilder() {
+            @Override
+            public void configure() throws Exception {
                 // Intercept the log:result endpoint - that's where I'm
                 // planning to send the results of the route.
-		interceptSendToEndpoint("log:result")
+                interceptSendToEndpoint("log:result")
                         // I don't want to let the flow continue to the
                         // actual endpoint after I've intercepted a message.
-			.skipSendToOriginalEndpoint()
+                        .skipSendToOriginalEndpoint()
                         // Send intercepted messages to the endpoint
                         // controlled by me in the tests.
-			.to("mock:result");
-	    }
-	});
+                        .to("mock:result");
+            }
+        });
 
         // I'm going to send a string to the route.
-	String bodyString = "body";
+        String bodyString = "body";
 
         // I expect to get back well formed XML containing that string.
-	String expectedBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test>" + bodyString + "</test>";
-	resultEndpoint.expectedBodiesReceived(expectedBody);
-	template.sendBody(bodyString);
-	resultEndpoint.assertIsSatisfied();
+        String expectedBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test>" + bodyString + "</test>";
+        resultEndpoint.expectedBodiesReceived(expectedBody);
+        template.sendBody(bodyString);
+        resultEndpoint.assertIsSatisfied();
       }
 
       @Override
       protected RouteBuilder createRouteBuilder() throws Exception {
-	return new MyRouteBuilder();
+        return new MyRouteBuilder();
       }
     }
