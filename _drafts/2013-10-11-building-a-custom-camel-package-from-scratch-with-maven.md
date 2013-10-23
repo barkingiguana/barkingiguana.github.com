@@ -149,9 +149,84 @@ public class ExampleTest
     resultEndpoint.assertIsSatisfied();
   }
 
+  // I want to test the routes that I'll define in the MyRouteBuilder class.
   @Override
   protected RouteBuilder createRouteBuilder() throws Exception {
     return new MyRouteBuilder();
   }
 }
 {% endhighlight %}
+
+I can run these tests using Maven:
+
+    $ mvn test
+    [ compiles happen, time passes ]
+    -------------------------------------------------------
+     T E S T S
+    -------------------------------------------------------
+    Running TestSuite
+    Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1.067 sec <<< FAILURE!
+    
+    Results :
+    
+    Failed tests: 
+      testSendingMessage(com.barkingiguana.blog.activemq.ExampleTest): Index: 0, Size: 0
+    
+    Tests run: 2, Failures: 1, Errors: 0, Skipped: 0
+
+The test run and fail, ace, I can now implement some code to make them pass.
+
+### Implementation
+
+{% highlight java %}
+// This is src/main/java/com/barkingiguana/blog/activemq/MyRouteBuilder.java
+package com.barkingiguana.blog.activemq;
+
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.Processor;
+import org.apache.camel.Exchange;
+
+public class MyRouteBuilder extends RouteBuilder
+{
+  @Override
+  public void configure()
+  {
+   String startEndpoint = "direct:start";
+   String resultEndpoint = "log:result";
+   from(startEndpoint).
+     transform(). // This isn't the easiest way to transform the message
+                  // to the expected format, but I wanted to play with
+                  // the xstl component.
+       simple("<xml>${in.body}</xml>").
+     to("xslt:example.xslt").
+     to(resultEndpoint);
+  }
+}
+{% endhighlight %}
+
+{% highlight xml %}
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- This is src/main/resources/example.xslt -->
+<xsl:stylesheet version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:template match="/">
+    <test><xsl:value-of select="xml" /></test>
+  </xsl:template>
+</xsl:stylesheet>
+{% endhighlight %}
+
+With those files in plae I can run the tests again:
+
+    $ mvn test
+    [ compile happens, time passes ]
+    -------------------------------------------------------
+     T E S T S
+    -------------------------------------------------------
+    Running TestSuite
+    Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.368 sec
+    
+    Results :
+    
+    Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+
+The tests pass. Success!
