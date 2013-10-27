@@ -43,7 +43,7 @@ We'll also express a dependency on `camel-testng` which allows us to specify aut
 <dependency>
   <groupId>org.apache.camel</groupId>
   <artifactId>camel-testng</artifactId>
-  <version>2.12.1<version>
+  <version>2.12.1</version>
   <scope>test</scope>
 </dependency>
 {% endhighlight %}
