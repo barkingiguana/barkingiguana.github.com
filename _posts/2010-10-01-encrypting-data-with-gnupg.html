@@ -9,6 +9,6 @@ author: Craig
 
 <p>Example time. You have a file full of confidential data called <code>confidential-data.xls</code>. Enter the command <code>gpg -c ./confidential-data.xls</code>. It'll prompt you for a passphrase and then to repeat the passphrase. Pick something strong. Once this command is complete you'll have a new file called <code>confidential-data.xls.gpg</code> which is the encrypted version of your confidential data. Delete your original confidential data file now and store the encrypted version somewhere.</p>
 
-<p>To restore your data you need to retrieve your encrypted file, enter the command <code>gpg -d ./confidential-data.xls.gpg --output ./restored.sql.gz</code>, and you're done. The file <code>restored.sql.gz</code> now contains the unencrypted version of your confidential data.</p>
+<p>To restore your data you need to retrieve your encrypted file, enter the command <code>gpg -d ./confidential-data.xls.gpg --output ./confidential-data.xls</code>, and you're done. The file <code>confidential-data.xlsz</code> now contains the unencrypted version of your confidential data.</p>
 
 <p>I use the command line, which you may not be comfortable with. It's not that scary and I'd encourage you to give it a go, but if you prefer your windows and your drag-and-drop you should look at something like <a href="http://macgpg.sourceforge.net/">GPGDropThing</a> which lets you encrypt things just by dropping them on it.</p>
