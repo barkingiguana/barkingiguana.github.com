@@ -68,17 +68,20 @@ require 'benchmark'
 puts "PLATFORM = #{RUBY_PLATFORM}, VERSION = #{RUBY_VERSION}"
 Benchmark.bmbm do |x|
   x.report("to_proc") { 10_000_000.times &:to_s }
-  x.report("literal") { 10_000_000.times { |n| n.to_s }}
+  x.report("literal 1") { 10_000_000.times { |n| n.to_s }}
+  x.report("literal 2") { n = lambda { |i| i.to_s }; 10_000_000.times &n }
 end
 {% endhighlight %}
 
 Here are the results from my MacBook Air on Ruby 2.1.2 - rather interesting results:
 
-        Rehearsal -------------------------------------------
-        to_proc   2.010000   0.000000   2.010000 (  2.027541)
-        literal   2.150000   0.000000   2.150000 (  2.157515)
-        ---------------------------------- total: 4.160000sec
+        Rehearsal ---------------------------------------------
+        to_proc     1.890000   0.010000   1.900000 (  1.909775)
+        literal 1   2.340000   0.000000   2.340000 (  2.350912)
+        literal 2   2.270000   0.000000   2.270000 (  2.274322)
+        ------------------------------------ total: 6.510000sec
 
-                      user     system      total        real
-        to_proc   1.920000   0.010000   1.930000 (  1.933398)
-        literal   2.030000   0.000000   2.030000 (  2.027449)
+        user     system      total        real
+        to_proc     1.810000   0.000000   1.810000 (  1.808921)
+        literal 1   2.090000   0.000000   2.090000 (  2.092189)
+        literal 2   2.060000   0.010000   2.070000 (  2.061436)
