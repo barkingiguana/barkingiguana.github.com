@@ -58,3 +58,29 @@ Benchmark.measure { Bar.find(:all) }.real
 ```
 
 Worry about those first.
+
+### Run it yourself
+
+It's been a long time since I ran this benchmark. Here's some copy/paste code to run a similar one yourself.
+
+```ruby
+require 'benchmark'
+puts "PLATFORM = #{RUBY_PLATFORM}, VERSION = #{RUBY_VERSION}"
+Benchmark.bmbm do |x|
+  x.report("to_proc") { 10_000_000.times &:to_s }
+  x.report("literal") { 10_000_000.times { |n| n.to_s }}
+end
+```
+
+Here are the results from my MacBook Air on Ruby 2.1.2 - rather interesting results:
+
+```
+Rehearsal -------------------------------------------
+to_proc   2.010000   0.000000   2.010000 (  2.027541)
+literal   2.150000   0.000000   2.150000 (  2.157515)
+---------------------------------- total: 4.160000sec
+
+              user     system      total        real
+to_proc   1.920000   0.010000   1.930000 (  1.933398)
+literal   2.030000   0.000000   2.030000 (  2.027449)
+```
