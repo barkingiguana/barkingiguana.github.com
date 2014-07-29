@@ -1,3 +1,4 @@
-source :rubygems
-gem 'jekyll', '0.11.0'
+source 'https://rubygems.org/'
+gem 'jekyll'
 gem 'RedCloth', '4.2.8'
+gem 'iconv'
