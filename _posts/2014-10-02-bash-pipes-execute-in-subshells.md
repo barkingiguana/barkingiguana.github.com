@@ -38,6 +38,8 @@ code needs to be rewritten something like this to use input redirection:
 while read FILE; do
   source $FILE
 done < <(find /etc/application  -name "*.sh" -type f)
+
+exec /path/to/application/run.sh
 {% endhighlight %}
 
 Now the application can see the environment variables it's expecting. Yay!
