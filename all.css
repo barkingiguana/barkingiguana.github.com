@@ -122,3 +122,5 @@ body { padding-top: 60px ;}
 
 p.comments { text-align: center; }
 footer { text-align: right; margin-top: 1em; }
+
+code { font-family: monospace; white-space: pre; }
