@@ -11,7 +11,7 @@ author: Craig
 
 <h4>Setting up ActiveMQ to use a MySQL Datastore</h4>
 
-<p>It turns out that this is <em>really</em> easy to setup. First, <a href="http://note19.com/2007/06/23/configure-activemq-with-mysql/">configure ActiveMQ to use MySQL</a> then <a href="http://note19.com/2008/01/26/activemq-50-jdbc-masterslave-requires-innodb-table/">make sure you're using InnoDB</a>. The only change I made to these instructions was to change <code>dataDirectory="${activemq.base}/activemq-data"</code> to <code>dataDirectory="${activemq.base}/data"</code>. Remember to change the broker name in activemq.xml to match the machine name. You've now got one broker running with a  MySQL datastore.</p>
+<p>It turns out that this is <em>really</em> easy to setup. First, <a href="https://web.archive.org/web/20130429212440/http://note19.com/2007/06/23/configure-activemq-with-mysql/">configure ActiveMQ to use MySQL</a> then <a href="https://web.archive.org/web/20130727053607/http://note19.com/2008/01/26/activemq-50-jdbc-masterslave-requires-innodb-table/">make sure you're using InnoDB</a>. The only change I made to these instructions was to change <code>dataDirectory="${activemq.base}/activemq-data"</code> to <code>dataDirectory="${activemq.base}/data"</code>. Remember to change the broker name in activemq.xml to match the machine name. You've now got one broker running with a  MySQL datastore.</p>
 
 <h4>Adding a slave for failover</h4>
 
