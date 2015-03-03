@@ -9,11 +9,13 @@ If you need to communicate with me securely please use my PGP public key to encr
 If you think that it is important that I can verify who you are, do not forget to sign the message.
 
 <pre>
-pub   4096R/23A8DAC8 2014-08-01 [expires: 2015-08-01]
-      Key fingerprint = F587 68AB FFDF 0059 4754  9656 16A7 1C2C 23A8 DAC8
-uid                  Craig R Webster &lt;craig@barkingiguana.com&gt;
-sub   4096R/A7327E2D 2014-08-01 [expires: 2015-08-01]
-sub   4096R/DFDF1ED7 2014-08-01 [expires: 2015-08-01]
+pub   4096R/78782A6576E09768 2015-02-28 [expires: 2016-02-28]
+      Key fingerprint = FA18 F8A1 B3C4 212E D83E  F7CD 7878 2A65 76E0 9768
+      uid               [ultimate] Craig R Webster &lt;craig@barkingiguana.com&gt;
+      uid               [ultimate] [jpeg image of size 3895]
+      sub   4096R/6A86AAF14EC25ADB 2015-02-28 [expires: 2016-02-28]
+      sub   4096R/AECB12CEC9A4C5F2 2015-02-28 [expires: 2016-02-28]
+      sub   4096R/2A476286B44D1E2E 2015-03-02 [expires: 2016-03-01]
 </pre>
 
 My key can be found at [http://barkingiguana.com/~craig/key.asc](http://barkingiguana.com/~craig/key.asc). It is also available on many public keyservers.
