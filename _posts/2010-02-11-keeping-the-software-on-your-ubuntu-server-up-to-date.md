@@ -31,11 +31,11 @@ The current commonly used releases, their release date, and their end of support
 
 Currently supported are 6.06, 8.04, 8.10, 9.04 and 9.10. Ubuntu 10.04 will be released in April.
 
-h4. Your responsibilities
+## Your responsibilities
 
 There are two things that you as a server operator need to know how to do to stay up-to-date with the software on your server and make sure that it's always supported. One is upgrading installed packages, and one is upgrading to the next release of Ubuntu. I'll cover them both one at a time, but first we'll do a little setup to make sure that both operations are nice and fast.
 
-h5. Using a package mirror
+### Using a package mirror
 
 A very time consuming part of the update and upgrade process is downloading a large quantity of files from the servers that host the latest software packages. To make this faster "Xeriom Networks":http://xeriom.net/ provide a mirror of the software packages for 8.04, 8.10, 9.04 and 9.10. If you're not hosted on Xeriom Networks (why not?) you should ask your current provider if they supply a package mirror for your release. If they don't you should skip this section and hope that your connection is fast enough to cope.
 
@@ -61,7 +61,7 @@ Now we tell Ubuntu to refresh the list of software packages so it knows what's a
 
 Congratulations, you're now using the Xeriom Ubuntu package mirror.
 
-h5. Upgrading installed software
+### Upgrading installed software
 
 Keeping your software up-to-date is an important part of keeping your server secure but since these new packages may break existing functionality it's best not to install them automatically. You should sit down and do this yourself, only applying the updates if they're appropriate and necessary.
 
@@ -77,7 +77,7 @@ Then you should ask it to upgrade your existing packages:
 
 This will calculate everything that needs upgrading, show you a list of those packages and ask you if you want to continue. Most of the time this command will run smoothly and you'll get the latest version of the software on your server, but you should check the list of packages that it will upgrade and be sure that you know what's going to change before you let it complete.
 
-h5. Upgrading to the next release
+### Upgrading to the next release
 
 Upgrading Ubuntu is a slightly more time consuming process with a small increase in risk because of the huge number of packages that will be upgraded. It will usually also require you to reboot your server since the kernel is likely to be upgraded so you should plan for a little downtime.
 
@@ -99,6 +99,6 @@ Once you're happy that you understand what you're doing and you've scheduled a t
 
 This will calculate all the packages that will be upgraded and ask you if you want to continue. Don't just say yes - read the list of packages and make sure you understand what upgrading them means to your setup.
 
-h4. If it all goes pear-shaped
+## If it all goes pear-shaped
 
 Sometimes things get messed up. Maybe the release wasn't tested enough (rare these days) or perhaps the new release doesn't support the same software as the one you upgraded from and you need that to run. If this ever happens we can create you a brand new image of the release you need as long as it's still supported. Of course, your data won't be on the new release so make sure your backups are up-to-date!
