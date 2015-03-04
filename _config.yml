@@ -1,3 +1,2 @@
 permalink: pretty
 markdown: kramdown
-exclude: [ '~craig', 'images', 'img' ]
