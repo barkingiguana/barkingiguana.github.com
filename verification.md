@@ -16,7 +16,7 @@ I keep this [entire blog in GitHub]. Each post is stored in `_posts/`, and this 
 
 In the same directory as the article source there will be a file with the same name and '.asc' at the end. This is the ASCII armoured detatched signature for that file. Save that to your computer also.
 
-## Verify the article using the signature.
+## Verify the article using the signature
 
 Once you have both files you can do this pretty easily at the command line.
 
