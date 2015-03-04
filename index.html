@@ -1,8 +1,11 @@
 ---
 layout: page
 ---
+{% assign hero = true %}
 {% for post in site.posts %}
-  {% if forloop.first %}
+  {% unless post.path contains '.asc' %}
+  {% if hero %}
+  {% assign hero = false %}
 <div class="hero-unit most_recent post{% if post.author != 'Craig' %} guest{% endif %}">
   <h1><a class="permalink title" href="{{ post.url }}">{{ post.title }}</a> <small class="published date">{{ post.date | date_to_string }}</small></h1>
   <p>{{post.introduction}}&hellip;</p>
@@ -16,5 +19,6 @@ layout: page
       <span class="published date">{{ post.date | date_to_string }}</span>
     </li>
   {% endif %}
+  {% endunless %}
 {% endfor %}
 </ul>
