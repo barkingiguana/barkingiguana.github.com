@@ -41,32 +41,46 @@ To mount the master keypair into the Docker container, I've modified the `caff` 
 {% highlight bash %}
 #!/bin/bash
 
-set -e
-
-# Ensure the master keypair is mounted before continuing
-readlink ~/.gnupg/master-keypair > /dev/null
-if [ "$?" != "0" ]; then
+# Make sure the master keypair is available on the USB stick
+USB_KEY_PATH="/Volumes/Survivor/master-keypair"
+if [ ! -d "$USB_KEY_PATH" ]; then
   echo "Have you mounted your master keypair?"
-  echo "It needs to be symlinked to ~/.gnupg/master-keypair."
+  echo "I'm expecting it on ${USB_KEY_PATH}"
   exit 1
 fi
 
-exec docker run -it --rm \
+# Create a temporary directory for the master keypair to be restored to
+# Note:
+# 1) I keep the keypair as backup certificates, so I can recreate the keypair
+#    fresh each time.
+# 2) I can't just mount the USB key as a volume because boot2docker is running
+#    docker and that's in a separate VM running under VirtualBox.
+GNUPGHOME=`mktemp -d .gnupg/XXXXXXXXXXXXXXXXXXXXXX`
+env GNUPGHOME=$GNUPGHOME \
+  gpg \
+    --allow-secret-key-import \
+    --import $USB_KEY_PATH/craig@barkingiguana.com-{public,private}-key.bak
+
+# Run the Caff docker image and sign the key(s).
+docker run -it --rm \
     --name caff \
     -e OWNER='Craig R Webster' \
     -e EMAIL='craig@barkingiguana.com' \
     -e KEYS='78782A6576E09768' \
     -v /Users/craig/.gnupg/caffrc:/home/user/.caffrc:ro \
     -v /Users/craig/.gnupg/caff-ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro \
-    -v /Users/craig/.gnupg/master-keypair:/home/user/.gnupg \
+    -v /Users/craig/$GNUPGHOME:/home/user/.gnupg \
     tianon/caff "$@"
+
+# Clean up afterwards
+rm -rf $GNUPGHOME
 {% endhighlight %}
 
-Note that I now mount the `master-keypair` on my laptop to `/home/user/.gnupg`, which provides the master keypair to Caff. I also mount `.gnupg/caff-ssmtp.conf` which contains my `ssmtp.conf` for sending through GMail, and I mount my custom `caffrc`.
+Note that running `caff` restores the master keypair and makes it available to the docker container. I also make `.gnupg/caff-ssmtp.conf` available, this contains my `ssmtp.conf` for sending through GMail, and I mount my customised `caffrc`.
 
 ## How to sign keys
 
-Retrieve the media containing your master keypair from your ultra secure safe location, maybe at the bottom of a volcano or your super secret bank deposit box in Zurich. Mount it in your machine then symlink the master keypair to `~/.gnupg/master-keypair`. Now you can run Caff as normal:
+Retrieve the media containing your master keypair from your ultra secure safe location, maybe at the bottom of a volcano or your super secret bank deposit box in Zurich. Mount it in your machine then run Caff as normal:
 
 {% highlight bash %}
 caff 78782A6576E09768
