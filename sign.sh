@@ -3,6 +3,7 @@
 set -e
 
 cp hooks/pre-commit .git/hooks/pre-commit
+
 GPG="gpg --batch --yes --local-user craig@barkingiguana.com --armor"
 find _posts -type f -name "*.md" -or -name "*.html" | while read FILE; do
   cp $FILE $FILE.unprocessed
