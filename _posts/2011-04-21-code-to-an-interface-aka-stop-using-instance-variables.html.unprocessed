@@ -1,0 +1,94 @@
+---
+title: "Code to an interface (aka stop using instance variables)"
+layout: post
+author: Craig
+---
+<p>We're all used to the idea that we should use only methods that classes declare public, avoiding use of protected and private methods since these may change at any time. In other words, we usually code to the public interface, and try not to depend on how the class is implemented. It keeps our code clean and means that when the internals of the class change we don't need to change the clients of that class.</p>
+
+<p>Unfortunately we don't normally use the same thought process when we're managing state in our class which can make refactoring a problem.</p>
+
+<p>Here's an example Book class from a hypothetical book store application. Books have titles and authors. They are published at a certain date, but their publication date can change if for example the author fails to deliver their manuscript on time or editing takes longer than expected. Titles can change, authors won't.</p>
+
+<pre><code>class Book
+  attr_reader :author
+  attr_accessor :title, :published_at
+
+  def initialize author, title, published_at
+    @author = author
+    @title = title
+    @published_at = published_at
+  end
+
+  def to_s
+    "\"#{@title}\" by #{@author}. Publication date: #{@published_at}"
+  end
+end</code></pre>
+
+<p>A few weeks pass, and we start to make more deals with publishers. Suddenly they want the book store to exclusively sell the upcoming book for A.N. Big Author. Great!... except we can't deal with books that don't have a publication date yet. We need to change the class so we can model books that aren't published:</p>
+
+<pre><code>class Book
+  attr_reader :author
+  attr_accessor :title, :published_at
+
+  # published_at = nil if the book doesn't have a publication date
+  def initialize author, title, published_at
+    @author = author
+    @title = title
+    @published_at = published_at
+  end
+
+  def to_s
+    "\"#{@title}\" by #{@author}. Publication date: #{@published_at ? @published_at : 'not yet published'}"
+  end
+end</code></pre>
+
+<p>That's not too bad for this trivial class, but it's not particularly readable and it's very easy to imagine that there would be several methods dealing with <code>@published_at</code>. Making this change in all of those areas would take time and it doesn't read very nicely. It's a good candidate for the <a href="http://www.refactoring.com/catalog/introduceNullObject.html">Introduce Null Object</a> refactoring, but because we're accessing <code>@published_at</code> directly everywhere we still have a lot of changes to make. We could introduce a Null Object during instantiation except the publication date could be changed at any time - it's possible that the publisher calls us and tells us that they can't make a publication date they've told us and that they're not sure when they'll be able to publish the book.</p>
+
+<p>Here's an alternative class that I wish I had started with. It exposes the same public API but also uses the accessors internally.</p>
+
+<pre><code>class Book
+  attr_accessor :author, :title, :published_at
+  private :author=
+
+  def initialize author, title, published_at
+    self.author = author
+    self.title = title
+    self.published_at = published_at
+  end
+
+  def to_s
+    "\"#{title}\" by #{author}. Publication date: #{published_at}"
+  end
+end</code></pre>
+
+<p>When I get the call from the published about the as yet unpublished book this time I can now insert the Null Object easily by hijacking the <code>attr_reader</code> for <code>published_at</code>, here's the change I make:</p>
+
+<pre><code>class MissingPublicationDate
+  include Singleton
+  def to_s
+    'not yet published'
+  end
+end
+
+class Book
+  attr_accessor :author, :title, :published_at
+  private :author=
+
+  def initialize author, title, published_at
+    self.author = author
+    self.title = title
+    self.published_at = published_at
+  end
+
+  def published_at_with_null_object
+    published_at_without_null_object || MissingPublicationDate.instance
+  end
+  alias_method :published_at_without_null_object, :published_at
+  alias_method :published_at, :published_at_with_null_object
+
+  def to_s
+    "\"#{title}\" by #{author}. Publication date: #{published_at}"
+  end
+end</code></pre>
+
+<p>It's a little more code in this example, but very few of the methods that use <code>published_at</code> need to change and it's massively more readable. Ace!</p>

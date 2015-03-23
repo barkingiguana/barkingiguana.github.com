@@ -1,0 +1,135 @@
+---
+title: "Scaling: Using MogileFS for storing uploaded images"
+layout: post
+author: Craig
+---
+<p>As you might have guessed from several of my previous posts, the team I've been working in has recently been scaling an application. I've learned a bunch of things along the way, several of which I've got half-written articles about and which I'll totally finish one day, honest.</p>
+
+<p>One of the most awesome technologies I've started using is <a href="http://www.danga.com/mogilefs/">MogileFS</a>, a distributed <acronym title="Big load of binary">BLOB</acronym> store. In our application we use this to store user-generated assets such as uploaded images and syndication feeds. I'll not go into the pros and cons of the technology here (I might do that another time), rather I'd like to share some code that we've found rather useful when handling image uploads and adding them to MogileFS: the <code class="ruby">MogileFilesystemBackend</code> for <a href="http://github.com/technoweenie/attachment_fu/tree/master">AttachmentFu</a>.</p>
+
+<p>It's necessary to use a shared filestore for uploaded images when the application cluster you're using for uploads needs to scale beyond one physical box as otherwise the uploaded images land on several disks and there's no telling if they'll be available to a particular request to your application (that depends on which application server serves the request).</p>
+
+<h4>Getting stuck in</h4>
+
+<p>I've done some rather ugly preparation for this work and monkey-patched <code class="ruby">Kernel</code> to provide an <code class="ruby">attr_accessor</code> called <code class="ruby">filestore</code> which is just an instance of <a href="">MogileFS::MogileFS</a> from the rather excellent <a href="http://seattlerb.rubyforge.org/mogilefs-client/">MogileFS client</a> by the clever people over at <a href="http://seattlerb.rubyforge.org/">Seattle RB</a>. The patch, which I'm sure will make experienced Rubyists cry, looks like this.</p>
+
+<pre><code class="ruby">module Kernel
+  # Oh noes, I'm screwing with Kernel.
+  # 
+  mattr_accessor :filestore
+end</code></pre>
+
+<p>During the Rails initializer execution the filestore is setup using configuration values pulled from a YAML file in <code>RAILS_ROOT/config/</code>.</p>
+
+<pre><code class="ruby">Kernel.filestore = MogileFS::MogileFS.new(
+  :domain => "APPNAME-#{RAILS_ENV}",
+  :hosts => array_of_hosts_from_yaml_file
+)</code></pre>
+
+<p>(What I actually do is quite a bit different from this but that's because I've done evil things to the MogileFS client library which I'll probably share in the future. For now, believe the magic).</p>
+
+<p>Now that the setup is complete, how do we get AttachmentFu to work with the filestore? We use the <code class="ruby">MogileFilesystemBackend</code> of course!</p>
+
+<pre><code class="ruby">class Image << ActiveRecord::Base
+  has_attachment :content_type => :image,
+    :storage => :mogile_filesystem,
+    :max_size => 5.megabytes,
+    :thumbnails => {
+      :canonical => '1024x'
+    },
+    :processor => "MiniMagick"
+
+  validates_as_attachment
+end</code></pre>
+
+<h4>The power behind the man</h4>
+
+<p>Of course, without the actual backend code not much is going to happen. The implementation was pretty heavily influenced by the existing Amazon S3 backend, mostly because the idea behind S3 and MogileFS is very similar.</p>
+
+<pre><code class="ruby">module MogileFilesystemBackend
+  def full_filename(thumbnail = nil)
+    "#{class_prefix}:#{filestore_tag(thumbnail)}"
+  end
+
+  def filestore_tag(thumbnail = nil)
+    "#{parent_id || id}:#{thumbnail || :original}"
+  end
+
+  def current_content
+    temp_path ? File.read(temp_path) : temp_data
+  end
+  
+  def public_filename(thumbnail = nil)
+    [
+      editorial_object_type.demodularize.tableize,
+      editorial_object_id,
+      "#{class_prefix}.#{file_extension}#{thumbnail && "?size=#{thumbnail}"}"
+    ].join("/")
+  end
+
+  def file_extension
+    Mime::Type.lookup(content_type).to_sym
+  end
+
+  def filestore_paths(thumbnail = nil)
+    filestore.get_paths(full_filename(thumbnail))
+  end
+
+  def file_data(thumbnail = nil)
+    filestore.get_file_data(full_filename(thumbnail))
+  end
+
+  protected
+  def current_content_location
+    temp_path ? :temp_path : :temp_data
+  end
+
+  def destroy_file
+    filestore.delete full_filename
+  end
+
+  def rename_file
+    filestore.rename @old_filename, full_filename
+  end
+
+  def save_to_storage
+    logger.info "Storing #{self.class.name}\##{id} as #{full_filename(thumbnail)} (class: #{replication_policy}) from #{current_content_location == :temp_path ? temp_path : :memory}"
+    filestore.store_content full_filename(thumbnail), replication_policy, current_content
+  end
+
+  def class_prefix
+    self.class.name.demodularize.underscore.downcase
+  end
+  alias_method :replication_policy, :class_prefix
+end
+
+Technoweenie::AttachmentFu::Backends::MogileFilesystemBackend = ::MogileFilesystemBackend</code></pre>
+
+<h4>Serving the public</h4>
+
+<p>So now you can get images into MogileFS, but in order to be useful we also need to serve them to the visitors of our application. That'll require a little work in the controller to make it read from the ever-present <code class="ruby">filestore</code> instead of the database (if you're storing files in the database I will HURT you) or the local filesystem.</p>
+
+<pre><code class="ruby">class ImageController < ApplicationController
+  before_filter :load_image
+
+  def show
+  respond_to do |format|
+    format.html
+    format.any(:png, :jpg, :gif) do
+      send_data @image.file_data(params[:size]),
+        :type => @image.content_type,
+        :disposition => 'inline'
+    end
+  end
+  
+  protected
+  def load_image
+    @image = Image.find(params[:id])
+  end
+end</code></pre>
+
+<p>There we have it. Images can now be requested through the ImageController and served to your adoring fans.</p>
+
+<h4>Found this article useful?</h4>
+
+<p>If you enjoyed this article I'd appreciate recommendations at <a href="http://www.workingwithrails.com/recommendation/new/person/7241-craig-webster">Working with Rails</a>.</p>

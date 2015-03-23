@@ -1,0 +1,41 @@
+---
+title: "Socket programming in Ruby"
+layout: post
+author: Craig
+---
+<div class="foreword">
+  <p>I was recently asked if I had the content of some articles that I posted a long time ago on a blog I used to run. After some searching I managed to scrape together the content using the way-back machine. It’s faithfully recreated here without changes, something I should have done when I first bought the barkingiguana.com domain.</p>
+</div>
+
+<p>I decided today to find out how hard it would be to do socket programming in Rails - mainly because I did a huge chunk of work and could find nothing better to do (the alternative was to tidy the kitchen…)</p>
+
+<p>A little Google brought up an extract from the Pragmatic Ruby book at <a href="http://www.rubycentral.com/book/lib_network.html">http://www.rubycentral.com/book/lib_network.html</a> and this simple library reference has proved very handy. I’ll need to purchase a copy of that book. Somebody remind me when I’m feeling flush.</p>
+
+<p>Anyway, unsurprisingly, it’s very easy to do socket programming - this is how you open and work with a TCP socket.</p>
+
+<p>First we fire up irb and load the socket library, like so:</p>
+
+<pre><code>kawaii:~ craig$ irb
+irb(main):001:0&gt; require 'socket'
+=&gt; true</code></pre>
+
+<p>Then we open the socket, passing in a block of work.</p>
+
+<pre><code>irb(main):002:0&gt; TCPSocket.open('xeriom.net','smtp') do |t|
+irb(main):003:1*   t.gets
+irb(main):004:1&gt; end
+=&gt; "220 pluto.xeriom.net ESMTP Postfix\r\n"</code></pre>
+
+<p>Lovely, simple, elegant. Yum! Checking if a socket is listening is easy as well. Here, we already have the socket library loaded from above so…</p>
+
+<pre><code>irb(main):005:0&gt; begin
+irb(main):006:1*   t = TCPSocket.new('xeriom.net',8000)
+irb(main):007:1&gt;   t.close
+irb(main):008:1&gt; rescue
+irb(main):009:1&gt;   "Error: socket not open"
+irb(main):010:1&gt; end
+=&gt; "Error: socket not open"</code></pre>
+
+<p>Boom, simple. Perhaps a little too simple; now I have nothing to do except tidy…</p>
+
+<p>Tomorrow I’ll play with opening many sockets simultaneously, checking if each one is open or closed. Bonus points if you beat me to it, or if you can make Java look as nice :)</p>

@@ -1,0 +1,13 @@
+---
+title: "The end of the world is nigh"
+layout: post
+author: Craig
+---
+<p>According to Ruby, the world ends (or, at least, is reconfigured) on Tuesday the 19th of January 2038 at 7 seconds past 3.14am.</p>
+
+<pre><code class="ruby">>> Time.utc(2038, 1, 19, 3, 14, 7, 999999)
+=> Tue Jan 19 03:14:07 UTC 2038
+>> Time.utc(2038, 1, 19, 3, 14, 7, 999999).succ
+=> Fri Dec 13 20:45:52 UTC 1901</code></pre>
+
+<p>This is an artefact of representing time as an integer counting from the epoch, but given that a <code>Fixnum</code> will automatically roll over into a <code>Bignum</code> when it reaches <code>2**30</code>, it's somewhat surprising that a similar transformation isn't performed internally in <code>Time</code> to allow us to represent dates and times beyond 2038-01-19.</p>

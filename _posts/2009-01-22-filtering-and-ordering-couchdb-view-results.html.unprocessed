@@ -1,0 +1,51 @@
+---
+title: "Filtering and ordering CouchDB view results"
+layout: post
+author: Craig
+---
+<p>Being able to map documents to <code>(key, value)</code> pairs is really useful, but the views installed in my <a href="http://barkingiguana.com/2009/01/20/adding-a-simple-view-to-couchdb">previous post</a> return all pairs that the view calculates in no specific order. What if I want only the titles of articles posted in December 2007?</p>
+
+<p>In the last article I mentioned in passing that it was possible to emit keys as part of the map method of a view. Keys are used to order and filter a result set. Details about how keys are sorted against each other can be found in the <a href="http://wiki.apache.org/couchdb/View_collation">CouchDB view collation specification</a>. To order and filter documents by date posted I just need to emit <code>doc.posted_at</code> as the key when I'm writing my <code>map</code> method.</p>
+
+<pre><code class="javascript">// Get all article titles ordered by posted date.
+function(doc) {
+  if(doc.type == 'article') {
+    emit([doc.posted_at], doc.title);
+  }
+}</code></pre>
+
+<p>It's worth noting that I've chosen always to have my keys be arrays. This is a personal preference - it was easier to make <a href="barkingiguana.com/2009/01/08/breaking-activecouch-in-fun-and-inventive-ways">my branch of ActiveCouch</a> support multiple keys if I assumed this.</p>
+
+<p>A typical result set from running this map might look like the following.</p>
+
+<pre><code class="javascript">
+// GET /blog/_articles/titles_by_posted_at
+{
+"total_rows":75,
+"offset":0,
+"rows":[
+  {"id":"showing-multiple-message-types-with-the-flash","key":["2007-12-15T20:14:02Z"],"value":"Showing multiple message types with the flash"},
+  {"id":"class-instance-and-singleton-methods","key":["2007-12-20T14:50:41Z"],"value":"Class, Instance and Singleton methods"},
+  // ... and so on ...
+}</code></pre>
+
+<p>Now that the articles are keyed by date note that they're ordered by the data - the lower the date value the earlier they are in the results.</p>
+
+<p>The key can also be used to pick out specific articles. Maybe I want just the article that was published at <code>2007-12-20T14:50:41Z</code>, I just ask for that key from the results.</p>
+
+<pre><code class="javascript">// GET /blog/_articles/titles_by_posted_at?key=["2007-12-20T14:50:41Z"]
+
+{"total_rows":75,"offset":0,"rows":[
+{"id":"class-instance-and-singleton-methods","key":["2007-12-20T20:50:41Z"],"value":"Class, Instance and Singleton methods"}
+]}</code></pre>
+
+<p>If I wanted to pull out a range of results I can specify a <code>startkey</code> and an <code>endkey</code> and all results that have a key that falls between the two will be returned. I can take advantage of the fact that the keys are strings too, and specify times that might otherwise not make sense such as 24:00 to make sure that I get all articles that I'm interested in.</p>
+
+<pre><code class="javascript">// GET /blog/_view/articles/titles_by_created_at?startkey=[%222007-12-01T00:00:00Z%22]&endkey=[%222007-12-31T24:00:00Z%22]
+
+{"total_rows":75,"offset":0,"rows":[
+{"id":"showing-multiple-message-types-with-the-flash","key":["2007-12-15T20:14:02Z"],"value":"Showing multiple message types with the flash"},
+{"id":"class-instance-and-singleton-methods","key":["2007-12-20T14:50:41Z"],"value":"Class, Instance and Singleton methods"}
+]}</code></pre>
+
+<p>The <code>key</code>, <code>startkey</code> and <code>endkey</code> are three of a whole bunch of parameters available as part of CouchDB's view API. More information can be found at <a href="http://wiki.apache.org/couchdb/HTTP_view_API">http://wiki.apache.org/couchdb/HTTP_view_API</a>.</p>

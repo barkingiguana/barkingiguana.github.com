@@ -1,0 +1,53 @@
+---
+title: "XMPP4R-Simple makes XMPP in Ruby uhh... simple..."
+layout: post
+author: Craig
+---
+<p>I thought it might be cool to have a control interface that you could talk to using IM, something like the IM client for Twitter.</p>
+
+<p>Initially I was looking at XMPP4R but a little reading pointed out that there's a gem called <a href="http://xmpp4r-simple.rubyforge.org/">XMPP4R-Simple</a>. Well, simple is always good so one <code>gem install</code> and 45 minutes later I had a Ruby script that could log in to an XMPP server, listen to (and log) what people said, and respond with a simple message.</p>
+
+<pre><code class="ruby">#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'xmpp4r-simple'
+
+logfile = File.join('..', 'log', "#{File.basename(__FILE__)}.log")
+logger = Hodel3000CompliantLogger.new(logfile)
+
+jabber = Jabber::Simple.new "username@domain.com", "password"
+sleep 1
+jabber.status(:away, "No one here but us mice.")
+sleep 1
+
+jabber.deliver("craig@xeriom.net", "I woke up at #{Time.now}.")
+
+loop do  
+  begin
+    jabber.received_messages do |msg|
+      jid = msg.from.strip.to_s
+      logger.info "%s said: %s" % [ jid, msg.body ]
+      jabber.add(jid) if !jabber.subscribed_to?(jid)
+      jabber.deliver(jid, "Nom nom nom.")
+    end
+
+    jabber.presence_updates do |update|
+      jid, status, message = *update
+      logger.info "#{jid} is #{status} (#{message})"
+    end
+
+    jabber.new_subscriptions do |friend, presence|
+      logger.info "#{friend.jid} #{presence.type}"
+      jabber.add(friend.jid) if !jabber.subscribed_to?(friend.jid)
+    end
+  rescue Exception => e
+    logger.error e.to_s
+  end
+  sleep 1
+end</code></pre>
+
+<p>Our own little pet XMPP client. How cute is that?</p>
+
+<h4>Quit yo jibba jabba, sucka!</h4>
+
+<p>If you've found this article useful I'd appreciate recommendations at <a href="http://www.workingwithrails.com/recommendation/new/person/7241-craig-webster">Working With Rails</a>.</p>

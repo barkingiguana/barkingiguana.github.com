@@ -1,0 +1,78 @@
+---
+title: "Counting tags with CouchDB and map-reduce"
+layout: post
+author: Craig
+---
+<p>My previous post on CouchDB covered <a href="http://barkingiguana.com/2009/01/20/adding-a-simple-view-to-couchdb">adding a simple view</a>, but what if we've got a problem that can't be solved simply by mapping the existing documents to new documents? What if we want to get a list of each tag used in articles along with a count of how many articles use that tag? Sure, we could emit <code class="javascript">doc.tags</code> then munge the resulting arrays in the client language, but wouldn't it be great if CouchDB would do that for us?</p>
+
+<p>Well, yes, it would be great, and CouchDB can do it for us.</p>
+
+<p>As a reminder, here's an example of the article documents that I'm using.</p>
+
+<pre><code class="javascript">{
+  "_id": "monkeys-are-awesome",
+  "_rev": "1534115156",
+  "type": "article",
+  "title": "Monkeys are awesome",
+  "posted_at": "2008-09-14T20:45:14Z",
+  "tags": [
+    "monkeys",
+    "awesome"
+  ],
+  "status": "Live",
+  "author_id": "craig@barkingiguana.com",
+  "updated_at": "2008-09-14T21:23:59Z",
+  "body": "The article body would go here..."
+}</code></pre>
+
+<p>It's fairly easily add a view that, for each document, will return a count of how many times that document has been tagged by each tag.</p>
+
+<pre><code class="javascript">function(doc) {
+  if(doc.type == 'article') {
+    for(i in doc.tags) {
+      emit(doc.tags[i], 1);
+    }
+  }
+}</code></pre>
+
+<p>For the example article document this would return <code class="javascript">("awesome", 1)</code> and <code class="javascript">("monkeys", 1)</code>, but if there were several documents tagged "monkeys" then this would return <code class="javascript">("monkeys", 1)</code> several times.</p>
+
+<p>What we want to do now is to <code>reduce</code> the result set to a list of unique tags and the number of times those tags were found in the results.</p>
+
+<p>The reduce takes the form of a method. It's called once for each unique instance of a key that appears in the map output and is passed the key and an array of all values that the map emits with that key.</p>
+
+<p>Since our keys are tags and our values are numbers we simply need to add all the numbers for each key.</p>
+
+<pre><code class="javascript">function(tag, counts) {
+  var sum = 0;
+  for(var i=0; i &lt; counts.length; i++) {
+     sum += counts[i];
+  }
+  return sum;
+}</code></pre>
+
+<p>This can be installed in the same way as a map function, just with the key "reduce".</p>
+
+<pre><code class="javascript">{
+  "tags": {
+    "map": "function(doc) { if(doc.type == 'article') { for(var i in doc.tags) { emit(doc.tags[i], 1); }}}",
+    "reduce": "function(tag, counts) { var sum = 0; for(var i = 0; i &lt; counts.length; i++) { sum += counts[i]; }; return sum; }"
+  }
+  // other views omitted for brevity
+}</code></pre>
+
+<p>Looking at this view in Futon will get you a nicely formatted list of tags and a count of the number of documents that have the tag. To use the view directly you must ask CouchDB to group the results by key.</p>
+
+<pre><code class="javascript">// GET http://localhost:5984/blog/_view/articles/tags?group=true&group_level=1
+
+{"rows":[
+  {"key":"awesome","value":1},
+  {"key":"agile","value":2},
+  {"key":"ajax","value":2},
+  {"key":"apache","value":2},
+  {"key":"api","value":1},
+  {"key":"caching","value":1},
+  {"key":"coding","value":7},
+  {"key":"conference","value":1},
+  // and so on ...
+]}</code></pre>

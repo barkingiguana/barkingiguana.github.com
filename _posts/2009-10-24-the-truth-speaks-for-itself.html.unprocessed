@@ -1,0 +1,30 @@
+---
+title: "The truth speaks for itself!"
+layout: post
+author: Craig
+---
+<p>Not just for Ruby this time. This applies to pretty much every programming language under the sun.</p>
+
+<p>Don't use unnecessary control statements to determine whether you want to return true or false.</p>
+
+<pre><code class="ruby">def foo
+  if some_boolean && other_boolean
+    return true
+  else
+    return false
+  end
+end</code></pre>
+
+<p>You should do this instead:</p>
+
+<pre><code class="ruby">def foo
+  return some_boolean && other_boolean
+end</code></pre>
+
+<p>It's very very rare that I ever have to return an explicit <code class="ruby">true</code> or <code class="ruby">false</code>. This should be a warning sign.</p>
+
+<p>Of course, in Ruby <a href="http://barkingiguana.com/2009/10/21/you-dont-need-to-return-explicitly">you don't need to return explicitly</a> so you should do this:</p>
+
+<pre><code class="ruby">def foo
+  some_boolean && other_boolean
+end</code></pre>

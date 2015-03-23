@@ -1,0 +1,62 @@
+---
+title: "Expanding shortened URLs in a Ruby String"
+layout: post
+author: Craig
+---
+<p>Everyone and their dog uses some sort of URL shortening service these days. While it's handy to cram an URL into short messages like those used on <a href="http://twitter.com/">Twitter</a> it's not always considered best practice for <a href="http://joshua.schachter.org/2009/04/on-url-shorteners.html">a bunch of reasons</a>.</p>
+
+<p>Since quite a few applications these days use Twitter feeds and similar services to gather new content, it'd be great to expand those URLs and undo any damage that these services cause.</p>
+
+<p>Borrowing heavily from <a href="http://github.com/rust/termtter/blob/e969e6fde8c056dcdc9a7f8dd06e002b1c802948/lib/plugins/expand-tinyurl.rb">a Ruby based Twitter client</a> I've extracted a module which can be used to do just that. Without further ado... here it is.</p>
+
+<pre><code class="ruby">require 'net/http'
+
+module BarkingIguana
+  module ExpandUrl
+    def expand_urls!
+      ExpandUrl.services.each do |service|
+        gsub!(service[:pattern]) { |match|
+          ExpandUrl.expand($2, service[:host]) || $1
+        }
+      end
+    end
+
+    def expand_urls
+      s = dup
+      s.expand_urls!
+      s
+    end
+
+    def ExpandUrl.services
+      [
+        { :host =&gt; "tinyurl.com", :pattern => %r'(http://tinyurl\.com(/[\w/]+))' },
+        { :host =&gt; "is.gd", :pattern => %r'(http://is\.gd(/[\w/]+))' },
+        { :host =&gt; "bit.ly", :pattern => %r'(http://bit\.ly(/[\w/]+))' },
+        { :host =&gt; "ff.im", :pattern => %r'(http://ff\.im(/[\w/]+))'},
+      ]
+    end
+
+    def ExpandUrl.expand(path, host)
+      result = ::Net::HTTP.new(host).head(path)
+      case result
+      when ::Net::HTTPRedirection
+        result['Location']
+      end
+    end
+  end
+end</code></pre>
+
+<p>To use it, first include the module into <code class="ruby">String</code>.</p>
+
+<pre><code class="ruby">class String
+  include BarkingIguana::ExpandUrl
+end</code></pre>
+
+<p>Then simply call <code class="ruby">expand_urls</code> or <code class="ruby">expand_urls!</code> on the text that contains shortened URLs. The bang method changes the string in-place where the regular method returns a copy of the string and leaves the original unchanged.</p>
+
+<pre><code class="ruby">s = "http://tinyurl.com/asdf"
+s.expand_urls!
+puts s.inspect
+# => "http://support.microsoft.com/default.aspx?scid=kb;EN-US;158122"</code></pre>
+
+<p>At the moment it supports ff.im, is.gd, bit.ly and tinyurl. If you can suggest any other services I'd love to hear about them. This code - like the original implementation - is released under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT licence</a>. The full code including licence and RDoc can be found at <a href="http://pastie.org/471016">http://pastie.org/471016</a>. Enjoy!</p>

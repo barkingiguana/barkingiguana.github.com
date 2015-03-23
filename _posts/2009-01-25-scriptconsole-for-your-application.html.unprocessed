@@ -1,0 +1,47 @@
+---
+title: "script/console for your application"
+layout: post
+author: Craig
+---
+<p>Rails coders will be more than familiar with the <code>script/console</code> command. It fires up a session in which you can interact with your application through the models that you've built. It's invaluable for debugging problems and can be really useful when building or administering the application. Not all of our Ruby applications are Rails applications though. Wouldn't it be nice to have a <code>script/console</code> anyway?</p>
+
+<p>Turns out it's really easy to build one. Here's how.</p>
+
+<p>First, decide on the libraries and files you'd like to have loaded. This almost always includes RubyGems and an init file from your application. I usually store the init file in <code>config/boot.rb</code>.</p>
+
+<p>An example boot.rb could look something like this:</p>
+
+<pre><code class="ruby">require 'rubygems'
+require 'hpricot'
+require 'net/http'
+require File.dirname(__FILE__) + '/../vendor/gems/activecouch/init'
+
+$: << File.dirname(__FILE__) + '/../app/models'
+
+ActiveCouch::Base.class_eval do
+  set_database_name 'blog'
+  site 'http://localhost:5984/'
+end
+
+require 'article'
+require 'comment'
+require 'author'</code></pre>
+
+<p>Once we have these files we can create a Ruby script that'll run IRb, require the files, and set the prompt to something nice and simple. I also like to print out a welcome banner.</p>
+
+<pre><code class="ruby">#! /usr/bin/env ruby
+
+libs = []
+libs << "irb/completion"
+libs << File.dirname(__FILE__) + '/../config/boot.rb'
+
+command_line = []
+command_line << "irb"
+command_line << libs.inject("") { |acc, lib| acc + %( -r "#{lib}") }
+command_line << "--simple-prompt"
+command = command_line.join(" ")
+
+puts "Welcome to the &lt;APPLICATION NAME&gt; console interface."
+exec command</code></pre>
+
+<p>I'd usually whack that code in <code>script/console</code>, make it <code>chmod +x</code> and commit it to the source code repository. Bam, instant application console.</p>

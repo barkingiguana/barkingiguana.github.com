@@ -1,0 +1,29 @@
+---
+title: "Showing multiple message types with the flash"
+layout: post
+author: Craig
+---
+<p>Traditionally the Rails flash is used to store only one message, usually in <code class="ruby">flash[:message]</code> but I like to be able to differentiate between warnings and information in my view rather than displaying them both in the same place in the same style.</p>
+
+<p>The flash is a <code class="ruby">HashWithIndifferentAccess</code> so we can use any key we want to store messages and pull them back out later, in the view.</p>
+
+<p>In your controller you simply use whichever key is most appropriate.</p>
+<pre><code class="ruby">if @widget.save
+  flash[:info] = "Your widget has been saved."
+  flash[:notice] = "There are now #{Widget.count} widgets."
+  redirect_to @widget and return
+else
+  flash.now[:warning] = "I couldn't save your widget."
+  render :action =&gt; "edit"
+end</code></pre>
+
+<p>In the view you can now iterate over the flash and pick out the key and the message.</p>
+<pre><code class="ruby">&lt;%= flash.sort.collect do |level, message|
+  content_tag(:p, message, :class =&gt; "flash #{level}", :id =&gt; "flash_#{level}")
+end.join %&gt;</code></pre>
+
+<p>Say the <code class="ruby">@widget</code> got saved earlier, you'd end up with some easily understood and styled markup.</p>
+<pre><code class="html">&lt;p class="flash info" id="flash_info"&gt;Your widget has been saved.&lt;/p&gt;
+&lt;p class="flash notice" id="flash_notice"&gt;There are now 29 widgets.&lt;/p&gt;</code></pre>
+
+<p>Of course, in the interest of readability the flash loop in the view should be extracted to a helper, but that's left as an exercise for the reader.</p>

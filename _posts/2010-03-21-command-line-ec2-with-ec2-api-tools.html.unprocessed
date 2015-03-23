@@ -1,0 +1,44 @@
+---
+title: "Command-line EC2 with ec2-api-tools"
+layout: post
+author: Craig
+---
+<p>A company I've been working with hosts some of their applications on EC2. Being a software developer who has worked extensively with Linux and Unix based servers and desktops I find it quite frustrating to work with the EC2 console webpage. Here's how I set things up to work with the EC2 API from my laptop (currently a MacBook Pro).</p>
+
+<pre><code class="bash">mkdir ~/.ec2
+cd ~/Downloads
+curl -O -L "http://www.amazon.com/gp/redirect.html/ref=aws_rc_ec2tools?location=http://s3.amazonaws.com/ec2-downloads/ec2-api-tools.zip&token=A80325AA4DAB186C80828ED5138633E3F49160D9"
+unzip ec2-api-tools.zip*
+cd ec2-api-tools
+mv bin lib ~/.ec2/
+echo 'export EC2_HOME=~/.ec2
+export PATH=$PATH:$EC2_HOME/bin
+export EC2_PRIVATE_KEY=`ls $EC2_HOME/pk-*.pem`
+export EC2_CERT=`ls $EC2_HOME/cert-*.pem`
+export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home/
+# I use the eu-west-1 - you may want to change this
+EC2_REGION="eu-west-1"
+export EC2_URL="https://${EC2_REGION}.ec2.amazonaws.com/"
+export EC2_KEYPAIR_NAME="aws-`whoami`"' &gt; ~/.ec2/env
+echo '[ -f ~/.ec2/env ] && . ~/.ec2/env' >> ~/.profile
+ec2-add-keypair aws-`whoami` > ~/.ec2/aws-`whoami`
+chmod 0600 ~/.ec2/aws-`whoami`</code></pre>
+
+<p>Now download the X.509 private key and certificate from the Security Identifiers page of your AWS account and save them to ~/.ec2/ - leave the names as they are with the big messy jumble of letters in them.</p>
+
+<p>That should be it. You're setup. Try asking for a description of all the machine images owned by Amazon to see if it worked:</p>
+
+<pre><code class="bash">ec2-describe-images -o amazon</code></pre>
+
+<p>The output should be a huge list that looks something like this:</p>
+
+<pre><code>IMAGE	ami-13042f67	amazon/fedora-8-i386-v1.14-std	amazon	available	public		i386	machine	aki-61022915	ari-63022917		ebs
+BLOCKDEVICEMAPPING	/dev/sda1		snap-34739d5d	15	
+IMAGE	ami-1d042f69	amazon/fedora-8-x86_64-v1.14-std	amazon	available	public		x86_64	machine	aki-6d022919	ari-37022943		ebs
+BLOCKDEVICEMAPPING	/dev/sda1		snap-08739d61	15</code></pre>
+
+<p>All the ec2 commands start with 'ec2-'. To see them all you can do this: <code>ls ~/.ec2/ec2-*</code></p>
+
+<p>If you get deprecation notices from Xalan don't worry about it, everything will still work.</p>
+
+<pre><code>[Deprecated] Xalan: org.apache.xml.res.XMLErrorResources_en_US</code></pre>

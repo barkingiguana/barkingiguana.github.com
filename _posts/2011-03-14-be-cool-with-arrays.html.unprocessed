@@ -1,0 +1,21 @@
+---
+title: "Be cool with Arrays"
+layout: post
+author: Craig
+---
+<p>Some of my pet peeves of center around arrays. Ruby provides a really rich language around arrays, use it to make your code more readable.</p>
+
+<p>Ask an array if it's empty. Don't check if it has a size equal to zero.</p>
+<pre><code class="ruby">bookmarks.size == 0 # no!
+bookmarks.empty? # yes</code></pre>
+
+<p>Ask an array it it has any elements. Don't check if it has a non-zero size.</p>
+<pre><code class="ruby">bookmarks.size > 0 # no!
+bookmarks.any? # yes</code></pre>
+
+<p>You don't need to ask if an array has elements before iterating over it using each, each will not yield unless the array has elements.</p>
+
+<pre><code class="ruby">if bookmarks.any?; bookmarks.each { ... }; end # pointless
+bookmarks.each { ... } # does the same thing</code></pre>
+
+I'm sure you have other similar peeves. Let me know what they are in the comments.

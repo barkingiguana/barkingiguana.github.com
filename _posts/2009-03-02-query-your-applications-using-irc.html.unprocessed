@@ -1,0 +1,114 @@
+---
+title: "Query your applications using IRC"
+layout: post
+author: Craig
+---
+<p>IRC. Most of you know what it is. For those that don't, it stands for <a href="http://en.wikipedia.org/wiki/Internet_Relay_Chat">Internet Relay Chat</a> - think of it as a geeky group-chat and you won't be too far off the mark.</p>
+
+<p>There's a long tradition of using bots - automated processes - to provide various services in IRC channels. There are, for example, bots that help people access <a href="http://pastie.org/">Paste Bin</a> services in IRC channels so that they don't have to paste hundreds of lines of code into the channel, or there are bots which take messages for users that are currently offline then replay those messages when they come online. These bots are really useful because they simply and easily enhance a medium which is naturally used for communication without requiring any additional software to use.</p>
+
+<p><a href="http://last.fm/">Last.fm</a> use IRC as an internal communication mechanism. They've written (and released under the GPL - thanks!) IRCCat which allows us to write simple bots to answer queries or perform commands given in IRC channels.</p>
+
+<p>I've setup IRCCat and written a few simple scripts for it. It's pretty easy to get started. First you'll need to get Java and Ant setup. I'm on a Mac on OS X 10.4 so I already have Java, and MacPorts provides an Ant port which is easy to install.</p>
+
+<p>After Java and Ant you'll need to clone the IRCCat source from GitHub.</p>
+
+<pre><code class="bash">git clone git://github.com/RJ/irccat.git</code></pre>
+
+<p>Now you can compile and package the bot by running <code class="bash">ant dist</code> in the directory created by the <code>git clone</code>.</p>
+
+<p>Once it's packaged create a directory called <code>config/</code> and copy the example configuration from <code>examples/irccat.xml</code> there. We'll use this to setup the bot the way we want it to work.</p>
+
+<p>The configuration file is reasonably well commented so open it up and run through each of the sections filling in the appropriate details.</p>
+
+<ul><li>Provide the details of the IRC server you'd like to connect to. I use an internal server but if you don't have one then there are plenty of IRC networks out there - a quick Google should get the details.</li><li>Tell the bot which username it should use.</li><li>Change the external scripts hook to <code>scripts/run</code> and up the max response lines to 30.</li><li>Choose which channels you'd like the bot to join. If they don't exist them they'll be created when the bot joins them (depending on IRC network policy).</li></ul>
+
+<p>With the configuration out of the way you can now launch your bot.</p>
+
+<pre><code class="bash">ant -Dconfgfile=./config/irccat.xml</code></pre>
+
+<p>If you're in one of the channels that you've asked the bot to connect to then you should see it join. If you're not in the channel, now would be a great time to join it. You can check the bot is working properly by asking it which channels it's running in. Type <code>!channels</code> into any of the channels that it's joined. It should response with a list of channels that it's currently active in.</p>
+
+<pre><code>CraigW: !channels
+bot: I am in 2 channels: #foo #bar</code></pre>
+
+<p>There are a few built-in commands such as <code>!channels</code>. Built-in commands always start with an exclamation mark.</p>
+
+<table>
+  <tr>
+    <th>Command</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>!join #channel password</td>
+    <td>Make the bot join another channel. Password is optional.</td>
+  </tr>
+  <tr>
+    <td>!part #channel</td>
+    <td>Make the bot leave a channel</td>
+  </tr>
+  <tr>
+    <td>!channels</td>
+    <td>List all channels the bot is in</td>
+  </tr>
+  <tr>
+    <td>!spam message</td>
+    <td>Send message to all channels the bot is in</td>
+  </tr>
+  <tr>
+    <td>!exit</td>
+    <td>Make the bot quit IRC and shutdown</td>
+  </tr>
+</table>
+
+<p>The really interesting commands are the externals. Externals are called by starting a command with a question mark. You get to write external commands yourself and they can do anything you want.</p>
+
+<p>Remember the configuration file had a <code>cmdhandler</code> value that I set to <code>script/run</code>? That's the first port of call for externals. I use this script to launch a router which loads and executes other commands stored in the <code>scripts/</code> directory.</p>
+
+<p>If you'd like to do the same thing as me, my <code>script/run</code> script looks like this:</p>
+
+<pre><code class="bash">#!/bin/bash
+# This script handles ?commands to irccat
+
+exec ruby ./scripts/router "$@" 2>&1</code></pre>
+
+<p>That's executable (<code>chmod +x script/run</code>). The code in <code>script/router</code> looks like the following and does the routing to and invocation of the correct command.</p>
+
+<pre><code class="ruby">#! /usr/bin/env ruby
+
+COMMANDS = File.expand_path(File.dirname(__FILE__))
+name, channel, username, command, arguments = *ARGV[0].split(/ /, 5)
+
+command_script = File.join(COMMANDS, File.basename(command))
+
+if File.exists?(command_script) && !%W(run router).include?(command)
+  load command_script
+  puts Command.execute(name, channel, username, arguments).strip
+else
+  desired_command = "#{command} #{arguments}".strip
+  puts "Sorry #{name}, I don't understand `#{desired_command}`."
+end</code></pre>
+
+<p>To write externals we now just need to write a short script that implements a <code class="ruby">Command</code> class.</p>
+
+<p>The name of the file which the command should be implemented in is based on what you'd like to type into the IRC channel. If you'd like to query SNMP on a certain host under a certain OID you might like to write something like <code>?snmp xeriom-vm-host-06 .1.3.6.1.2.1.1.1</code>. The script name in this case would be <code>script/snmp</code>. Here's a very simple implementation of that commands which just executes <code>snmpwalk</code> and returns the results.</p>
+
+<pre><code class="ruby">class Command
+  class &lt;&lt; self
+    def execute(name, channel, username, arguments)
+      hostname, oid, remainder = arguments.split(/ /, 3)
+      `snmpwalk -c public -v 1 #{hostname}.core.xeriom.net #{oid}`
+    end
+  end
+end</code></pre>
+
+<p>Now entering <code>?snmp xeriom-vm-host-06 .1.3.6.1.2.1.1.1</code> in IRC will run this script and print the results straight back into the IRC channel the command was typed in. Note that there's no need to restart the bot for changes to take effect.</p>
+
+<pre><code>CraigW: ?snmp xeriom-vm-host-06 .1.3.6.1.2.1.1.1
+bot: SNMPv2-MIB::sysDescr.0 = STRING: Linux xeriom-vm-host-06.core.xeriom.net 2.6.24-17-xen #1 SMP Thu May 1 15:55:31 UTC 2008 x86_64</code></pre>
+
+<p>There's great potential in having such powerful scripts available directly in the same communication channel that you'd use to discuss development or customer relations - a simple command can quickly pull up customer records or statistics without the need to drop to the terminal and fire up the application console or load a web page.</p>
+
+<h4>Ruby vs Java</h4>
+
+<p>I've just found out that there's a <a href="http://github.com/webs/irccat/tree/master">Ruby port of IRCCat</a>. I'll be swapping to use that since I find it easier to maintain and fork a Ruby project than a Java project. Your mileage may vary.</p>
