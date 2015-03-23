@@ -1,0 +1,5 @@
+<p>Prodded by <a href="http://twitter.com/semanticist/status/11958233080">a tweet</a>, here's how to serve a directory in one line of Ruby:</p>
+
+<pre><code>ruby -rwebrick -e'WEBrick::HTTPServer.new(:Port => 3000, :DocumentRoot => Dir.pwd).start'</code></pre>
+
+<p>Handy for sharing files at a conference, for example.</p>

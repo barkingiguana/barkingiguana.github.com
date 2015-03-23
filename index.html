@@ -3,7 +3,6 @@ layout: page
 ---
 {% assign hero = true %}
 {% for post in site.posts %}
-  {% unless post.path contains '.asc' or post.path contains '.unprocessed' %}
   {% if hero %}
   {% assign hero = false %}
 <div class="hero-unit most_recent post{% if post.author != 'Craig' %} guest{% endif %}">
@@ -19,6 +18,5 @@ layout: page
       <span class="published date">{{ post.date | date_to_string }}</span>
     </li>
   {% endif %}
-  {% endunless %}
 {% endfor %}
 </ul>

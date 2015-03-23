@@ -1,2 +1,7 @@
+url: http://barkingiguana.com
 permalink: pretty
+highlighter: pygments
 markdown: kramdown
+safe: true
+lsi: false
+exclude: [ 'sign.sh', 'hooks' ]

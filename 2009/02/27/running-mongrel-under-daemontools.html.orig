@@ -1,0 +1,20 @@
+<p>I've installed <a href="http://barkingiguana.com/2008/11/28/running-daemontools-under-ubuntu-810">DaemonTools</a> to make sure that the various services I run are up and behaving reasonably nicely. Since I also run plenty of Rails applications I use this DaemonTools script to keep Mongrel running.</p>
+
+<pre><code class="bash">#!/bin/sh
+exec 2>&1
+
+echo "Starting..."
+
+ENVIRONMENT=production
+PORT=8000
+IP=0.0.0.0
+
+CHDIR=/var/www/www.application.com
+USER=application_user
+
+exec softlimit -m 134217728 \
+     setuidgid $USER \
+     env HOME=$CHDIR \
+     mongrel_rails start -e $ENVIRONMENT -p $PORT -a $IP -c $CHDIR 2&gt;&amp;1</code></pre>
+
+<p>Create a separate service for each Mongrel you'd like to run and change the PORT variable in the script.</p>

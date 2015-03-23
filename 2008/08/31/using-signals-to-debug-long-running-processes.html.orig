@@ -1,0 +1,13 @@
+<p>Sometimes a long-running process will start to perform it's tasks much slower than it should, or in a strange order. It'd be lovely to know what the process is doing but <code>strace</code> produces a deluge of information that is several levels below what you want to know. What can you do?</p>
+
+<p>Well, we could ask the process to turn on debugging output while it's still running. How does that sound?</p>
+
+<pre><code class="ruby">trap("USR1") do
+  $DEBUG = !$DEBUG
+  @logger.level = $DEBUG ? Logger::DEBUG : Logger::INFO
+  @logger.info "USR1 received. Turning #{$DEBUG ? 'on' : 'off'} debugging."
+end</code></pre>
+
+<p>Now whenever you need more debugging information simple send a USR1 signal to your process.</p>
+
+<pre><code>kill -USR1 [pid]</code></pre>

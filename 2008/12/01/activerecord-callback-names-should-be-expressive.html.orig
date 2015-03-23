@@ -1,0 +1,19 @@
+<p><a href="http://ar.rubyonrails.org/">ActiveRecord</a> provides <a href="http://ar.rubyonrails.org/classes/ActiveRecord/Callbacks.html">a bunch of useful callbacks</a> which will be run at various stages during the lifecycle of an ActiveRecord object. There are lots of ways to define these callbacks, and the easiest way is something like this.</p>
+
+<pre><code class="ruby">class Widget &lt ActiveRecord::Base
+  def after_save
+    # What did this code do again?
+  end
+end</code></pre>
+
+<p>Seems harmless enough, right? Sure, as long as you're writing a throwaway prototype. Try adding another <code>after_save</code> callback, or implementing the callback in a subclass. Try coming back to the callback after 6 months and trying to work out what it's meant to be doing. That way insanity lies.</p>
+
+<p>Name your callbacks expressively and you'll reap the immediate benefits of more readable code and easier implementation. You'll also have a decent indication - the method name - of what the callback was meant to do when you come back to the code in 6 months.</p>
+
+<pre><code class="ruby">class Widget &lt ActiveRecord::Base
+  after_save :add_widget_to_bill_of_materials
+  def add_widget_to_bill_of_materials
+    # No need to guess what this method does,
+    # it's right there in the name!
+  end
+end</code></pre>

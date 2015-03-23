@@ -1,0 +1,64 @@
+<p>I'm still somewhat new to Git. I'm not really sure what best practice is, or what protocol surrounds providing patches to other people's projects. Here's the best I could come up with for making a change to someone's project and allowing them to incorporate the changes if they desire them.</p>
+
+<h4>Clone the repository</h4>
+
+<p>First off you'll need to get a copy of the project to work on. Hopefully they're using Git... because I've not worked out the best way to handle if they're not.</p>
+
+<pre><code>git clone git://github.com/username/project_name.git
+cd project_name.git</code></pre>
+
+<h4>Add a public repository</h4>
+
+<p>If you're like me then you're disconnected a lot of the time. I <a href="http://barkingiguana.com/2008/11/15/setting-up-a-public-git-repository">setup a public Git repository</a> that I could make code available from by pushing changes to it. If you're connected all the time (or at least all the time that another developer might want to get to your code) then you probably don't need to do this.</p>
+
+<pre><code>git remote add public ssh://barkingiguana.com/~craig/code/project_name.git
+git push public master</code></pre>
+
+<h4>Time to work</h4>
+
+<p>Here comes the hard but interesting bit: do some work. Typically this involves checking out a branch for a feature, bug fix or topic area.</p>
+
+<pre><code>git checkout -b sprozzle-the-gromits
+# ... do the work ...
+git add gromits/blue.txt
+git commit -m "Sprozzle Gromit with the blue face."
+
+# ... do more work ...
+git add gromits/cherry.txt
+git commit -m "Cherry Gromits are even better with more Sprozzle."</code></pre>
+
+<h4>Conflict resolution</h4>
+
+<p>While you've been working on your awesome patch (and until your patch is accepted back into the project origin) there may be upstream changes. You'll want to make sure that it applies cleanly to the master branch as this will increase the chances that your patch will be accepted.</p>
+
+<pre><code>git checkout master
+git pull origin master
+git checkout sprozzle-the-gromits
+git rebase master
+# resolve any conflicts
+git commit -m "Made branch patch master at 351ac1b cleanly."
+git push public</code></pre>
+
+<h4>Advertise your changes</h4>
+
+<p>You want to make just the changes on the branch available to the public so push the branch to the public repository. Once again, this is only needed if you live a disconnected life.</p>
+
+<pre><code>git push public sprozzle-the-gromits:refs/heads/sprozzled-gromits</code></pre>
+
+<h4>Automation is awesome</h4>
+
+<p><a href="http://www.sirena.org.uk/log/">Mark Brown</a> pointed out that you can use <code>git request-pull</code> to create a few paragraphs suitable for emailing to the project team that contain all the information needed for your changes to be looked at and <a href="http://barkingiguana.com/2008/11/21/accepting-changes-from-a-remote-git-repository">merged into the project</a>.</p>
+
+<pre><code>get request-pull \
+  b9e0f1b4ff4bc196513c9551f6c25f0ee40d991f \
+  http://barkingiguana.com/~craig/project_name.git</code></pre>
+
+<h4>And relax...</h4>
+
+<p>Your changes are now available to the public. They can clone your repository and fetch any of your pushed branches. Now would be a good time to email the owner of the project and ask nicely that they pull from your repository and check out the changes you've made.</p>
+
+<p>If you need to make more changes to the branch, do the work on the branch, commit it, and do a <code>git push public</code> from the branch (or a <code>git push public sprozzle-the-gromits</code> from a different branch).</p>
+
+<h4>Difference is the spice of life</h4>
+
+<p>The project you want to work on may not support this style of contributing. Check with the project team before embarking on your quest. If you'd prefer not to (or are unable to) publish your own copy of the repository, check out the Git book which covers <a href="http://book.git-scm.com/5_git_and_email.html">using Git and Email</a>.</p>

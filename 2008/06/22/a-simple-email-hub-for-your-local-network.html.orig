@@ -1,0 +1,132 @@
+<p>I've been setting up the new <a href="http://xeriom.net/">Xeriom Networks</a> MX service and decided that I'd document what I've done for your perusal. If you think something should be done in a different way, please do leave comments!</p>
+
+<h4>Requirements</h4>
+<p>The requirements for the MX service are pretty simple. We don't need to do spam filtering, Greylisting, logging or virus scanning. We're going to build a very simple service that provides reliable email delivery to hosts within our network and let our clients decide their own email policy. We will do a little blacklist checking however.</p>
+
+<h4>Installing the software</h4>
+<p>I'll use Postfix because I'm pretty familiar with it. This is going to be pretty simple since we don't do any filtering; the basic Postfix install matches the requirements above.</p>
+
+<pre><code class="bash">sudo apt-get install postfix --yes</code></pre>
+
+<p>Stop Postfix here since it starts automatically after install.</p>
+
+<pre><code class="bash">sudo /etc/init.d/postfix stop</code></pre>
+
+<h4>Configuring Postfix</h4>
+<p>Make <code>/etc/postfix/main.cf</code> specify the following values.</p>
+
+<pre><code class="cf">
+# Don't reveal the OS in the banner.
+smtpd_banner = $myhostname ESMTP $mail_name
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+# Send "delivery delayed" emails after 4 hours.
+delay_warning_time = 4h
+
+readme_directory = no
+
+smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+smtpd_use_tls=yes
+smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+
+# This is mx1.xeriom.net. Change for mx2, mx3, etc.
+myhostname = mx1.xeriom.net
+myorigin = mx1.xeriom.net
+
+# Map root, abuse and postmaster to real email addresses.
+virtual_alias_maps = hash:/etc/postfix/virtual
+
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+mydestination = 
+relayhost = 
+mynetworks = 127.0.0.0/8
+mailbox_size_limit = 0
+recipient_delimiter = +
+inet_interfaces = all
+local_transport = error:No local mail delivery
+local_recipient_maps = 
+smtpd_helo_required = yes
+
+# Only allow the service to be used for hosts with final
+# destinations within our VM network.
+permit_mx_backup_networks = 193.219.108.0/24
+
+# Only accept mail from nice people.
+# Read and understand these blacklists policies before you
+# use them or you risk losing mail!
+smtpd_client_restrictions = reject_rbl_client zen.spamhaus.org,
+  reject_rbl_client cbl.abuseat.org,
+  reject_rbl_client dul.dnsbl.sorbs.net
+
+# Only relay mail for which this machine is a listed MX backup.
+smtpd_recipient_restrictions = permit_mx_backup, reject</code></pre>
+
+<p>Create the aliases database and redirect abuse, root and postmaster mail to a real email address</p>
+
+<pre><code class="bash">newaliases
+echo 'postmaster postmaster@xeriom.net' >> /etc/postfix/virtual
+echo 'abuse abuse@xeriom.net' >> /etc/postfix/virtual
+echo 'root root@xeriom.net' >> /etc/postfix/virtual
+postmap /etc/postfix/virtual</code></pre>
+
+<p>Restart Postfix so the changes take effect.</p>
+
+<pre><code class="bash">sudo /etc/init.d/postfix restart</code></pre>
+
+<p>After installing, configuring and restarting the mail server we'll need to punch a hole in the firewall to allow traffic on the SMTP port. If you don't have a firewall set up, you should - <a href="http://barkingiguana.com/2008/06/22/firewall-a-pristine-ubuntu-804-box">set it up now</a>.</p>
+
+<pre><code class="bash">sudo iptables -I INPUT 4 -p tcp --dport smtp -j ACCEPT
+sudo sh -c "iptables-save -c > /etc/iptables.rules"</code></pre>
+
+<h4>Testing the setup</h4>
+
+<p>First, check that the new MX is listed in the zone and that the final MX is within the networks specified in <code>permit_mx_backup_network</code>. If they're not then edit the zone or the Postfix configuration. The domain that I'm testing this service with is emailmyfeeds.com.</p>
+
+<pre><code class="bash">dig MX emailmyfeeds.com +short
+0 emailmyfeeds.com.
+10 mx1.xeriom.net.
+10 mx2.xeriom.net.
+
+dig emailmyfeeds.com +short
+193.219.108.60</code></pre>
+
+<p>After doing that use <code>telnet</code> to send a trial email through the new MX box. Below is the entire SMTP conversation for a successful send.</p>
+
+<pre><code class="bash">telnet mx1.xeriom.net smtp
+Trying 193.219.108.242...
+Connected to 193.219.108.242.
+Escape character is '^]'.
+220 mx1.xeriom.net ESMTP Postfix
+EHLO my-computer
+250-mx1.xeriom.net
+250-PIPELINING
+250-SIZE 10240000
+250-VRFY
+250-ETRN
+250-STARTTLS
+250-ENHANCEDSTATUSCODES
+250-8BITMIME
+250 DSN
+MAIL FROM: craig@xeriom.net
+250 2.1.0 Ok
+RCPT TO: craig@emailmyfeeds.com
+250 2.1.5 Ok
+DATA
+354 End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;
+TEST!
+
+.
+250 2.0.0 Ok: queued as A6EED440BB
+</code></pre>
+
+<p>If, after you type the <code>RCPT TO</code> line you get an error something like <code>554 5.7.1 &lt;test@foo.com&gt;: Recipient address rejected: Access denied</code> then the domain either doesn't have the MX currently listed in the zone file (or the change hasn't propagated through the DNS yet), or the final destination for the email doesn't fall within the ranges allowed by <code>permit_mx_backup_networks</code>.</p>
+<p>You should also always, <strong>always</strong> check your MX's using an <a href="http://www.abuse.net/relay.html">open relay checker</a> - if you don't then you're helping spam distribution and I will hunt you down and hurt you.</p>
+
+<h4>Using the Xeriom MX service</h4>
+<p>If you're lucky enough to have a VM here at Xeriom Networks you'll be able to use this service from 2008-06-24 by following the instructions at <a href="http://wiki.xeriom.net/w/XeriomMXService">http://wiki.xeriom.net/w/XeriomMXService</a>.

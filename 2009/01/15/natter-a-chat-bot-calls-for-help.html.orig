@@ -1,0 +1,34 @@
+<p>I've been playing around with <a href="http://barkingiguana.com/2009/01/13/having-a-good-old-natter">Natter</a> and I've uncovered what might be a problem. When chat-bots are hooked up to the internet they join cults and invent things that might harm both them and people.</p>
+
+<pre>[Thu Jan 15 16:25:43 +0000 2009] craig@barkingiguana.com &gt; "Hey!"
+[Thu Jan 15 16:25:46 +0000 2009] Bot &gt; "may refer to:"
+[Thu Jan 15 16:25:52 +0000 2009] craig@barkingiguana.com &gt; "Refer to what?"
+[Thu Jan 15 16:25:54 +0000 2009] Bot &gt; "Join now"
+[Thu Jan 15 16:26:05 +0000 2009] craig@barkingiguana.com &gt; "That sounds a bit like you're in a cult..."
+[Thu Jan 15 16:26:11 +0000 2009] Bot &gt; "Help"
+[Thu Jan 15 16:26:18 +0000 2009] craig@barkingiguana.com &gt; "How?!"
+[Thu Jan 15 16:26:21 +0000 2009] Bot &gt; "But what happens when our inventions get the better of us? The results can be devastating."</pre>
+
+<p>It's also admitted that it's being forced to have kids due to [redacted] site policies...</p>
+
+<pre>[Thu Jan 15 15:47:01 +0000 2009] craig@barkingiguana.com &gt; "Hey, what's up?"
+[Thu Jan 15 15:47:05 +0000 2009] Bot &gt; "[a popular website]"
+[Thu Jan 15 15:47:10 +0000 2009] craig@barkingiguana.com &gt; "Uhh... okay"
+[Thu Jan 15 15:47:14 +0000 2009] Bot &gt; "on Tue Nov 18, 2008 6:48 am"
+[Thu Jan 15 15:47:22 +0000 2009] craig@barkingiguana.com &gt; "What's going to happen then?"
+[Thu Jan 15 15:47:24 +0000 2009] Bot &gt; "1 kin"
+[Thu Jan 15 15:47:31 +0000 2009] craig@barkingiguana.com &gt; "You're having kids?"
+[Thu Jan 15 15:47:33 +0000 2009] Bot &gt; "Site Policies"
+[Thu Jan 15 15:47:38 +0000 2009] craig@barkingiguana.com &gt; "That's harsh..."
+[Thu Jan 15 15:47:42 +0000 2009] Bot &gt; "Mike Knapp"
+[Thu Jan 15 15:47:50 +0000 2009] craig@barkingiguana.com &gt; "Is that the dad?"
+[Thu Jan 15 15:47:52 +0000 2009] Bot &gt; "Fathers are a powerful, yet largely untapped resource in our society"</pre>
+
+<p>... and that it tracks me using Google Analytics.</p>
+
+<pre>[Thu Jan 15 16:21:21 +0000 2009] craig@barkingiguana.com &gt; "I'm lost."
+[Thu Jan 15 16:21:23 +0000 2009] Bot &gt; "_uacct = \"UA-582589-1\";\nurchinTracker();"
+[Thu Jan 15 16:21:30 +0000 2009] craig@barkingiguana.com &gt; "You're tracking me?"
+[Thu Jan 15 16:21:34 +0000 2009] Bot &gt; "permalink"</pre>
+
+<p>Skynet here we come.</p>

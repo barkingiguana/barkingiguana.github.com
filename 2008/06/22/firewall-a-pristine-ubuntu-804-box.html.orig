@@ -1,0 +1,21 @@
+<p>Follow these simple instructions to block all traffic but SSH to your box. Once you have these rules running you can punch more holes as required.</p>
+
+<pre><code class="bash">sudo apt-get install iptables
+sudo iptables -A INPUT -i lo -j ACCEPT
+sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport ssh -j ACCEPT
+sudo iptables -A INPUT -j DROP
+sudo sh -c "iptables-save -c > /etc/iptables.rules"</code></pre>
+
+<p>If you'd like to save your current rules when you stop - or load the rules when you start the box, change your <code>/etc/network/interfaces</code> file so that it contains pre-up and post-down hooks to load / save the rules.</p>
+
+<pre><code class="bash">pre-up    iptables-restore < /etc/iptables.rules
+post-down iptables-save -c > /etc/iptables.rules</code></pre>
+
+<p>If you're hosted at <a href="http://xeriom.net/">Xeriom Networks</a> and would like to be monitored by the <a href="http://wiki.xeriom.net/w/XeriomAlertService">monitoring service</a> there, allow ICMP Type 8 from <code>monitor.xeriom.net</code>.</p>
+
+<pre><code>sudo iptables -I INPUT 4 -s 193.219.108.245 -p icmp -m icmp --icmp-type 8 -j ACCEPT</code></pre>
+
+<p>Remember to save the new rules to the <code>iptables.rules</code>.</p>
+
+<pre><code>sudo sh -c "iptables-save -c > /etc/iptables.rules"</code></pre>

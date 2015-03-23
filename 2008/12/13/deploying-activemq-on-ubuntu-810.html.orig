@@ -1,0 +1,75 @@
+<p>I used Ubuntu 8.10 in this article but the instructions will probably work on 8.04 and 7.10 as well. I've not tested those though, and I'm not sure if it'll work on other versions of Ubuntu. Feedback would be awesome.</p>
+
+<h4>Prerequisites</h4>
+
+<p>ActiveMQ is a Java aplication so, well, you'll need Java installed.</p>
+
+<pre><code>sudo apt-get install openjdk-6-jre</code></pre>
+
+<h4>Installing ActiveMQ</h4>
+
+<ol>
+  <li>Grab the latest stable release using wget. I used 5.2.0.
+  <pre><code>wget http://www.apache.org/dist/activemq/apache-activemq/5.2.0/apache-activemq-5.2.0-bin.tar.gz</code></pre></li>
+  <li>Unpack it somewhere. I use <code>/usr/local</code> although I believe this may be bad practice. Leave a comment if there's somewhere better for this!
+  <pre><code>sudo tar -xzvf apache-activemq-5.2.0-bin.tar.gz -C /usr/local/</code></pre></li>
+  <li>Configure the broker name in <code>/usr/local/apache-activemq-5.2.0/conf/activemq.xml</code> (replace all instances of "localhost" with the actual machine name)</li>
+  <li>Start ActiveMQ by running <code>/usr/local/apache-activemq-5.2.0/bin/activemq</code>
+  <li>Fire up a browser and browse to http://brokername:8161/admin. You should see the ActiveMQ admin console.</li>
+</ol>
+
+<h4>Keeping ActiveMQ running</h4>
+
+<p>Running ActiveMQ (or indeed any service you don't absolutely <em>have</em> to) as root is a Bad Idea. Create an activemq user and make the data directory be owned by them.</p>
+
+<pre><code>sudo adduser --system activemq
+sudo chown -R activemq /usr/local/apache-activemq-5.2.0/data</code></pre>
+
+<p>I run ActiveMQ under DaemonTools to make sure it's always up. If you haven't already, <a href="http://barkingiguana.com/2008/11/28/running-daemontools-under-ubuntu-810">install DaemonTools</a>.</p>
+
+<p>Create a service directory for activemq and populate it with the required scripts.</p>
+
+<pre><code>sudo mkdir -p /usr/local/apache-activemq-5.2.0/service/activemq/{,log,log/main}</code></pre>
+
+<p><code>/usr/local/apache-activemq-5.2.0/service/activemq/run</code> should look like this.</p>
+
+<pre><code>#!/bin/sh
+exec 2&gt;&amp;1
+
+USER=activemq
+
+exec softlimit -m 1073741824 \
+     setuidgid $USER \
+/usr/local/apache-activemq-5.2.0/bin/activemq</code></pre>
+
+<p><code>/usr/local/apache-activemq-5.2.0/service/activemq/log/run</code> should look like this.</p>
+
+<pre><code>#!/bin/sh
+USER=activemq
+exec setuidgid $USER multilog t s1000000 n10 ./main</code></pre>
+
+<p>Make both <code>run</code> scripts exectuable, the <code>log/main</code> directory owned by activemq and symlink the activemq service directory into <code>/etc/service/</code>.</p>
+
+<pre><code>sudo sh -c "find /usr/local/apache-activemq-5.2.0/service/activemq -name 'run' |xargs chmod +x,go-wr"
+sudo chown activemq /usr/local/apache-activemq-5.2.0/service/activemq/log/main
+sudo ln -s /usr/local/apache-activemq-5.2.0/service/activemq /etc/service/activemq</code></pre>
+
+<p>Now turn the keys and start it up.</p>
+
+<pre><code>sudo svc -u /etc/service/activemq</code></pre>
+
+<p>Tail the logs to make sure everything is happening as you'd expect.</p>
+
+<pre><code>sudo tail -F /etc/service/activemq/log/main/current</code></pre>
+
+<h4>Trouble-shooting</h4>
+
+<p>When I did this I got a bunch of stack traces with the following message.</p>
+
+<pre><code>Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.apache.activemq.xbean.XBeanBrokerService#0' defined in class path resource [activemq.xml]: Invocation of init method failed; nested exception is java.lang.RuntimeException: java.io.FileNotFoundException: /usr/local/apache-activemq-5.2.0/data/kr-store/state/hash-index-store-state_state (Permission denied)</code></pre>
+
+<p>This was because I stopped ActiveMQ after I changed ownership of the data directory causing it to dump the state file owned by another user. If you get the same problem just change the ownership of the data directory again.</p>
+
+<h4>Thanks</h4>
+
+<p>Thanks to Sean O'Halpin who introduced me to message queues and ActiveMQ (but who doesn't have a homepage or blog that I can link to) and <a href="http://djce.org.uk/">Dave Evans</a> who introduced me to Daemon Tools.</p>

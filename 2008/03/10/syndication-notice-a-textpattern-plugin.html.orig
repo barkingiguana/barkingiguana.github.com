@@ -1,0 +1,7 @@
+<p>I can't remember how, but recently I stumbled across the blog of Mike Davidson. There are plenty of interesting articles there, but the one that caught my eye was about <a href="http://www.mikeindustries.com/blog/archive/2007/08/adding-a-subscribe-bar-to-your-blog">people not using syndication feeds</a>, visiting the blog every so often instead to consume new content.</p>
+
+<p>There's a pretty good solution: add a message at the top of the page to explain that these resources are available and what they do. Well, I decided that it was about time I wrote a TextPattern plugin so I wrote one to implement his solution. To get it, clone from <code>http://barkingiguana.com/~craig/syndication_notice.git</code> using Git.</p>
+
+<pre><code>git clone http://barkingiguana.com/~craig/syndication_notice.git/</code></pre>
+
+<p>Installation is pretty much undocumented except here: change the TextPattern <code>publish/rss.php</code> and <code>publish/atom.php</code> scripts for correct feed integration (add <code>?source=feed</code> to the end of each href). I'll get more detailed instructions into the next release if there's demand.</p>

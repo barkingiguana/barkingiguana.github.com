@@ -1,0 +1,99 @@
+New exploits are found just about every day in software both old and new. To combat this, software vendors release security updates which the Ubuntu team package up and use to release new, more secure packages of the software that you install.
+
+It's very hard to provide software updates for all versions of all software packages ever built for a platform like Ubuntu so the Ubuntu team produce releases of Ubuntu Linux which they offer to support for a known period of time. These support periods are currently one of two lengths depending on the release of Ubuntu you use. Long Term Support (usually noted by including "LTS" in the name) releases for the server are supported for 5 years after the release date. Regular releases are supported for 18 months. Beyond these windows support for the release is dropped and you won't be able to upgrade or update any packages without a lot of work, so it's important to upgrade before support for your release is stopped.
+
+The current commonly used releases, their release date, and their end of support window are as follows:
+
+|_. Version    |_. Name           |_. Release Date  |_. Support Ends |
+| 10.04  [LTS] | Lucid Lynx       | April 2010      | April 2015     |
+| 9.10         | Karmic Koala     | October 29 2009 | April 2011     |
+| 9.04         | Jaunty Jackalope | April 23 2009   | October 2010   |
+| 8.10         | Intrepid Ibex    | October 30 2008 | April 2010     |
+| 8.04.4 [LTS] | Hardy Heron      | January 28 2010 | April 2013     |
+| 8.04.3 [LTS] | "                | July 16 2009    | April 2013     |
+| 8.04.2 [LTS] | "                | January 22 2009 | April 2013     |
+| 8.04.1 [LTS] | "                | July 3 2008     | April 2013     |
+| 8.04   [LTS] | "                | April 24 2008   | April 2013     |
+| 7.10         | Gutsy Gibbon     | October 18 2007 | April 2009     |
+| 7.04         | Feisty Fawn      | April 19 2007   | October 2008   |
+| 6.10         | Edgy Eft         | October 26 2006 | April 2008     |
+| 6.06.2 [LTS] | Dapper Drake     | January 21 2008 | June 2011      |
+| 6.06.1 [LTS] | "                | August 10 2006  | June 2011      |
+| 6.06   [LTS] | "                | June 1 2006     | June 2011      |
+| 5.10         | Breezy Badger    | October 12 2005 | April 2007     |
+| 5.04         | Hoary Hedgehog   | April 8 2005    | October 2006   |
+| 4.10         | Warty Warthog    | October 26 2004 | April 2006     |
+
+Currently supported are 6.06, 8.04, 8.10, 9.04 and 9.10. Ubuntu 10.04 will be released in April.
+
+## Your responsibilities
+
+There are two things that you as a server operator need to know how to do to stay up-to-date with the software on your server and make sure that it's always supported. One is upgrading installed packages, and one is upgrading to the next release of Ubuntu. I'll cover them both one at a time, but first we'll do a little setup to make sure that both operations are nice and fast.
+
+### Using a package mirror
+
+A very time consuming part of the update and upgrade process is downloading a large quantity of files from the servers that host the latest software packages. To make this faster "Xeriom Networks":http://xeriom.net/ provide a mirror of the software packages for 8.04, 8.10, 9.04 and 9.10. If you're not hosted on Xeriom Networks (why not?) you should ask your current provider if they supply a package mirror for your release. If they don't you should skip this section and hope that your connection is fast enough to cope.
+
+Using the package mirror is simple and requires you to edit just one file. A nice simple editor is nano. Install it by connecting to your server by SSH and using sudo and apt-get to install it:
+
+  <pre><code>sudo apt-get install nano --yes</code></pre>
+
+The contents of the file is determined by which release of Ubuntu you are running. Find out which release you run by typing this:
+
+  <pre><code>cat /etc/lsb-release</code></pre>
+
+You should then match your release up with the appropriate box on this Wiki page: "http://wiki.xeriom.net/w/XeriomUbuntuPackagesService":http://wiki.xeriom.net/w/XeriomUbuntuPackagesService
+
+Copy the text from within only the box that's matched with your release. Now we can edit the file to add the local package server:
+
+  <pre><code>sudo nano -w /etc/apt/sources.list</code></pre>
+
+Delete all the existing lines in that file and replace them with the text you copied from the Wiki page. Now press CTRL and X and say that you do want to save the file.
+
+Now we tell Ubuntu to refresh the list of software packages so it knows what's available on the local package mirror:
+
+  <pre><code>sudo apt-get update</code></pre>
+
+Congratulations, you're now using the Xeriom Ubuntu package mirror.
+
+### Upgrading installed software
+
+Keeping your software up-to-date is an important part of keeping your server secure but since these new packages may break existing functionality it's best not to install them automatically. You should sit down and do this yourself, only applying the updates if they're appropriate and necessary.
+
+To update the software installed on your server you use a set of tools called apt - and specifically you use apt-get.
+
+To make sure you get the latest updates you should first update your servers package database:
+
+  <pre><code>sudo apt-get update</code></pre>
+
+Then you should ask it to upgrade your existing packages:
+
+  <pre><code>sudo apt-get upgrade</code></pre>
+
+This will calculate everything that needs upgrading, show you a list of those packages and ask you if you want to continue. Most of the time this command will run smoothly and you'll get the latest version of the software on your server, but you should check the list of packages that it will upgrade and be sure that you know what's going to change before you let it complete.
+
+### Upgrading to the next release
+
+Upgrading Ubuntu is a slightly more time consuming process with a small increase in risk because of the huge number of packages that will be upgraded. It will usually also require you to reboot your server since the kernel is likely to be upgraded so you should plan for a little downtime.
+
+To upgrade you should use a package called update-manager-core. If this is your first time upgrading your Ubuntu release you may need to install it:
+
+  <pre><code>sudo apt-get install update-manager-core</code></pre>
+
+Next configure it to target releases based on your preferred strategy. This is either lts, normal or never.
+
+  <pre><code>sudo nano -w /etc/update-manager/release-upgrades</code></pre>
+
+Change the line that starts "Prompt=" to be whichever strategy you choose. For example, if I choose the lts strategy which should give me 5 years of support for each release I update to I'd enter "Prompt=lts" here. Now press CTRL and X and tell it that you want to save the file if it asks.
+
+Now, before you upgrade, read the "release notes":http://www.ubuntu.com/getubuntu/releasenotes/ for the version of Ubuntu that you're going to upgrade to and make sure you understand all the current issues and caveats surrounding it.
+
+Once you're happy that you understand what you're doing and you've scheduled a time to upgrade your server you can start the upgrade:
+
+  <pre><code>sudo do-release-upgrade</code></pre>
+
+This will calculate all the packages that will be upgraded and ask you if you want to continue. Don't just say yes - read the list of packages and make sure you understand what upgrading them means to your setup.
+
+## If it all goes pear-shaped
+
+Sometimes things get messed up. Maybe the release wasn't tested enough (rare these days) or perhaps the new release doesn't support the same software as the one you upgraded from and you need that to run. If this ever happens we can create you a brand new image of the release you need as long as it's still supported. Of course, your data won't be on the new release so make sure your backups are up-to-date!

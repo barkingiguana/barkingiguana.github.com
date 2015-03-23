@@ -1,0 +1,74 @@
+<p>CouchDB views are sort of like scripts that run inside CouchDB which manipulate and massage the documents inside the database into a (key, value) pair, then return those pairs which contain keys that match a query you run against the view. When I started playing with CouchDB I couldn't work out how to add views, thinking that there was something I was missing.</p>
+
+<p>To show how to create a view and add it to the database let's take an example problem. Say you have several documents that describe articles in your database.</p>
+
+<pre><code class="javascript">{
+   "_id": "monkeys-are-awesome",
+   "_rev": "1534115156",
+   "type": "article",
+   "title": "Monkeys are awesome",
+   "posted_at": "2008-09-14T20:45:14Z",
+   "tags": [
+       "monkeys",
+       "awesome"
+   ],
+   "status": "Live",
+   "author_id": "craig@barkingiguana.com",
+   "updated_at": "2008-09-14T21:23:59Z",
+   "body": "The article body would go here..."
+}</code></pre>
+
+<p>You might create a view that would give you the id and title of all documents in the database. To do this you would ask CouchDB to map each existing document to a new document containing the document id and the document title. This takes the form of a method which accepts each document as an argument and returns the document or result that you'd like to get back from the view.</p>
+
+<pre><code class="javascript">function(doc) {
+  emit(null, { 'id': doc._id, 'title': doc.title });
+}</code></pre>
+
+<p>For just now ignore that the first argument to <code>emit</code> is <code>null</code>. It's for emitting the key that will be used to sort and filter results. I'll cover it in my next post.</p>
+
+<p>While writing a view it can be useful to filter documents so that you only get the desired types emitted - in this case I only want the id and title of <em>article</em> documents. Documents that represent, for example, comments, may not have a title attribute.</p>
+
+<pre><code class="javascript">function(doc) {
+  if(doc.type == 'article') {
+    emit(null, { 'id': doc._id, 'title': doc.title });
+  }
+}</code></pre>
+
+<p>Adding this view to the database it pretty simple: just add a design document to the database. Design documents are just the same as any another document you'd add to CouchDB except they must have an identifier that starts <code>_design/</code> for example <code>_design/articles</code>. To insert the document you can use the built-in admin client, Futon, which is available at <code>http://localhost:5984/_utils/</code>.</p>
+
+<p>The full JSON document for a view which gives back the id and title for all documents in the database is shown below.</p>
+
+<pre><code class="javascript">{
+  "_id": "_design/articles",
+  "_rev": "42351258",
+  "language": "javascript",
+  "views": {
+    "titles": {
+      "map": "function(doc) { emit(null, { 'id': doc._id, 'title': doc.title }); }"
+    }
+  }
+}</code></pre>
+
+<p>Fire up Futon, access your database, add a new document and paste the view in. Once installed you can easily see the results of a view by clicking the drop-down that Futon shows when viewing a database. It's in the top right and it's labelled "select view". To get the raw JSON documents returned by your view you'll need to access your database directly. If your database was called "blog" then you could access the above view at <code>http://localhost:5984/blog/_view/articles/titles</code>.</p>
+
+<p>There can be many views in one design documents, each with a different name, and each returning different kinds of results. Here's one that's got that a few views that use the soon-to-be discussed "key" emitted.</p>
+
+<pre><code class="javascript">{
+  "_id": "_design/articles",
+  "_rev": "28651884",
+  "language": "javascript",
+  "views": {
+    "all": {
+      "map": "function(doc) { if(doc.type == 'article') { emit(null, doc); }  }"
+    },
+    "by_author_id": {
+      "map": "function(doc) { if(doc.type == 'article') { emit([doc.author_id], doc); }  }"
+    },
+    "by_status": {
+      "map": "function(doc) { if(doc.type == 'article') { emit([doc.status], doc); }  }"
+    },
+    "titles": {
+      "map": "function(doc) { if(doc.type == 'article') { emit(null, { 'id': doc._id, 'title': doc.title }); } }"
+    }
+  }
+}</code></pre>

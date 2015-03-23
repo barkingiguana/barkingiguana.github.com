@@ -1,0 +1,200 @@
+<p>Rails has changed quite a lot since <a href="http://www.pragprog.com/titles/rails2">Agile Web Development with Ruby on Rails (2nd Ed)</a> was released. A number of new best practice techniques are now used in favour of those described in the book.</p>
+
+<p>To demonstrate these techniques it is necessary to have a new Rails application to build upon. In this article I'll cover the basics needed to setup and run a Rails 2 project on your desktop or laptop. Future articles can then build on this base.</p>
+
+<h4>In this article</h4>
+<ul class="table_of_contents">
+  <li><a href="#installing-rails-2-0">Installing Rails 2.0</a></li>
+  <li><a href="#starting-your-rails-2-0-project">Starting your Rails 2.0 project</a></li>
+  <li><a href="#the-importance-of-version-control">The importance of version control</a></li>
+  <li><a href="#working-with-the-database-models">Working with the database: Models</a></li>
+  <li><a href="#creating-dynamic-pages-views">Creating dynamic pages: Views</a></li>
+  <li><a href="#hooking-up-the-view-and-the-model-controllers">Hooking up the view and the model: Controllers</a></li>
+  <li><a href="#what-next">What next?</a></li>
+</ul>
+
+<a id="installing-rails-2-0" name="installing-rails-2-0"></a><h4>Installing Rails 2.0</h4>
+
+<p>Rails 2 now uses SQLite as it's development and test database so you needn't worry about setting up MySQL on the development machine. This makes installing Rails and starting a new project a <em>lot</em> easier: we only have to get Ruby and the Rails code onto our machines. To simplify this even further use <a href="http://macports.org/">MacPorts</a>. If you don't have that installed, go install it now. Remember to install XcodeTools - you can get it from your OS X install media if you didn't install it the first time around.</p>
+
+<p>To install Ruby with MacPorts open Terminal.app (it's in Applications / Utilities) and run <code class="bash">sudo port install rb-rubygems</code>. Technically this command will install RubyGems, but since Ruby is a dependency that'll get installed too. Once RubyGems has installed (it might take a while) use that to install Rails by running <code class="bash">sudo gem install -y rails</code>.</p>
+
+<p>That's pretty much it. You now have a working Rails install on your development machine.</p>
+
+<a id="starting-your-rails-2-0-project" name="starting-your-rails-2-0-project"></a><h4>Starting your Rails 2.0 project</h4>
+
+<p>First, to keep your home directory tidy, create an area to keep all your projects under. I call mine <code>sandbox</code>. In the terminal run the command <code>mkdir ~/sandbox</code> to create the sandbox.</p>
+
+<p>Under the sandbox directory we want to create our project. To do this use the <code>rails</code> command, letting it know the name of your project - in this case I call my project QuickBite.</p>
+
+<pre><code class="bash">cd ~/sandbox/
+rails QuickBite</code></pre>
+
+<p>You'll see a bit out output scroll past as Rails builds a basic project for you. Let's run that Rails app and see what we get.</p>
+
+<pre><code class="bash">cd QuickBite
+ruby ./script/server</code></pre>
+
+<p>Open a web browser and type <a href="http://localhost:3000/">http://localhost:3000/</a> into the address bar.</p>
+
+<div style="text-align: center; width: 100%;"><img src="/images/rails-default-index.png" alt="The default Rails index page." /></div>
+
+<p>It's not much, but our project now has a decent starting point. Lets save our progress in case anything bad happens.</p>
+
+<a id="the-importance-of-version-control" name="the-importance-of-version-control"></a><h4>The importance of version control</h4>
+
+<p>Version control does just what the name suggests: it allows you to control various version of your project. It's useful because it allows you to see when a change was made, what files the change affected, who made it, and it provides you the option of undoing changes that you don't like.</p>
+
+<h5>Git!</h5>
+
+<p>The version control system I use is <a href="http://git.or.cz/">Git</a>. It does lots of cool things, but most of them won't be used until later articles. For just now we're only interested in being able to add changes to our projects so we can undo them if something bad happens.</p>
+
+<p>You are of course free to use whichever system you're comfortable with, but the commands given in this article will only cover Git use.</p>
+
+<h6>Installing</h6>
+
+<p>Installing Git is simple if you use MacPorts. Simply run <code class="bash">sudo port install git-core</code> from the Terminal. Grab a cup of coffee, this can take a while.</p>
+
+<h6>Configuring Git</h6>
+
+<p>Since Git has only just been installed it doesn't know who we are. Let's tell it.</p>
+
+<pre><code class="bash">git config --global user.name "Your Full Name"
+git config --global user.email "you@domain.com"</code></pre>
+
+<p>This is useful when working in teams as it lets you check who made a change to the code but it's a good idea to get it set up correctly from the get-go. By using <code>--global</code> we tell git that we want to use these values for <em>all</em> projects, not just this one - you only have to set your name and email address once.</p>
+
+<h6>Adding your Rails project to Git</h6>
+
+<p>Version control is great, but sometimes we don't want to version certain kinds of file. In a file called <code>.gitignore</code> in the top-level directory of your project add the following directives to ignore development and test databases, generated documentation, logs and temporary files that may be generated while running or developing a Rails project.</p>
+
+<pre><code>.DS_Store
+db/*.sqlite3
+doc/api
+doc/app
+log/*.log
+tmp/**/*</code></pre>
+
+<p>Git is different from most version control systems in that it tracks content rather than files. We've told Git to ignore all content in <code>tmp/</code> and <code>log/</code> but we do want those directories to exist - Rails complains if they don't - so you'll need to create two <code>.gitignore</code> files, one in <code>tmp/</code> and one in <code>log/</code>.</p>
+
+<pre><code class="bash">touch tmp/.gitignore
+touch log/.gitignore</code></pre>
+
+<p>Now that Git in only paying attention to the files we're interested in we can add the project.</p>
+
+<pre><code class="bash"># Create the repository
+git init
+# Add the project to the next commit
+git add .
+# Commit the changes
+git commit -m "Setup a new Rails application."</code></pre>
+
+<p>Normally we won't add <code>.</code> as it adds <em>all</em> uncommitted files under the current directory to the next commit. It's preferable to pick the files we want to commit (called staging in Git-speak) by using <code>git add &lt;filename&gt;</code> then using <code>git commit -m "Commit Message"</code> to commit just the staged files.</p>
+
+<p>Once that's committed we can start building our application.</p>
+
+<a id="working-with-the-database-models" name="working-with-the-database-models"></a><h4>Working with the database: Models</h4>
+
+<p>In order to make a useful application we need to model the problem domain that the application operates in. Most - though not all - models interact with a database. Models can be found in <code>app/models/</code>, although there won't be any there yet.</p>
+
+<p>The application I've created is called QuickBite. It's going to be an application for exchanging sandwich recipes. Sandwiches usually have a name - BLT, New York Deli, that sort of thing. We can tell Rails about Sandwiches by generating a model.</p>
+
+<pre><code class="bash">ruby ./script/generate model Sandwich name:string</code></pre>
+
+<p>If you look at the output of this command you'll notice that it's created a file in <code>app/models/sandwich.rb</code>. That's our sandwich model. The generator has also create some files called migrations. Migrations are commands that tell Rails how to manipulate your database - adding, deleting and renaming tables, columns and indexes. By running the migrations we ask Rails to tell the database what we know about sandwiches.</p>
+
+<pre><code class="bash"># Run any pending migrations
+rake db:migrate</code></pre>
+
+<p>Now that Rails knows about sandwiches we should commit our changes to the source code repository in case something bad happens. The generator created some tests for us. I'm going to be a bad man and ignore those for just now - I'll cover testing at a later date.</p>
+
+<pre><code class="bash"># Look to see what's been changed
+git status
+
+# Stage the models, migrations, schema and tests.
+git add app/models/ db/migrate/ db/schema.rb test/
+
+# Commit the changes with a message
+git commit -m "Added a model to represent sandwiches."</code></pre>
+
+<a id="creating-dynamic-pages-rails-views" name="creating-dynamic-pages-views"></a><h4>Creating dynamic pages: Views</h4>
+
+<p>Rails knows about sandwiches, but that doesn't help us get information into the database or show the people visiting our application what we've added to the database. We want to create a page that allows us to enter sandwich details and to let people see those details.</p>
+
+<p>Pages are made up of several views - in our case we're just going to use one per page to keep things simple. Views live in subfolders of <code>app/views/</code>. If you take a look you'll see that there's already one subfolder there: <code>layouts</code>. Ignore it for now - we'll play with layouts soon, but they're not needed to get a basic application up and running.</p>
+
+<p>Create a file called <code>app/views/sandwiches/new.html.erb</code> containing the following simple form which will allow us to create sandwich records.</p>
+
+<pre><code class="ruby">&lt;form action="/sandwiches/create"&gt;
+  Name: &lt;input type="text" name="sandwich[name]" /&gt;
+  &lt;input type="submit" value="Save" /&gt;
+&lt;/form&gt;</code></pre>
+
+<p>Now that we have a way of creating records we should allow people to see them. Create a file called <code>app/views/sandwiches/show.html.erb</code> containing the following code.</p>
+
+<pre><code class="ruby">&lt;p&gt;This sandwich is called &lt;%=h @sandwich.name %&gt;.&lt;/p&gt;</code></pre>
+
+<p>There are three important things to notice about the view we've just created.</p>
+
+<ol>
+  <li>ERb output blocks (<code class="ruby">&lt;%= ... %&gt;</code>) are used where something - such as the sandwich name - should appear in the output HTML.</li>
+  <li>The helper method <em>h</em> is used to make sure that the output is properly sanitised HTML ie it doesn't include any nasty HTML tags that could mess up our page.</li>
+  <li>The variable we're using starts with an @ symbol. It's not important to understand why at this stage, but it's important to take note of.</p>
+</ol>
+
+<p>Let's try to create a sandwich. Fire up a browser and visit <a href="http://localhost:3000/sandwiches/new">http://localhost:3000/sandwiches/new</a>.</p>
+
+<div style="text-align: center; width: 100%;"><img src="/images/no-new-route.png" alt="Rails complains that there's no route matching /sandwiches/new action" /></div>
+
+<p>Oh no, an error! Rails doesn't know what we mean by asking for <code>/sandwiches/new</code>. We should tell Rails what to do when we ask for our new sandwich form, but first we should commit our views in case we screw anything up.</p>
+
+<pre><code class="bash"># Check what's changed
+git status
+# Stage the views for the next commit
+git add app/views/sandwiches
+# Commit the changes
+git commit -m "Added create and show views for sandwiches."</code></pre>
+
+<a id="hooking-up-the-view-and-the-model-controllers" name="hooking-up-the-view-and-the-model-controllers"></a><h4>Hooking up the view and the model: Controllers</h4>
+
+<p>Controllers tell Rails what to do when the view wants to talk to the model - for example when a view sends data as the result of someone hitting the submit button of a form, or when a browser requests a view. Controllers live in <code>app/controllers/</code>. There will already be one there, the application controller, which we will use as a base for our other controllers.</p>
+
+<p>Create a new file called <code>app/controllers/sandwiches_controller.rb</code></p>
+
+<pre><code class="ruby">class SandwichesController &lt; ApplicationController
+  def new
+  end
+
+  def create
+    @sandwich = Sandwich.create(params[:sandwich])
+    redirect_to :action =&gt; 'show', :id =&gt; @sandwich
+  end
+  
+  def show
+    # Notice that this variable starts with an @ to match the view.
+    @sandwich = Sandwich.find(params[:id])
+  end
+end</code></pre>
+
+<p>Now that we have told Rails what to do when we submit data, fire up a browser and visit the <a href="http://localhost:3000/sandwiches/new">new sandwich form</a> again. This time when you should see your form, and when you hit save you will be shown the sandwich record you've just created as a webpage.</p>
+
+<div style="text-align: center; width: 100%;"><img src="/images/sandwich-record.png" alt="A sandwich record is shown in the browser window" /></div>
+
+<p>Success! Our application allows us to create sandwiches and share them with visitors. One last time (for this article), save your progress.</p>
+
+<pre><code class="bash"># Look to see what's been changed
+git status
+# Stage the sandwiches controller
+git add app/controllers/sandwiches_controller.rb
+# Commit the changes with a message
+git commit -m "Added a controller for sandwiches."</code></pre>
+
+<a name="what-next" id="what-next"></a><h4>What next?</h4>
+
+<p>You've seen how to install Rails 2 and create a basic project that allows you to create sandwich records and show them to people.</p>
+
+<p>In the next article we'll flesh out some missing functionality by providing a sandwich index so visitors can find sandwiches and a way of editing and deleting sandwiches, and we'll start using layouts and partials to DRY up views and make them look good. Stay tuned!</p>
+
+<p>If you've found this article useful I'd appreciate recommendations at <a href="http://www.workingwithrails.com/recommendation/new/person/7241-craig-webster">Working With Rails</a>.</p>
+
+<p>You may also be interested in attending my Rails tutorial at <a href="http://scotlandonrails.com/tutorial">Scotland on Rails Charity Day</a> in Edinburgh, Scotland on April 3rd 2008.</p>

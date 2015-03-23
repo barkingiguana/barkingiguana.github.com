@@ -1,0 +1,37 @@
+<p><a href="http://cr.yp.to/daemontools.html">Daemontools</a> is a collection of tools that help keep manage processes. It's great for keeping daemons running - if they ever die then Daemontools just restarts them. Unfortunately the package for Ubuntu is a little broken because it relies on <code>/etc/inittab</code> and Ubuntu hasn't used this file for a long time. Here's how install Daemontools and fix the problem.</p>
+
+<h4>Installing Daemontools</h4>
+
+<p>This bit is easy.</p>
+
+<pre><code>sudo apt-get install daemontools</code></pre>
+
+<p>Daemontools is installed. Easy, huh? Unfortunately it won't start after a reboot. That's bad. The <code>daemontools-run</code> package was meant to make Daemontools start at system bootup but unfortunately it relies on a system that uses init... and Ubuntu doesn't. It uses upstart instead.</p>
+
+<h4>Make Daemontools run at system startup</h4>
+
+<p>Create the file <code>/etc/event.d/svscanboot</code> with the following content.</p>
+
+<pre><code>start on runlevel 2
+start on runlevel 3
+start on runlevel 4
+start on runlevel 5
+
+stop on runlevel 0
+stop on runlevel 1
+stop on runlevel 6
+
+respawn
+exec /usr/bin/svscanboot</code></pre>
+
+<p>You'll also need to <code>mkdir /etc/service</code> since this is where the Ubuntu-installed Daemontools looks for service definitions.</p>
+
+<p>Now tell the system to start the process.</p>
+
+<pre><code>sudo initctl start svscanboot</code></pre>
+
+<h4>Other distributions</h4>
+
+<p>Plenty of other distributions use upstart instead of init. Getting DaemonTools running on them is pretty similar.</p>
+
+<ul><li>Fedora Core &gt;= 9: <a href="http://directory.fedoraproject.org/wiki/Howto:Daemontools#Daemontools_Installation">http://directory.fedoraproject.org/wiki/Howto:Daemontools#Daemontools_Installation</a> and <a href="http://qmail.jms1.net/daemontools/upstart.shtml">http://qmail.jms1.net/daemontools/upstart.shtml</a></li></ul>

@@ -1,0 +1,10 @@
+<p>If you'd like to use <a href="http://blog.evanweaver.com/articles/2007/03/10/add-gud-spelning-to-ur-railz-app-or-wharever/">Aspell</a> and you use MacPorts to manage software on your Mac then you might run into a problem compiling the native extensions for RAspell. There's a pretty large error log, but the important part is this line:</p>
+
+<pre><code>raspell.h:6:20: error: aspell.h: No such file or directory</code></pre>
+
+<p>It can't find the Aspell headers even though it's been installed by MacPorts. Well, here's the fix: tell RubyGems where MacPorts has installed Aspell.</p>
+
+<pre><code># Install the Aspell port
+sudo port install aspell
+# Install the Ruby bindings for Aspell
+sudo gem install raspell -- --with-opt-dir=/opt/local</code></pre>

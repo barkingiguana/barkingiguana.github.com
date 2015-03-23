@@ -1,4 +1,7 @@
-source 'https://rubygems.org/'
-gem 'jekyll'
-gem 'RedCloth', '4.2.8'
-gem 'iconv'
+source 'https://rubygems.org'
+
+require 'json'
+require 'open-uri'
+versions = JSON.parse(open('https://pages.github.com/versions.json').read)
+
+gem 'github-pages', versions['github-pages']

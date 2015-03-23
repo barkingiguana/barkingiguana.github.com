@@ -13,37 +13,27 @@ layout: base
       <dt class="property">written by</dt>
       <dd class="author name value">{{ page.author }}</dd>
       <dt class="property">published</dt>
-      <dd class="published date value">{{ page.date | date_to_string }}</dd>
+      <dd class="published date value">{{ page.date | date: '%F' }}</dd>
     </dl>
   </div>
   <div>
     <p class="alert alert-info comments" id="comments">Disagree? Found a typo? <a href="https://github.com/craigw/craigw.github.com/fork">Fork the repo</a> and show me how wrong I am.<br />Got a question? If you'd like to have a conversation about this post, <a href="mailto:craig@barkingiguana.com">email craig@barkingiguana.com</a>. I don't bite.</p>
     <p class="alert alert-warning security" id="security">You can verify that I've written this post by following the <a href="/verification">verification instructions</a>:<br />
-    <pre><code>curl -O https://raw.githubusercontent.com/craigw/craigw.github.com/master/{{ page.path }} \
-curl -O https://raw.githubusercontent.com/craigw/craigw.github.com/master/{{ page.path }}.asc
-gpg --verify {{ page.path }}{.asc,}</code></pre>
+    {% capture verify_base_url %}{{ site.url }}{{ page.path | replace_first: '_posts', '' | replace_first: '-', '/' | replace_first: '-', '/' | replace_first: '-', '/' | append: '.orig'  }}{% endcapture %}
+    {% capture verify_file_name %}{% assign path_parts = page.path |split: '-' %}{% for part in path_parts offset:3 %}{% unless forloop.index0 == 0 %}-{% endunless %}{{part}}{% endfor %}.orig{% endcapture %}
+    <pre><code>curl -O {{ verify_base_url }}
+curl -O {{ verify_base_url | append: '.asc' }}
+gpg --verify {{ verify_file_name }}{.asc,}</code></pre>
     </p>
   </div>
   <div class="related btn-group">
-{% assign previous = '' %}
-{% assign show_previous = true %}
-{% assign show_next = false %}
-{% for post in site.posts reversed %}
-  {% unless post.path contains '.asc' or post.path contains '.unprocessed' %}
-    {% if post.url == page.url and previous != '' and show_previous == true %}
-      <a class="previous btn" href="{{ previous.url }}" rel="previous" title="{{ previous.title }}"><i class="icon-backward"></i> {{ previous.title | truncatewords: 15 }}</a>
-      {% assign show_previous = false %}
+    {% if page.previous.url %}
+      <a class="previous btn" href="{{ page.previous.url }}" rel="previous" title="{{ page.previous.title }}"><i class="icon-backward"></i> {{ page.previous.title | truncatewords: 15 }}</a>
     {% endif %}
-    {% if show_next == true %}
-      <a class="next btn" href="{{ post.url }}" rel="next" title="{{ post.title }}"><i class="icon-forward"></i> {{ post.title | truncatewords: 15 }}</a>
-      {% assign show_next = false %}
-    {% endif %}
-  {% assign previous = post %}
-  {% if post.url == page.url %}
     <a class="up btn" href="/" rel="up"><i class="icon-home"></i> Home</a>
-    {% assign show_next = true %}
-  {% endif %}
-  {% endunless %}
-{% endfor %}
+    {% if page.next.url %}
+      <a class="next btn" href="{{ page.next.url }}" rel="next" title="{{ page.next.title }}"><i class="icon-forward"></i> {{ page.next.title | truncatewords: 15 }}</a>
+    {% endif %}
   </div>
 </div>
+

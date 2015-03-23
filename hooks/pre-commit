@@ -5,10 +5,13 @@ set -e
 cp hooks/pre-commit .git/hooks/pre-commit
 
 GPG="gpg --batch --yes --local-user craig@barkingiguana.com --armor"
-find _posts -type f -name "*.md" -or -name "*.html" | while read FILE; do
-  $GPG --verify $FILE.asc $FILE.unprocessed >/dev/null 2>/dev/null || \
+find _posts -type f -name "*.md" -or -name "*.html" | sed 's/_posts\///' | while read FILE; do
+  DIR=$(echo ${FILE:0:10} |sed 's/-/\//' |sed 's/-/\//')
+  test -d $DIR || mkdir -p $DIR
+  TARGET="${FILE:11}.orig"
+  $GPG --verify $DIR/$TARGET{.asc,} >/dev/null 2>/dev/null || \
     (echo "Did you run ./sign.sh?" && exit 1)
 done
 
-$GPG --verify verification.md.asc verification.md.unprocessed >/dev/null 2>/dev/null || \
+$GPG --verify verification.md{.asc,} >/dev/null 2>/dev/null || \
   (echo "Did you run ./sign.sh?" && exit 1)

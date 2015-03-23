@@ -1,0 +1,38 @@
+<p>My main concern about <a href="http://barkingiguana.com/2009/10/21/you-dont-need-to-return-explicitly">returning explicitly</a> is readability. It's a very subjective thing, but in general whenever I see an unnecessary return statement my internal <a href="http://www.osnews.com/story/19266/WTFs_m">WTF counter</a> increments.</p>
+
+<p>Less subjective though, it has been <a href="http://barkingiguana.com/2009/10/24/the-truth-speaks-for-itself#c000073">pointed</a> <a href="http://barkingiguana.com/2009/10/21/you-dont-need-to-return-explicitly#c000074">out</a> that returning explicitly is slower.</p>
+
+<p>Benchmarking in Ruby is easy. Here's how:</p>
+
+<pre><code class="ruby">require 'benchmark'
+
+def explicit
+  return "TEST"
+end
+
+def implicit
+  "TEST"
+end
+
+n = 100_000_000
+Benchmark.bmbm do |x|
+  x.report("Explicit return") { n.times { explicit } }
+  x.report("Implicit return") { n.times { implicit } }
+end</code></pre>
+
+<p>And here are the results of this particular benchmark:</p>
+
+<pre><code>Rehearsal ---------------------------------------------------
+Explicit return  50.380000   0.210000  50.590000 ( 51.000510)
+Implicit return  36.200000   0.100000  36.300000 ( 36.454038)
+----------------------------------------- total: 86.890000sec
+
+                      user     system      total        real
+Explicit return  47.650000   0.070000  47.720000 ( 47.744167)
+Implicit return  35.900000   0.070000  35.970000 ( 35.985493)</code></pre>
+
+<p>This shows that while returning explicitly is slower, like the to_proc hack it's <a href="http://barkingiguana.com/2008/11/18/symbol-to_proc-is-slow-is-it-slow-enough-to-matter">not slow enough to matter</a>. You need to return a huge number of times to see any significant difference.</p>
+
+<p>Does this change my mind? No. Returning explicitly is still ugly.</p>
+
+<p><em>Update:</em> The above benchmark was run on Ruby 1.8.6. <a href="http://tomafro.net/">Tom Ward</a> has provided <a href="http://tomafro.net/2009/08/the-cost-of-explicit-returns-in-ruby">similar benchmarks</a> for Ruby 1.8.7, 1.9 and jRuby 1.1.6 (using n = 10,000,000) which show that the cost of explicitly returning on these platforms in negligible. Still ugly though.</p>

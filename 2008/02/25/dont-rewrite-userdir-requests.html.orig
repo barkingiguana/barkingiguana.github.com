@@ -1,0 +1,9 @@
+<p>I have a site that's a Rails application which I also want to be able to use as my home on the web -- a place I keep the stuff that I want to share. Since I use Apache, the simplest way to do this is to use the UserDir module. Unfortunately, the way that I setup my applications catches all requests using mod_rewrite and, after some processing to make sure there's not a cached file to use, passes the request to an application server.</p>
+
+<p>For my future reference, here's the necessary mod_rewrite voodoo to avoid rewriting UserDir requests.</p>
+
+<pre><code># Don't rewrite UserDir requests
+RewriteRule ^/~.*$ - [L]
+</code></pre>
+
+<p>All hail the mighty <a href="http://www.addedbytes.com/apache/mod_rewrite-cheat-sheet/">mod_rewrite cheat-sheet</a>.</p>

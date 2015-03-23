@@ -1,0 +1,120 @@
+<p>At <a href="http://www.railsconfeurope.com/">RailsConf Europe</a> it quickly became obvious that while there's a bunch of really cool things happening in the Ruby and Rails worlds just now, the current hotness is all about <a href="http://www.erlang.org/">Erlang</a>. I decided to give it a whirl so I bought a few screencasts and the <a href="http://www.pragprog.com/titles/jaerlang/programming-erlang">Programming Erlang</a> book and played for a few hours.</p>
+
+<p>I very quickly found out that Erlang is incredibly similar to <a href="http://en.wikipedia.org/wiki/Prolog">Prolog</a> and when I commented on this it turned out that Erlang was originally a Prolog descendent intended for high-availability, high-performance distributed applications. That's great for me - I spent the best part of three years working with Prolog as part of my AI course!</p>
+
+<p>To see if I could remember how to reason with Prolog I decided to implement some fairly trivial predicates - the sort of thing that you'd use at the start of a degree course to introduce Prolog, for example.</p>
+
+<h4>A brief introduction to graphs</h4>
+
+<p><em>Also know as &quot;here comes the maths bit...&quot;</em></p>
+
+<p>For those who haven't covered <a href="http://en.wikipedia.org/wiki/Graph_theory">graph theory</a> as part of mathematics, graphs aren't bar charts or pie charts. The clue's in the name: those are <em>charts</em>. A graph is a collection of vertices and edges that join them. Every played join the dots? That's a close enough comparison.</p>
+
+<p>There are two kinds of graphs: directed and undirected. For directed graphs the direction of the edges matters while for undirected graphs it doesn't.</p>
+
+<div style="text-align: center;"><img src="/images/11.png" alt="A simple directed graph." /></div>
+
+<p>If we have an directed graph with two vertices A and B, and an edge A &rarr; B, there is no edge between B and A (above). In an undirected graph there is one (below).</p>
+
+<div style="text-align: center;"><img src="/images/10.png" alt="A simple undirected graph." /></div>
+
+<p>To play with Erlang, I'll make an arbitrary choice and use a simple undirected graph like the last of the two graphs above. I'll ask Erlang to check if there's a connection between two vertices in the graph.</p>
+
+<h4>Less Mathematics, More Erlang</h4>
+
+<p>First, let's decide how to represent the graph. In English I'd describe the graph like this:<ol><li>There's an edge between vertex A and vertex B</li><li>There's an edge between vertex B and vertex C</li><li>There's an edge between vertex C and vertex A</li>so I should do the same in Erlang to keep it clear.</p>
+
+<pre><code class="erlang">Graph = [
+  { edge, 
+    { vertex, a },
+    { vertex, b }},
+  { edge, 
+    { vertex, b },
+    { vertex, c }},
+  { edge, 
+    { vertex, c },
+    { vertex, a }}
+].</code></pre>
+
+<p>With a graph to reason about, how do I decide if two vertices, N and M, are connected? I look at the first edge in the graph and ask "does this edge connect N to M?"</p>
+
+<pre><code class="erlang">% If there's an edge from A -> B then A and B are connected.
+% 
+connected([ { edge, { vertex, A }, { vertex, B } } | _ ], { vertex, A }, { vertex, B }) -> yes;</code></pre>
+
+<p>Since I'm considering an undirected graph edges that connect N to M can also be defined as edges that connect M to N, so I also have to ask "does this edge connect M to N?"</p>
+
+<pre><code class="erlang">% If there's an edge from B -> A then A and B are connected (since we're 
+% considering only undirected graphs).
+%
+connected([ { edge, { vertex, B }, { vertex, A } } | _ ], { vertex, A }, { vertex, B }) -> yes;</code></pre>
+
+<p>If the edge I'm considering meets neither of the above two conditions than possibly the next edge in the graph will match them so discard the first edge and repeat the above with the next vertex.</p>
+
+<pre><code class="erlang">% If the edge currently being examined doesn't join the vertices, try 
+% looking through the rest of the graph searching for a matching edge.
+% 
+connected([ _ | Graph], { vertex, A }, { vertex, B }) ->
+  connected(Graph, { vertex, A }, { vertex, B });</code></pre>
+
+<p>If we've looked through the entire graph in this manner and there are no edges left to consider, the nodes aren't joined.</p>
+
+<pre><code class="erlang">% If there are no edges to consider then the nodes aren't joined.
+% 
+connected([], _, _) -> no.</code></pre>
+
+<p>There are no other cases I can think of so I finish the predicate definition with a period (.) - note that the previous cases had a semi-colon at the end.</p>
+
+<h4>Organising Erlang code</h4>
+
+<p>Erlang code is organised in modules. I suspect that these act sort of like namespaces, but I haven't dug that deep yet so can't say for sure. In any case, the module name and the name of the file that the Erlang code is stored in should be the same. Since I'm dealing with undirected graphs I've called the module unigraph which makes the filename unigraph.erl. I have to tell Erlang which module this is, and which predicates I want to make available to the outside world so the following code goes at the top of that file.</p>
+
+<pre><code class="erlang">-module(unigraph).
+-export([connected/3]).</code></pre>
+
+<h4>Running the code</h4>
+
+<p>Change into the directory containing the Erlang file and Launch the Erlang shell by typing <code>erl</code>.</p>
+
+<pre><code>webstc09@MC-S001877 graphs $ erl
+Erlang (BEAM) emulator version 5.5.5 [source] [async-threads:0] [hipe] [kernel-poll:false]
+
+Eshell V5.5.5  (abort with ^G)</code></pre>
+
+<p>Once in the shell compile the module, setup the graph given above and ask Erlang if some of the nodes are connected.</p>
+
+<pre><code class="erlang">1> c(unigraph).
+{ok,unigraph}
+2> Graph = [
+2>   { edge, 
+2>     { vertex, a },
+2>     { vertex, b }},
+2>   { edge, 
+2>     { vertex, b },
+2>     { vertex, c }},
+2>   { edge, 
+2>     { vertex, c },
+2>     { vertex, a }}
+2> ].
+[{edge,{vertex,a},{vertex,b}},
+ {edge,{vertex,b},{vertex,c}},
+ {edge,{vertex,c},{vertex,a}}]
+3> unigraph:connected(Graph, { vertex, a }, { vertex, b }).
+yes
+4> unigraph:connected(Graph, { vertex, a }, { vertex, c }).
+yes</code></pre>
+
+<p>That's great, but what happens if we ask about a vertex that doesn't exist? Let's ask if <code class="erlang">{ vertex, a }</code> is connected to an imaginary <code class="erlang">{ vertex, z }</code>.</p>
+
+<pre><code class="erlang">5> unigraph:connected(Graph, { vertex, a }, { vertex, z }).
+no</code></pre>
+
+<h4>Get the code</h4>
+
+<p>The code to the module I've described is available at <a href="http://barkingiguana.com/file_download/2">http://barkingiguana.com/file_download/2</a>.</p>
+
+<h4>Confusing tangent</h4>
+
+<p>I'm not really sure how to finish up since this post was mainly to help me get to grips with a Prolog-like language again. I look forward to seeing what else I can make Erlang do, and I'll probably post that here too. Prolog just got a lot prettier and a bunch more fun.</p>
+
+<p>If you found this article useful, give me some love over at <a href="http://www.workingwithrails.com/recommendation/new/person/7241-craig-webster">Working With Rails</a>... because obviously, Erlang has so much to do with Rails.</p>

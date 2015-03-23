@@ -1,0 +1,19 @@
+<p>Recently I've been doing a lot of work on creating a management interface for Xen VMs in one of my Rails applications. The current state of Xen API's is not well documented which makes it rather hard to implement. In fact, just about the only comparison that I can find of the API's appears to be on the Xen mailing list in an email from Ewan Mellor.</p>
+
+<blockquote><ul>
+<li>xend-http-server: Very old and totally broken HTML interface and legacy, generally working SXP-based interface, on port 8000.</li>
+<li>xend-unix-server: Ditto, using a unix domain socket.</li>
+<li>xend-unix-xmlrpc-server: Legacy XML-RPC server, over HTTP/unix, the recommended way to access Xend in 3.0.4.</li>
+<li>xend-tcp-xmlrpc-server: Ditto, over TCP, on port 8006.</li>
+<li>xen-api-server: All new, all shiny Xen-API interface, available in preview form now, and landing for 3.0.5.</li></ul> -- Ewan Mellor, 2007-01-24 in <a href="http://lists.xensource.com/archives/html/xen-api/2007-01/msg00006.html">http://lists.xensource.com/archives/html/xen-api/2007-01/msg00006.html</a></blockquote>
+
+<p>As far as I can tell, if you use Xen &lt;= 3.0.4 the best option is to use the <a href="http://ruby-xen.rubyforge.org/">Ruby-Xen gem</a> to work with the legacy Xen XML-RPC API. If you're using Xen &gt;= 3.0.5 the preferred method of integration appears to be the almost-undocumented Xen API*, which as far as I can tell has no existing Ruby client.</p>
+
+<p>A paper which talks about the Xen API is available at <a href="http://research.iu.hio.no/theses/pdf/master2007/ingard.pdf">http://research.iu.hio.no/theses/pdf/master2007/ingard.pdf</a> which seems to suggest that the new Xen API also uses XML-RPC, with a sample script available at <a href="http://folk.uio.no/ingardm/thesis/xensource.xeninfo.pl">http://folk.uio.no/ingardm/thesis/xensource.xeninfo.pl</a>.</p>
+
+<p>In the following weeks I hope to setup some modern Xen dom0's and begin to document exactly what is required to get the Xen API setup and accessible from a host within the same network as the dom0.</p>
+
+<div class="update">
+  <p class="when date">Update, 2008-03-15</p>
+  <p>I found a <em>draft</em> definition of the new XML-RPC API on the <a href="http://wiki.xensource.com/xenwiki/XenApi?action=AttachFile&do=get&target=xenapi-1.0.0.pdf">XenSource Wiki</a>. A huge cake is the prize for anyone that writes a BSD or MIT licenced Ruby interface against the specification given there.</p>
+</div>

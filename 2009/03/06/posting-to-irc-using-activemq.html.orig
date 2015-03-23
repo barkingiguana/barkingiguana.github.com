@@ -1,0 +1,29 @@
+<p>Previously I wrote about querying your app using IRC and IRCCat. Well, that's not all IRCCat can be used for. It can also allow your application or platform to talk to you and let you know what's up. A source code commit, a user logging in or a server dying can all be pretty interesting information, and it's really easy to hook these into IRC using IRCCat.</p>
+
+<p>The IRCCat examples of sending notifications to IRC all seem to work around using netcat to pipe data across the network to the IRCCat process. My preference is to use a small Ruby script and a message bus to deliver messages to the process. Of course, I already have ActiveMQ setup so I don't have much extra overhead doing things this way.</p>
+
+<pre><code class="ruby">#! /usr/bin/env ruby
+
+STDOUT.sync = true
+
+require 'rubygems'
+require 'smqueue'
+require 'yaml'
+require 'socket'
+
+puts "Starting..."
+
+messages = SMQueue(:name =&gt; "/queue/irc.outgoing", :host =&gt; "mq.domain.com", :reliable =&gt; true, :adapter =&gt; "StompAdapter")
+
+messages.get do |job|
+  message = YAML.parse(job.body).transform
+  puts "Posting #{message['text']} in #{message.headers['message-id']}."
+  irc = TCPSocket.open('localhost', '12345')
+  irc.send("#{message['text']}\r\n", 0)
+  irc.close
+  puts "Posted #{message.headers['message-id']}."
+end</code></pre>
+
+<p>With that running on the same box as IRCCat your other processes can now just put messages onto the IRC queue and they'll be posted to IRC. If IRCCat isn't running, they'll be stored in the queue until it is and then get posted.</p>
+
+<p>I like this approach because the various other processes don't need to know which server / port IRCCat is running on, they just talk to the message queue - which is made easy by SMQueue.</p>

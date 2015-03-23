@@ -1,0 +1,65 @@
+<p>Previously I wrote about how to <a href="http://barkingiguana.com/2008/11/20/working-on-other-peoples-projects-with-git">work on an external project using Git</a>. I didn't show how the owner could accept your changes though.</p>
+
+<h4>Connect to the remote repository</h4>
+
+<p>Being a committer to the project you of course already have the repository cloned. If you don't, now might be a good time to do that.</p>
+
+<p>The person that's asked you to review their changes should have provided you with the repository location, and probably a branch with the changes that they'd like you to look at. Add the remote repository to yours.</p>
+
+<pre><code>git remote add \
+  craigwebster http://barkingiguana.com/~craig/project_name.git</code></pre>
+
+<p>Double check just to make sure the repository is correct.</p>
+
+<pre><code>git remote show craigwebster
+  * remote craigwebster
+    URL: http://barkingiguana.com/~craig/project_name.git/
+    New remote branches (next fetch will store in remotes/craigwebster)
+      dev/sprozzled-some-gromits master</code></pre>
+
+<p>Grab the information on those juicy looking branches</p>
+
+<pre><code>git fetch craigwebster</code></pre>
+
+<h4>Review, critique, rinse, repeat</h4>
+
+<p>To look at the changes you'll want to check them out to a local branch. Ask Git to track the remote branch for you so that any changes the patcher makes can easily be pulled into this branch.</p>
+
+<pre><code>git co --track \
+  -b craigwebster-sprozzled-gromits-are-good \
+  craigwebster/dev/sprozzled-some-gromits</code></pre>
+
+<p>Do your stuff, run the test suite, look over the code, discuss it with your peers, whatever.</p> 
+
+<pre><code>git whatchanged
+commit b9e0f1b4ff4bc196513c9551f6c25f0ee40d991f
+Author: Craig R Webster &lt;craig@xeriom.net&gt;
+Date:   Wed Nov 19 20:53:08 2008 +0000
+# and so on</code></pre>
+
+<p>I'll assume that you accept the changes wholesale - you'll have to cherry pick commits if you don't.</p>
+
+<h4>Ask for a wider review</h4>
+
+<p>In some cases it may be appropriate to ask for a wider review of the changes before they are accepted into the master branch. Maybe the change is too huge to be in a minor release, or maybe it's patching a development branch. In these cases you can apply the changes to a branch.</p>
+
+<pre><code>git checkout dev/version-2-0-45
+git merge craigwebster-sprozzled-some-gromits
+git commit -m \
+  "The Gromits are well and truly Sprozzled." \
+  --author "Craig R Webster &lt;craig@xeriom.net&gt;"
+git push origin \
+  dev/version-2-0-45:refs/heads/dev/version-2-0-45</code></pre>
+
+<p>From here you can merge, commit, or otherwise screw around with the commit much as you would with any change you've made.</p>
+
+<h4>Accepting the changes without review</h4>
+
+<p>If the change is appropriate to merge directly into the master branch then you can do that too.</p>
+
+<pre><code>git checkout master
+git merge craigwebster-sprozzled-some-gromits
+git commit -m \
+  "The Gromits are well and truly Sprozzled." \
+  --author Craig R Webster &lt;craig@xeriom.net&gt;"
+git push origin master</code></pre>

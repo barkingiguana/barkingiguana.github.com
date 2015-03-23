@@ -1,0 +1,23 @@
+<p>This is how I manage gem dependencies for Rails applications that use Rails &gt;= 2.0.3.</p>
+
+<p>Specify the dependencies in <code>config.rb</code>.</p>
+
+<pre><code class="ruby">Rails::Initializer.run do |config|
+  # ...
+  config.gem 'doodle'
+  config.gem 'aws-s3', :lib => 'aws/s3'
+  config.gem 'smqueue', :version => '0.1.0'
+  # ...
+end</code></pre>
+
+<p>Since I don't want to make my deployment depend on all the gem sources being available I tend to pull the gems into the source tree and check them in.</p>
+
+<pre><code>sudo rake gems:install
+rake gems:unpack
+svn add vendor/gems/*</code></pre>
+
+<p>When it's time to deploy the application remember to build the gems that have native extensions.</p>
+
+<pre><code>rake gems:build</code></pre>
+
+<p>If you've got some sort of build system in place that produces application packages then this should be done as part of building that package. If you're using Capistrano then it should be done in an after <code>deploy:update_code</code> callback.</p>

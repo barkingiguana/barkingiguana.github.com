@@ -1,0 +1,15 @@
+<p>Working with arrays in Ruby. Don't do this:</p>
+
+<pre><code class="ruby">index = 0
+for item in array
+  index += 1
+  puts "Item #{index}: #{item.inspect}"
+end</code></pre>
+
+<p>Do this instead:</p>
+
+<pre><code class="ruby">array.each_with_index do |item, index|
+  puts "Item #{index}: #{item.inspect}"
+end</code></pre>
+
+<p>There are a bunch of handy methods like this. Read the <a href="http://ruby-doc.org/core/classes/Enumerable.html">Enumerable</a> documentation and make your code that little bit more readable.</p>

@@ -1,0 +1,12 @@
+<p>Previously I wrote about using SMQueue to <a href="http://barkingiguana.com/2009/01/01/writing-rubystomp-clients-with-smqueue">create some simple consumers and producers</a> for message queues. I also wrote about setting up a <a href="http://barkingiguana.com/2008/12/16/high-availability-activemq-using-a-mysql-datastore">high availability message store</a>. In the case of a failure the message queue will turn the slave node into the master. Unfortunately the producer and consumer I created will forever try to reconnect to the now-dead ex-master node.</p>
+
+<p>Using smqueue 0.1.0 (which was produced when I created the simple producer and consumer) it's trivial to add failover capabilities to the clients. Where the SMQueue instance is created simply add another key, <code>secondary_host</code>, to the configuration and point it to the second broker.</p>
+
+<pre><code class="ruby">queue = SMQueue(
+  :name =&gt; "/queue/numbers.ascending",
+  :host =&gt; "mq1.domain.com",
+  :secondary_host =&gt; "mq2.domain.com",
+  :adapter =&gt; :StompAdapter
+)</code></pre>
+
+<p>I think that the plan is to support more than two broker nodes and support for failover strategies into future versions of SMQueue.</p>

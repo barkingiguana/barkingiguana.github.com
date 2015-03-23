@@ -6,25 +6,9 @@ You can check that each post I publish, as well as this page with the verificati
 
 Verifying that I've written what you're reading are the same thing is pretty easy.
 
-For each article you'd like to verify:
+For each article you'd like to verify, there's a section at the bottom of the page that will show you how to download the article source and the signature for that article, and how to verify the signature using [GnuPG].
 
-## Obtain the source for the article
-
-I keep this [entire blog in GitHub]. Each post is stored in `_posts/`, and this page is `verification.md`. Save that file to your computer. Read it and check that it says what you previously read online.
-
-## Obtain the signature for the article
-
-In the same directory as the article source there will be a file with the same name and `.asc` at the end. This is the ASCII armoured detatched signature for that file. Save that to your computer also.
-
-## Verify the article using the signature
-
-Once you have both files you can do this pretty easily at the command line.
-
-{% highlight bash %}
-gpg --verify verification.md.asc verification.md
-{% endhighlight %}
-
-Success looks something like the below - note the `good signature` line, this shows that what I've written hasn't been changed since I signed it.
+Success looks something like the below - note the `good signature` line, this shows that what I've written hasn't been changed since I signed it. Check that the content is signed by me, and if you're in any doubt email me to check.
 
 {% highlight text %}
 gpg: Signature made Wed  4 Mar 11:11:28 2015 GMT

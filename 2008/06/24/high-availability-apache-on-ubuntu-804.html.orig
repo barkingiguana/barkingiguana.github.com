@@ -1,0 +1,184 @@
+<p>It's nice when your website continues to be served even when something catastrophic happens. Running two Apache nodes and Heartbeat will help - if one server blows up, the other will take over in short order.</p>
+
+<h4>Prelude</h4>
+
+<p>You'll need two boxes and <em>three</em> IP addresses. I use <a href="http://xeriom.net/">virtual machines from Xeriom Networks</a>. I've <a href="http://barkingiguana.com/2008/06/22/firewall-a-pristine-ubuntu-804-box">firewalled</a> them and opened the HTTP port to the world.</p>
+
+<pre><code class="bash">sudo iptables -I INPUT 3 -p tcp --dport http -j ACCEPT
+sudo sh -c "iptables-save -c > /etc/iptables.rules"</code></pre>
+
+<p>For the purpose of this post, let's assume that the following IP addresses are available.</p>
+
+<ul>
+  <li>193.219.108.236 - Node 1 (craig-02.vm.xeriom.net)</li>
+  <li>193.219.108.237 - Node 2 (craig-03.vm.xeriom.net)</li>
+  <li>193.219.108.238 - Not assigned</li>
+</ul>
+  
+<h4>Simple Service</h4>
+
+<p>First we'll setup Apache on both boxes. Nothing complex - we just want to make sure that we can serve <em>something</em> to HTTP clients.</p>
+
+<p>Run the following command on both boxes.</p>
+
+<pre><code class="bash">sudo apt-get install apache2 --yes</code></pre>
+
+<p>Now fire up a browser and hit the IP addresses assigned to Node 1 and Node 2. You should see the default Apache page stating &quot;It works!&quot;. If you don't, check your firewall allows <code>www</code> traffic. Your firewall rules should look like the below - note the line ending <code>tcp dpt:www</code>.</p>
+
+<pre><code class="bash">sudo iptables -L
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+ACCEPT     all  --  anywhere             anywhere            state RELATED,ESTABLISHED 
+ACCEPT     tcp  --  anywhere             anywhere            tcp dpt:ssh 
+ACCEPT     tcp  --  anywhere             anywhere            tcp dpt:www
+DROP       all  --  anywhere             anywhere            
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination</code></pre>
+
+<h4>Adding resilience</h4>
+
+<p>Apache can serve web pages from your machines now - that's great, but it doesn't protect against one of the machines dying. For that, we use a tool called <code>heartbeat</code>.</p>
+
+<p>Install and configure Heartbeat on both boxes.</p>
+
+<pre><code class="bash">sudo apt-get install heartbeat</code></pre>
+
+<p>Next we'll copy and customise the <code>authkeys</code>, <code>ha.cf</code> and <code>haresources</code> files from the sample documentation to the configuration directory.</p>
+
+<pre><code class="bash">sudo cp /usr/share/doc/heartbeat/authkeys /etc/ha.d/
+sudo sh -c "zcat /usr/share/doc/heartbeat/ha.cf.gz > /etc/ha.d/ha.cf"
+sudo sh -c "zcat /usr/share/doc/heartbeat/haresources.gz > /etc/ha.d/haresources"</code></pre>
+
+<p>The <code>authkeys</code> should be readable only by root because it's going to contain a valuable password.</p>
+
+<pre><code class="bash">sudo chmod go-wrx /etc/ha.d/authkeys</code></pre>
+
+<p>Edit <code>/ec/ha.d/authkeys</code> and add a password of your choice so that it looks like below.</p>
+
+<pre><code class="bash">auth 2
+2 sha1 your-password-here</code></pre>
+
+<p>Configure <code>ha.cf</code> according to your network. In this case the nodes are <code>craig-02.vm.xeriom.net</code> and <code>craig-03.vm.xeriom.net</code>. To figure out what your node names are run <code>uname -n</code> on each of the nodes. These <strong>must</strong> match the values you use in the <code>node</code> directives in the configuration file.</p>
+
+<pre><code class="cf">logfile /var/log/ha-log
+logfacility local0
+keepalive 2
+deadtime 30
+initdead 120
+bcast eth0
+udpport 694
+auto_failback on
+node craig-02.vm.xeriom.net
+node craig-03.vm.xeriom.net</code></pre>
+
+<p>We need to tell Heartbeat we want it to look after Apache. Edit haresources and make it look like the following - still on both machines.</p>
+
+<pre><code>craig-02.vm.xeriom.net 193.219.108.238 apache2</code></pre>
+
+<p>This file must be identical on <strong>both</strong> nodes - even the hostname, which should be the output of <code>uname -n</code> on node 1. The IP address should be the unassigned IP address given above in the prelude section.</p>
+
+<p>In <code>ha.cf</code> we told Heartbeat to use UDP port 694 to communicate but because we're all nicely firewalled this port is blocked. Open it on both boxes.</p>
+
+<pre><code class="bash">sudo iptables -I INPUT 2 -p udp --dport 694 -j ACCEPT</code></pre>
+
+<p>Your iptables rules should now look similar to the output below.</p>
+
+<pre><code class="bash">sudo iptables -L
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+ACCEPT     all  --  anywhere             anywhere            state RELATED,ESTABLISHED 
+ACCEPT     udp  --  anywhere             anywhere            udp dpt:694 
+ACCEPT     tcp  --  anywhere             anywhere            tcp dpt:ssh 
+ACCEPT     tcp  --  anywhere             anywhere            tcp dpt:www 
+DROP       all  --  anywhere             anywhere            
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination</code></pre>
+
+<p>Now create a file on each box that tells us which webserver we're looking at.</p>
+
+<pre><code class="bash"># Node 1 (craig-02.vm.xeriom.net)
+echo "craig-02.vm.xeriom.net" > /var/www/index.html</code></pre>
+
+<pre><code class="bash"># Node 2 (craig-03.vm.xeriom.net)
+echo "craig-03.vm.xeriom.net" > /var/www/index.html</code></pre>
+
+<p>Check that this file shows up on each box by hitting the nodes IP addresses in the browser. If that works, it's time to flip the switch.</p>
+
+<h4>It lives... IT LIVES!</h4>
+
+<p>Start heartbeat on the master (node 1 / craig-02.vm.xeriom.net) then the slave (node 2 / craig-03.vm.xeriom.net).</p>
+
+<pre><code>sudo /etc/init.d/heartbeat start</code></pre>
+
+<p>This process takes quite a while to start up. <code>tail -f /var/log/ha-log</code> on both boxes to watch what's happening. After a while you should see node 1 say something like this.</p>
+
+<pre><code>heartbeat[6792]: 2008/06/24_11:06:21 info: Initial resource acquisition complete (T_RESOURCES(us))
+IPaddr[6867]:   2008/06/24_11:06:22 INFO:  Running OK
+heartbeat[6832]: 2008/06/24_11:06:22 info: Local Resource acquisition completed.</code></pre>
+
+<h4>Testing for a broken heart</h4>
+
+<p>If you now check the output of <code>ifconfig eth0:0</code> on both boxes you should see output like below.</p>
+
+<pre><code># Node 1
+sudo ifconfig eth0:0
+eth0:0    Link encap:Ethernet  HWaddr 00:16:3e:3c:70:25  
+          inet addr:193.219.108.238  Bcast:193.219.108.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1</code></pre>
+
+<pre><code># Node 2
+sudo ifconfig eth0:0
+eth0:0    Link encap:Ethernet  HWaddr 00:16:3e:92:ad:78  
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1</code></pre>
+
+<p>Node 1 has taken over our virtual IP address. If you kill Node 1, Node 2 will take it over. You can simulate this by taking down the Heartbeat process on Node 1.</p>
+
+<pre><code class="bash"># Node 1
+sudo /etc/init.d/heartbeat stop</code></pre>
+
+<p>Checking <code>ifconfig</code> again you should see that the virtual IP address has swapped nodes. If you bring up Node 1 again (start heartbeat) you should see the IP address swap back to that node.</p>
+
+<p>If you got this far with no problems then congratulations, Heartbeat is running and your web tier will survive failure of a node. You can skip to the next section to see it working in the browser.</p>
+
+<p>If you see some lines in the ha-log file telling you that the message queue is filling up then it's likely the two nodes can't communicate with each other. Check that you opened UDP port 694 on the firewall of <em>both</em> boxes.</p>
+
+<pre><code>heartbeat[6148]: 2008/06/24_11:05:09 ERROR: Message hist queue is filling up (500 messages in queue)</code></pre>
+
+<p>Check the firewall rules look like below - the important line is the one ending in <code>udp dpt:694</code>.</p>
+
+<pre><code class="bash">sudo iptables -L
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+ACCEPT     all  --  anywhere             anywhere            state RELATED,ESTABLISHED 
+ACCEPT     udp  --  anywhere             anywhere            udp dpt:694 
+ACCEPT     tcp  --  anywhere             anywhere            tcp dpt:ssh 
+ACCEPT     tcp  --  anywhere             anywhere            tcp dpt:www 
+DROP       all  --  anywhere             anywhere            
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination</code></pre>
+
+<h4>The proof is in the pudding</h4>
+
+<p>Mmm, cake.</p>
+
+<p>Fire up your browser and hit the virtual IP address (193.219.18.238 in this post). You should see a page telling you that you're on Node 1.</p>
+
+<p>Stop heartbeat (or shutdown Node 1) and hit the IP address again in the browser. You should now see that you're hitting Node 2.</p>
+
+<p>Finally, bring Heartbeat back up on Node 1 (or start the box if you stopped it) and hit the IP address again. You should now be hitting Node 1 again.</p>
+
+<h4>Love me!</h4>
+
+<p>If you've found this article useful I'd appreciate beer and recommendations at <a href="http://www.workingwithrails.com/recommendation/new/person/7241-craig-webster">Working With Rails</a>.</p>

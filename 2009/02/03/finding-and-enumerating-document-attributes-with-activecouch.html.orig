@@ -1,0 +1,14 @@
+<p>Continuing from my investigation into <a href="http://barkingiguana.com/2009/01/28/counting-tags-with-couchdb-and-map-reduce">counting tags with CouchDB and map-reduce</a>, I've made ActiveCouch support the operations required to count all uses of attributes on a certain document type in your database. Through that it's also possible to get all unique values for an attribute in your database.</p>
+
+<p>To use this new functionality just call <code class="ruby">enumarate_all_[attribute_name]</code> or <code class="ruby">find_all_[attribute_name]</code> on your models.</p>
+
+<pre><code class="ruby">&gt;&gt; Article.enumerate_all_tags
+=&gt; {"security"=>2, "ldap"=>1, "xen"=>1, "stories"=>3, "rails"=>13, "xeriom"=>3, "mysql"=>3, ... }
+
+&gt;&gt; Article.find_all_tags
+=&gt; ["agile", "ajax", "apache", "api", "caching", "coding", ... ]
+
+&gt;&gt; Article.find_all_author_ids
+=&gt; ["craig@barkingiguana.com"]</code></pre>
+
+<p>If you'd like to see exactly what I did to add this have a look at commit <code>1cbbe71</code>.</p>

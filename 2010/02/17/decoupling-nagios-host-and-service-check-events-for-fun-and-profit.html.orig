@@ -1,0 +1,98 @@
+<p>Nagios does a pretty good job of watching over my services and hosts, but I want to do a little more with the events it creates &#8211; when it checks a service and something is wrong, or when something recovers. In particular I want to give my clients the ability to select at an incredibly high resolution what sort of notifications they get, for what services, how often, and at what level of technical detail. Coupled with this I want to up-sell the services that <a href="http://xeriom.net/">Xeriom</a> offers &#8211; if the disk is getting full or the transfer quota is being consumed so fast that it wont last until the end of the month I want to make it easy to upgrade plans. I&#8217;d also like to be able to try out some fun things &#8211; iPhone push notifications, <span class="caps">SMS</span> gateways, audible alarms, whatever &#8211; without worrying that I might destroy Nagios and bring my monitoring setup to its knees.</p>
+
+<p>Message queues are a great way of decoupling systems, moving risk and complexity elsewhere. Nagios shouldn&#8217;t have to worry about all of the stuff I want to build around the monitoring system, it should focus just on the core features that I like it for: monitoring my hosts and services.</p>
+
+<p>Luckily, <a href="http://barkingiguana.com/2008/12/13/deploying-activemq-on-ubuntu-810">I already have ActiveMQ running</a> for other tasks, <a href="http://barkingiguana.com/2009/01/01/writing-rubystomp-clients-with-smqueue">writing a <span class="caps">STOMP</span> client using <span class="caps">SMQ</span>ueue</a> is pretty trivial, and Nagios has several ways to execute external commands when events happen including the <a href="http://nagios.sourceforge.net/docs/3_0/configmain.html#global_host_event_handler">global host and service event handlers</a>. All I need is a command to have Nagios run that&#8217;ll accept a bunch of information from Nagios and stick it on the message queue.</p>
+
+<p>Here&#8217;s what I came up with:</p>
+
+<pre><code class="ruby">require 'rubygems'
+require 'smqueue'
+require 'json'
+
+message = {
+  :hostname => ARGV[2],
+  :service => ARGV[3],
+  :state => ARGV[4],
+  :state_type => ARGV[5],
+  :state_time => ARGV[6].to_i,
+  :attempt => ARGV[7].to_i,
+  :max_attempts => ARGV[8].to_i,
+  :time_t => Time.now.to_i
+}
+
+configuration = {
+  :host => ARGV[0],
+  :name => ARGV[1],
+  :adapter => :StompAdapter
+}
+
+broadcast = SMQueue(configuration)
+broadcast.put message.to_json, "content-type" => "application/json"</code></pre>
+
+<p>You&#8217;ll need Ruby and RubyGems installed. Once you have those, install the script like this:</p>
+
+<pre><code class="bash">sudo su -
+gem sources -a http://gems.github.com/
+gem install seanohalpin-smqueue json --no-ri --no-rdoc
+cd /usr/bin
+wget http://gist.github.com/raw/306765/2a3e9cbade88b4c6dd430e108bc8a28f95047462/notify-service-by-stomp.rb
+chmod +x notify-service-by-stomp.rb</code></pre>
+
+Once it's installed tell Nagios to use it by adding this to your Nagios configuration:
+
+<pre><code>define command {
+  command_name notify-service-by-stomp
+  command_line /usr/bin/notify-service-by-stomp.rb mq.example.com /topic/foo.bar.baz.quux $HOSTADDRESS$ "$SERVICEDESC$" $SERVICESTATE$ $SERVICESTATETYPE$ $SERVICEDURATIONSEC$ $SERVICEATTEMPT$ $MAXSERVICEATTEMPTS$
+}
+
+global_service_event_handler=notify-service-by-stomp</code></pre>
+
+<p>Change <code>mq.example.com</code> to be the hostname of your message broker, and <code>/topic/foo.bar.baz.quux</code> to be the topic or queue that you&#8217;d like notifications to be sent to. Restart Nagios and you should start receiving notifications on that queue or topic.</p>
+
+<p>If you don&#8217;t receive notifications form Nagios very often then a simple way to test that this is working is to attach stompcat &#8211; a <code>cat</code> type tool that uses <span class="caps">STOMP</span> as a source &#8211; to the topic or queue, then send a few test notifications to the same queue by manually running the same command that Nagios would.</p>
+
+<p>Here&#8217;s a simple stompcat tool in case you don&#8217;t have one handy:</p>
+
+<pre><code class="ruby">#! /usr/bin/env ruby
+
+# Run me like this:
+#
+#   ./stompcat.rb mq.example.com /topic/foo.bar.baz.quux
+#
+
+require 'rubygems'
+require 'smqueue'
+
+configuration = {
+  :host => ARGV[0],
+  :name => ARGV[1],
+  :adapter => :StompAdapter
+}
+
+source = SMQueue(configuration)
+source.get do |m|
+  payload = m.body
+  puts ">>> #{payload}"
+end</code></pre>
+
+<p>Here&#8217;s how to send notifications to the queue or topic:</p>
+
+<pre><code>/usr/bin/notify-service-by-stomp.rb mq.example.com \
+  /topic/foo.bar.baz.quux service-host.example.com "SERVICE NAME" \
+  WARNING HARD 86492 6 6</code></pre>
+
+<p>If it&#8217;s working you should get an entry like this showing up where you&#8217;re running the <code>stompcat</code>:</p>
+
+<pre><code class="javascript">{
+  "time_t":1266427384,
+  "state":"WARNING",
+  "state_type":"HARD",
+  "state_time":86492,
+  "attempt":6,
+  "hostname":"service-host.example.com",
+  "max_attempts":6,
+  "service":"SERVICE NAME"
+}</code></pre>
+
+<p>You should be able to change the stompcat example to perform more complex and interesting actions &#8211; looking up clients in a database, sending text messages if an account has enough credit, whatever you fancy. If you come up with something fun, please let me know!</p>

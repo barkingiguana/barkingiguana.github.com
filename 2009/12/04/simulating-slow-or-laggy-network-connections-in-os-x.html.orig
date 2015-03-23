@@ -1,0 +1,15 @@
+<p>A client recently said that their site was loading slowly from remote sites. We got the specification of the network connection used, but I always forget how to do bandwidth limiting and latency simulation on OS X. This is a note for myself so I don't have to go searching again.</p>
+
+<p>Configure a pipe that has the appropriate bandwidth limit and delay.</p>
+<pre><code class="bash">sudo ipfw pipe 1 config bw 16Kbit/s delay 350ms</code></pre>
+
+<p>Attach it to all traffic going to or from port 80.</p>
+<pre><code class="bash">sudo ipfw add 1 pipe 1 src-port 80
+sudo ipfw add 2 pipe 1 dst-port 80</code></pre>
+
+<p>Now traffic coming from or going to port 80 anywhere is limited by the pipe that you specified. Do your testing and once you get frustrated with slow access to the web remove the rules like so:</p>
+<pre><code class="bash">sudo ipfw delete 1
+sudo ipfw delete 2</code></pre>
+
+<p>Finally, delete the now defunct pipe like so:</p>
+<pre><code class="bash">sudo ipfw pipe 1 delete</code></pre>

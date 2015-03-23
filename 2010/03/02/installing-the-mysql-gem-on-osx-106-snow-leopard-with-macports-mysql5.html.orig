@@ -1,0 +1,4 @@
+<p>Took a while to work this command out. Hopefully it can save someone else some time.</p>
+
+<pre><code class="bash">sudo port install mysql5-server
+sudo env ARCHFLAGS="-arch x86_64" gem install mysql -- --with-mysql-config=/opt/local/bin/mysql_config5</code></pre>

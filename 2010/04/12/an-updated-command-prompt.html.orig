@@ -1,0 +1,34 @@
+<p>It's been a while since I <a href="http://barkingiguana.com/2008/11/15/get-the-current-git-branch-in-your-command-prompt">added the current Git branch to my command prompt</a> to better aid my development efforts. Since then I've started working with several versions of Ruby and find myself working more frequently in situations where the exit status of the last command is a useful thing to know. I've updated my prompt to look like this:</p>
+
+<img src="/images/15.jpg" alt="A screen-shot of my command prompt showing username, hostname, exit code of last command, Ruby interpreter information, current working directory and Git information" />
+
+<p>To get this I declare <code class="bash">$PS1</code> like this:</p>
+
+<pre><code class="bash"># Show the exit code of the last command.
+# Idea stolen from <a href="http://twitter.com/mathie">@mathie</a>.
+function last_exit_code() {
+  local code=$?
+  if [ $code = 0 ]; then
+    printf "$1" $code
+  else
+    printf "$2" $code
+  fi
+  return $code
+}
+
+# I only want to see the interpreter in the output if I'm not using MRI.
+function ruby_version() {
+  local i=$(/Users/craig/.rvm/bin/rvm-prompt i)
+  case $i in
+    ruby) printf "$1" $(/Users/craig/.rvm/bin/rvm-prompt $2) ;;
+    *)    printf "$1" $(/Users/craig/.rvm/bin/rvm-prompt $3) ;;
+  esac
+}
+
+# Show lots of info in the __git_ps1 output.
+# Thanks for the info <a href="http://twitter.com/mathie">@mathie</a>.
+export GIT_PS1_SHOWDIRTYSTATE="true"
+export GIT_PS1_SHOWSTASHSTATE="true"
+export GIT_PS1_SHOWUNTRACKEDFILES="true"
+
+export PS1='\[\033[01;32m\]\u@\h\[\033[00m\] $(last_exit_code "\[\033[1;32m\]%s\[\033[00m\]" "\[\033[01;31m\]%s\[\033[00m\]") $(ruby_version "\[\033[01;36m\]%s\[\033[00m\]" "v p" "i v p") \[\033[01;34m\]\W\[\033[00m\]$(__git_ps1 "\[\033[01;33m\](%s)\[\033[00m\]")\$ '</code></pre>

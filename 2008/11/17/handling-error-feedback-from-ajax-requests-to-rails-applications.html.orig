@@ -1,0 +1,60 @@
+<p>Ajax is frequently used to provide a richer user experience. Why then are important error messages rarely handled properly in Ajax enabled applications? Handling errors gracefully and in a way that helps the visitor to solve them adds a really high quality feel to your application. We've got all the necessary machinery, all it takes is a little care and attention.</p>
+
+<pre><code class="ruby">class FoosController < ApplicationController
+  def update
+    @foo = Foo.find(params[:id])
+    respond_to do |format|
+      if @foo.save
+        format.html do
+          flash[:info] = "Your foo has been created."
+          redirect_to @foo
+        end
+        format.js { head :ok }
+      else
+        format.html do
+          flash.now[:warning] = "I could not update the foo."
+          render :action => :edit
+        end
+        format.json do
+          head :unprocessable_entity, :json => @foo.errors.to_json
+        end
+      end
+    end
+  end
+end</code></pre>
+
+<p>Using the above code we get a lovely fallback HTML based behaviour and when we work with Ajax we get to use JSON behaviours. When JSON is requested and something goes wrong we get back an array of arrays that takes the following form.</p>
+
+<pre><code class="javascript">[
+  [ "attribute1", "error1", "error2" ],
+  [ "attribute2", "error3"]
+]</code></pre>
+
+<p>Just think of the awesome things you could do with such rich feedback...</p>
+
+<pre><code class="javascript">new Ajax.Request('/foo.json', {
+  method: 'PUT',
+  parameters: {
+    authenticity_token: window._token,
+    "foo[subject]": $F('foo_subject'),
+    "foo[body]"   : $F('foo_body')
+  },
+  onSuccess: function(transport) {
+    // This is Web 2.0: celebrate with a yellow highlight.
+  },
+  onFailure: function(transport) {
+    var errors = transport.responseJSON;
+    errors.each(function(error) {
+      var attribute = error.shift();
+      var messages = error.join(", ");
+      var errorMessage = attribute + " " + messages;
+      var inputNode = $("foo_" + attribute);
+      if(inputNode) {
+        // Show that something is wrong with this field.
+        inputNode.addClassName("error");
+        // Do something better than an alert box. Alert boxes suck.
+        alert(errorMessage);
+      }
+    });
+  }
+});</code></pre>

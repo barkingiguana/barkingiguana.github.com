@@ -1,0 +1,163 @@
+<p>It's been just over 5 months since I <a href="http://barkingiguana.com/2008/06/28/getting-started-with-couchdb-a-simple-address-book-application">started playing with CouchDB</a>. Until a few days ago I didn't have much time to explore it, but since Christmas I've been playing around with it almost constantly, seeing what it can do and experimenting with it in my favourite language, <a href="http://ruby-lang.org/">Ruby</a>.</p>
+
+<p>Since I hadn't used Ruby to work with CouchDB before I decided to pick up <a href="http://github.com/arunthampi/activecouch/tree/master">ActiveCouch</a>. It's an excellent library, but after playing for a few days I found that it worked with CouchDB in ways that I don't think I would. That could be down to my inexperience with using CouchDB, or it could just be that how you use CouchDB depends on how you think. Either way, I pushed a copy of ActiveCouch onto my server and began hacking at it to make it play the way that I wanted it to.</p>
+
+<h4>One application, one database</h4>
+
+<p>As it stood, ActiveCouch used one database per class. People went into the people database, comments went into the comments database, articles went into the articles database. My approach to using CouchDB is to store all application data in one database and differentiate between the document types by having a <code>doc.type</code> attribute.</p>
+
+<p>ActiveCouch now also installs a set of views that can be used to access just the documents of one type. You should see these in the Futon client after you've run your application once.</p>
+
+<h4>Unknown functionality dropped</h4>
+
+<p>I broke <code>ActiveCouch::Base#find_from_url</code> while I was working. I didn't know what it was for, and I didn't use it in the application I was building, so I dropped it in <code>9982b348c</code>. If you use this functionality please let me know what it's for!</p>
+
+<h4>Syntactic sugar</h4>
+
+<p>One of the goals of ActiveCouch is to act like ActiveRecord, and ActiveRecord provides <code>#all</code> and <code>#first</code>. I like them. ActiveCouch now provides them too.</p>
+
+<h4>New attribute types</h4>
+
+<p>Sometimes there's data that's too simple to merit a class and an association. I've added a new attribute type, <code class="ruby">:array</code>. Simple tags, for example, are a perfect fit for this. The default value of these attributes is an empty array.</p>
+
+<pre><code class="ruby">class Article &lt; ActiveCouch::Base
+  has :title, :which_is =&gt; :text
+  has :tags, :which_is =&gt; :array
+end
+
+article = Article.new :title =&gt; "Sandwiches", :tags =&gt; [ "pickle" ]
+article.tags &lt;&lt; "cheese"
+article.tags # =&gt; [ "pickle", "cheese" ]</code></pre>
+
+<p>I've also added a <code>:datetime</code> attribute type that defaults to <code class="ruby">Time.now</code>.</p>
+
+<h4>Calculated default values</h4>
+
+<p>It's now possible to set a default value which is a calculation to be lazily executed ie it'll be worked out when the instance comes into existence rather than when the class is declared. You can do this be setting the default value to a proc (or anything else that <code class="ruby">responds_to?(:call)</code>).</p>
+
+<pre><code class="ruby">class Egg &lt; ActiveCouch::Base
+  has :hatches_at, :type =&gt; :datetime, :with_default_value =&gt; proc { 3.weeks.from_now }
+end</code></pre>
+
+<p>The instance is yielded into the proc in case you'd like to do any calculations based on that.</p>
+
+<h4>Conversion to native Ruby types</h4>
+
+<p>When you declare a type for a document attribute, ActiveCouch now tries to convert the value from the document into a native Ruby type. For example, if you declared that your class had an attribute called created_at that was a datetime you'd now get an instance of <code>Time</code> when you access that attribute. Previously you'd have got a <code>String</code>.</p>
+
+<pre><code class="ruby">class Person &lt; ActiveCouch::Base
+  has :birthday, :which_is =&gt; :datetime
+end
+
+Person.find(:first).birthday.class # =&gt; Time</code></pre>
+
+<h4>Changes to associations and adding belongs_to</h4>
+
+<p>I've changed the <code class="ruby">has_many</code> and <code class="ruby">has_one</code> associations so that they don't appear in the document that declares them. These associations are declaring that other classes have keys which point at the current class and they a query is needed to fetch them.</p>
+
+<p>To accomodate that change there's a new association, <code class="ruby">belongs_to</code>, which says that the declaring class contains a key which points to an owning class.</p>
+
+<pre><code class="ruby">class Pet &lt; ActiveCouch::Base
+  # This document will have a person_id attribute
+  belongs_to :person
+end
+
+class Person &lt; ActiveCouch::Base
+  # Instances of this class will query the database for doc.type = "pet"
+  # and doc.person_id = self.id
+  has_many :pets
+end</code></pre>
+
+<p>At the moment you have to set the association on the class that <code class="ruby">belongs_to</code>. Setting it on the class that <code class="ruby">has_many</code> won't work.</p>
+
+<pre><code class="ruby"># BAD
+craig.pets &lt;&lt; cat
+
+# GOOD
+cat.person = craig</code></pre>
+
+<h4>Views with multiple keys</h4>
+
+<p>It's now possible to have a view with more than one attribute as a key. Just use <code class="ruby">ActiveCouch::View#with_key</code> more than once and each key you specify will be added to the view.</p>
+
+<h4>Design document with multiple views</h4>
+
+<p>The version of ActiveCouch that I checked out allowed only one view per design document. I think that was a bug since there was some code in there to merge in the existing view. I've fixed that and now design documents can have more than one view.</p>
+
+<h4>Finders have conditions, not params</h4>
+
+<p>It felt a little unnatural typing <code class="ruby">:params =&gt; { ... }</code> when writing custom finders. ActiveRecord asks for <code class="ruby">:conditions</code>, so now ActiveCouch does too.</p>
+
+<pre><code class="ruby">Person.find(:all, :condtions =&gt; { :last_name =&gt; "Smith" })</code></pre>
+
+<h4>Automatic view generation for custom finders</h4>
+
+<p>I don't really want to worry about writing and installing the views for a finder with conditions before I run it. Now, the first time you run a finder with conditions, ActiveCouch will generate and install the appropriate view for you.</p>
+
+<h4>Probably lots more too!</h4>
+
+<p>I've still got to clean up quite a few of my changes, make sure that the test coverage is meaningful enough, and write lots of documentation. I am using my altered version of ActiveCouch for an application so that should improve over time.</p>
+
+<h4>Want?</h4>
+
+<p>You can clone my changes using Git. The repository is available at <code>http://barkingiguana.com/~craig/code/activecouch.git</code>.</p>
+
+<pre><code>git clone http://barkingiguana.com/~craig/code/activecouch.git</code></pre>
+
+<h4>Getting started</h4>
+
+<p>If you don't already have CouchDB setup, do that now. If you use Ubuntu, I wrote a brief article on <a href="http://barkingiguana.com/2008/06/28/installing-couchdb-080-on-ubuntu-804">setting it up</a> there. If you use OS X then install MacPorts and run <code>sudo port install couchdb</code>.</p>
+
+<p>The first thing you'll need to do is configure ActiveCouch to connect to your CouchDB instance. Set <code>site</code> to the URL that your CouchDB instance is listening at, and the database name to something that makes sence for your application.</p>
+
+<pre><code class="ruby">ActiveCouch::Base.class_eval do
+  set_database_name 'blog'
+  site 'http://localhost:5984/'
+end</code></pre>
+
+<p>Now you'll need some classes to work with.</p>
+
+<pre><code class="ruby">class Author &lt; ActiveCouch::Base
+  has :name, :which_is =&gt; :text
+  has :email_address, :which_is =&gt; :text
+  has_many :articles
+end
+
+class Article &lt; ActiveCouch::Base
+  has :title, :which_is =&gt; :text
+  has :status, :which_is =&gt; :text, :with_default_value =&gt; "draft"
+  has :body, :which_is =&gt; :text
+  belongs_to :author
+end</code></pre>
+
+<p><code>has</code> declares an attribute, <code>has_many</code>, <code>has_one</code> and <code>belongs_to</code> work very similar to the way that you're familiar with from ActiveRecord (except they don't have the extreme customisability - the name of the association must reflect the name of the class on the other side of the association).</p>
+
+<p>That's pretty much it. Use your classes however make sense for your application.</p>
+
+<pre><code class="ruby">author = Author.create :name =&gt; "Craig R Webster",
+  :email_address =&gt; "craig@barkingiguana.com"
+
+a = Article.new
+a.title = "Getting started with ActiveCouch"
+a.body =<<-EOF
+  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+  consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+  cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+  proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+EOF
+a.author = author
+a.save
+
+Article.find(:all)
+Author.first
+Article.find(:first, :conditions =&gt; { :status =&gt; "draft" })</code></pre>
+
+<h4>Known Issues</h4>
+
+<p>Not so much a bug as a feature which hasn't yet been implemented. <code class="ruby">ActiveCouch::Base#find</code> doesn't support ordering. It should be possible to add this but I haven't started working on it yet. If you need ordering then a patch would be lovely ;)</p>
+
+<h4>Having problems? Got feedback?</h4>
+
+<p>There are likely to be a bunch of bugs in there still. Bug reports, patches and feedback, as always, would be awesome. Either leave a comment or <a href="http://barkingiguana.com/~craig/contact">get in touch directly</a>.</p>

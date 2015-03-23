@@ -1,0 +1,19 @@
+<p>If you followed my previous post about <a href="http://barkingiguana.com/2008/07/07/high-availability-mysql-on-ubuntu-804">high availability MySQL</a> your application now has one less single point of failure. That's good, but as <a href="http://woss.name/">Graeme</a> <a href="http://barkingiguana.com/2008/07/07/high-availability-mysql-on-ubuntu-804#c000014">points out</a> there's a possibility of data collision if the replication process fails.</p>
+
+<p>If replication has stopped and a query inserts into db-01 while a second query inserts into db-02 then the value of any auto_increment columns will be the same. When you get replication running again this will cause a problem.</p>
+
+<p>To avoid this situation we can use <code>auto-increment-increment</code> and <code>auto-increment-offset</code>. These variables affect the way that MySQL generates the next value in an auto-incrementing series.</p>
+
+<pre><code># On db-01, in /etc/mysql/my.cnf
+auto-increment-increment = 10
+auto-increment-offset = 1</code></pre>
+
+<pre><code># On db-02, in /etc/mysql/my.cnf
+auto-increment-increment = 10
+auto-increment-offset = 2</code></pre>
+
+<p>Restart MySQL on both boxes and you should now be safe from this threat of data collision.</p>
+
+<h4>Love me!</h4>
+
+<p>If you've found this article useful I'd appreciate beer and / or recommendations at <a href="http://www.workingwithrails.com/recommendation/new/person/7241-craig-webster">Working With Rails</a>.</p>

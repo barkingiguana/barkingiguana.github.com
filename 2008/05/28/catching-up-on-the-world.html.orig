@@ -1,0 +1,35 @@
+<p>The last few weeks have been pretty full but I'm finally starting to catch up on the world again - Inbox not zero, but nearly there, Google Reader down to a measly few thousand articles, bills paid, letters written, chickens roasted. Uh. Anyway.</p>
+
+<p><a href="http://woss.name/">Mathie</a> is <a href="http://woss.name/2008/04/17/history-meme/">interested in my history</a>. Here it is.</p>
+
+<p>My iMac, where I do the development for such things as my <a href="http://barkingiguana.com/2008/05/28/xmpp4r-simple-makes-xmpp-in-ruby-uhh-simple">Ruby Jabber thingy</a>.</p>
+<pre><code>  108	cd 
+   69	ls 
+   46	ssh 
+   31	ruby 
+   28	./jabber.rb
+   22	tail 
+   20	svn 
+   19	find 
+   19	dig 
+   18	cap</code></pre>
+
+<p>As you can see, a lot of it is looking at logs, running Ruby scripts or deploying applications.</p>
+
+<p>The <a href="http://code.xeriom.net/">server</a> that I've most recently been working on.</p>
+<pre><code>  181	sudo 
+   82	ls 
+   52	tail 
+   39	cd 
+   33	ps 
+   16	cat 
+   13	god 
+   11	top 
+   10	nano 
+    8	nohup</code></pre>
+
+<p>It seems that mainly here I run stuff as root using <code>sudo</code> and examine logs and processes.</p>
+
+<p>Those two machines aren't hugely exciting, and unfortunately I can't show my work laptop because that would (a) require me to hunt down my backpack and power up the computer, and (b) provide meaningful results that I'm not sure I can share.</p>
+
+<p><a href="http://semantici.st/">John</a> and <a href="http://blog.timperrett.com/">Tim</a>, what dark secrets lurk in your histories?</p>

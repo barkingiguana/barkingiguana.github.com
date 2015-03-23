@@ -1,0 +1,13 @@
+<p>Sometimes a function behaves differently based on it's inputs. Consider, for example, calculating the absolute value of a number. If the number is less than 0 then the result is <code>-1 * INPUT</code>. If the number is greater than or equal to zero then the number is the same as the input.</p>
+
+<div class="text-align: center"><img src="/images/12.png" alt="ABS(X) = { X &lt; 0: -1 times X, X &gt;= 0: X }" /></div>
+
+<p>This can be accomplished in Erlang using predicate guards: conditions on the inputs which are defined just after the argument list of a predicate.</p>
+
+<pre><code class="erlang">-module(maths).
+-export([abs/1]).
+
+abs(X) when X < 0 -> -1 * X;
+abs(X) -> X.</code></pre>
+
+<p>Of course Erlang does already provide a <code>math</code> module which exports <code>abs</code>. This is just a simple example of how to implement guards. It's also the reason that my module is called <code>maths</code> instead of <code>math</code>. Ick.</p>

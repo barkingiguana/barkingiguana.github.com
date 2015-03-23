@@ -1,0 +1,13 @@
+<p>At <a href="http://xeriom.net/">Xeriom Networks</a> we provide virtual machines - virtualised servers - for clients to run their applications. It's fairly frequent that a client starts off (rather sensibly) with the smallest size of virtual machine that meets their needs and upgrades to larger virtual machines as their requirements grow. Unfortunately, we can only fit so much disk space in each physical server, so as clients upgrade their virtual machines we sometimes need to move their <a href="http://en.wikipedia.org/wiki/Logical_Volume_Manager_(Linux)">LVM</a> volumes to another physical server which has enough free space to host the expanded disk image.</p>
+
+<p>A fairly easy way to do this would be to use <a href="http://en.wikipedia.org/wiki/Dd_(Unix)">dd</a> to copy the entire volume on to a file on disk, copy that file across the network using <a href="http://en.wikipedia.org/wiki/Secure_copy">SCP</a>, then use dd on the remote machine to copy that file into a volume on the new server. The problem, however, is that some of the volumes are hundreds of gigabytes in size, and the disk on each server don't always have enough space to store the intermediate file. (It also feels rather messy using an intermediate file, but we'll leave the aesthetics of doing that alone just now).</p>
+
+<p>After some investigation I discovered that it's possible to stream the output of dd directly into ssh, across the network, and into a dd process on the far end, obviating the need for an intermediate file.</p>
+
+<p>There are two steps to this process:</p>
+<ol>
+  <li>On the destination host, create a partition that's large enough for the volume: <code>sudo lvcreate -L 10G -n destination-lvm-volme-name</code></li>
+  <li>From the source host, stream the volume across the network: <code>sudo dd if=/dev/source-vg-name/source-volume-name | ssh -c arcfour -l root host-b 'dd of=/dev/destination-vg-name/destination-lvm-volume-name'</code>
+</ol>
+
+<p>Much easier than I was expecting. It can take a while to move large files, and the main disadvantage to this method compared to using SCP is that you don't get a nice progress bar so you're largely left guessing when the transfer is going to end. If you know how to create a progress bar for transfers like this, I'd love to hear from you - please leave a comment.</p>
