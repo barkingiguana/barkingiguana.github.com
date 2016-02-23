@@ -30,7 +30,7 @@ fi
 
 # Check we're setting up the computer from fresh
 DEFAULT_GNUPGHOME="$HOME/.gnupg"
-if [ -d "${DEFAULT_GNUPGHOME}"" ]; then"
+if [ -d "${DEFAULT_GNUPGHOME}" ]; then
   echo "$HOSTNAME appears to be already set up for GnuPG"
   echo "If you'd like me to set it up again, delete ${DEFAULT_GNUPGHOME}"
   exit 3
