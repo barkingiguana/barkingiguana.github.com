@@ -1,6 +1,6 @@
 url: http://barkingiguana.com
 permalink: pretty
-highlighter: pygments
+highlighter: rouge
 markdown: kramdown
 safe: true
 lsi: false
