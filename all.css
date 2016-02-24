@@ -104,8 +104,6 @@ body { padding-top: 60px ;}
 .post .meta .author:before { content: '-- Written by '; font-weight: normal; }
 .post .meta .published:before { content: ' on '; font-weight: normal; }
 
-.post .security, .post .comments { margin-top: 1em; }
-
 .post .related { text-align: center; margin-top: 1em; }
 
 .post .content .foreword { background-color: #eee; font-style: italic; }
@@ -120,7 +118,8 @@ body { padding-top: 60px ;}
 .post .content .update { background-color: #eee; }
 .post .content .update .when { font-style: italic; }
 
-p.security, p.comments { text-align: center; }
+.post .security, .post .comments { margin-top: 1em; text-align: center; }
 footer { text-align: right; margin-top: 1em; }
 
 code { font-family: monospace; white-space: pre; }
+.security code { text-align: left; }

@@ -1,6 +1,9 @@
 ---
 layout: base
 ---
+{% capture verify_base_url %}{{ site.url }}{{ page.path | replace_first: '_posts', '' | replace_first: '-', '/' | replace_first: '-', '/' | replace_first: '-', '/' | append: '.orig'  }}{% endcapture %}
+{% capture verify_file_name %}{% assign path_parts = page.path |split: '-' %}{% for part in path_parts offset:3 %}{% unless forloop.index0 == 0 %}-{% endunless %}{{part}}{% endfor %}.orig{% endcapture %}
+
 <div class="post">
   <div class="page-header">
     <h1>{{ page.title }}</h1>
@@ -17,14 +20,12 @@ layout: base
     </dl>
   </div>
   <div>
-    <p class="alert alert-info comments" id="comments">Disagree? Found a typo? <a href="https://github.com/craigw/craigw.github.com/fork">Fork the repo</a> and show me how wrong I am.<br />Got a question? If you'd like to have a conversation about this post, <a href="mailto:craig@barkingiguana.com">email craig@barkingiguana.com</a>. I don't bite.</p>
-    <p class="alert alert-warning security" id="security">You can verify that I've written this post by following the <a href="/verification">verification instructions</a>:<br />
-    {% capture verify_base_url %}{{ site.url }}{{ page.path | replace_first: '_posts', '' | replace_first: '-', '/' | replace_first: '-', '/' | replace_first: '-', '/' | append: '.orig'  }}{% endcapture %}
-    {% capture verify_file_name %}{% assign path_parts = page.path |split: '-' %}{% for part in path_parts offset:3 %}{% unless forloop.index0 == 0 %}-{% endunless %}{{part}}{% endfor %}.orig{% endcapture %}
-    <pre><code>curl -O {{ verify_base_url }}
+    <div class="alert alert-info comments" id="comments">Disagree? Found a typo? Got a question?<br />If you'd like to have a conversation about this post, <a href="mailto:craig@barkingiguana.com">email craig@barkingiguana.com</a>. I don't bite.</div>
+    <div class="alert alert-warning security" id="security">You can verify that I've written this post by following the <a href="/verification">verification instructions</a>:
+      <pre><code>curl -O {{ verify_base_url }}
 curl -O {{ verify_base_url | append: '.asc' }}
 gpg --verify {{ verify_file_name }}{.asc,}</code></pre>
-    </p>
+    </div>
   </div>
   <div class="related btn-group">
     {% if page.previous.url %}
