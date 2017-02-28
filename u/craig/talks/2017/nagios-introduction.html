@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Nagios: A Very Brief Introduction</title>
+  <!-- metadata -->
+  <meta name="generator" content="Craig R Webster" />
+  <meta name="version" content="S5 1.1" />
+  <meta name="presdate" content="20170228" />
+  <meta name="author" content="Craig R Webster" />
+  <meta name="company" content="Barking Iguana Ltd" />
+  <!-- configuration parameters -->
+  <meta name="defaultView" content="slideshow" />
+  <meta name="controlVis" content="hidden" />
+  <!-- style sheet links -->
+  <link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+  <link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+  <link rel="stylesheet" href="../ui/default/print.css" type="text/css" media="print" id="slidePrint" />
+  <link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+  <!-- S5 JS -->
+  <script src="../ui/default/slides.js" type="text/javascript"></script>
+  <script src="../ui/default/tracker.js" type="text/javascript" defer="defer"></script>
+</head>
+<body>
+  <div class="layout">
+    <div id="controls"><!-- DO NOT EDIT --></div>
+    <div id="currentSlide"><!-- DO NOT EDIT --></div>
+    <div id="header"></div>
+    <div id="footer">
+      <h1>Nagios</h1>
+      <h2>A Very Brief Introduction</h2>
+    </div>
+  </div>
+
+  <div class="presentation">
+    <div class="slide">
+      <h1>Nagios</h1>
+      <h2>A Very Brief Introduction</h2>
+      <h3>Craig R Webster</h3>
+      <h4>DevOps Consultant, Barking Iguana Ltd.</h4>
+    </div>
+
+    <div class="slide">
+      <h1>This talk</h1>
+      <ul>
+        <li>What is Nagios?</li>
+        <li>Configuring Nagios
+          <ul>
+            <li>Hosts &amp; Hostgroups</li>
+            <li>Services &amp; Servicegroups</li>
+            <li>Custom Checks</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <div class="slide">
+      <h1>What is Nagios?</h1>
+      <ul>
+        <li>A monitoring system</li>
+        <li>Periodically checks if hosts are up</li>
+        <li>Checks services on those hosts too</li>
+        <li>Bunch of predefined checks</li>
+        <li>Easy to write custom checks</li>
+      </ul>
+      <div class="handout">
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Configuring Nagios</h1>
+      <ul>
+        <li>Structured text files</li>
+        <li>Write the files, reload Nagios</li>
+      </ul>
+      <div class="handout">
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Configuring Nagios: Hosts</h1>
+      <pre><code>define host {
+  host_name     rpi-001
+  address       192.168.0.101
+}</code></pre>
+      <div class="handout">
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Configuring Nagios: Host Groups</h1>
+      <pre><code>define hostgroup {
+  hostgroup_name rpis
+  alias Raspberry Pi's
+}
+
+define host {
+  host_name     rpi-001
+  hostgroups    rpis
+  address       192.168.0.101
+}</code></pre>
+      <div class="handout">
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Configuring Nagios: Services</h1>
+      <pre><code>define service {
+  hostgroup_name        rpis
+  service_description	SSH
+  check_command		check_ssh
+}</code></pre>
+      <div class="handout">
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Configuring Nagios: Service Groups</h1>
+      <pre><code>define servicegroup {
+  servicegroup_name	SSH
+  alias			SSH Access
+}
+
+define service {
+  hostgroup_name        rpis
+  service_description	SSH
+  check_command		check_ssh
+  servicegroups         SSH
+}</code></pre>
+      <div class="handout">
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Configuring Nagios: Custom Checks</h1>
+      <ul>
+         <li>Any executable that outputs a status line and exit code</li>
+	 <li><q>OKAY: Service is fine!</q> (exit code = 0)</li>
+	 <li><q>WARNING: Service is approaching an issue!</q> (exit code = 1)</li>
+	 <li><q>CRITICAL: Service has breached a threshold!</q> (exit code = 2)</li>
+	 <li><q>UNKNOWN: I couldn't check this service!</q> (exit code = 3)</li>
+         <li>Status line can be anything we want, exit codes must match above</li>
+      </ul>
+      <div class="handout">
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Configuring Nagios: Custom Checks</h1>
+      <pre><code>#!/bin/bash
+COUNT=$(who --count | grep -Eo '# users=[0-9]+' | cut -f 2 -d =)
+if [[ $COUNT -gt 0 ]]; then
+  echo "CRITICAL: $COUNT users are logged in!"
+  exit 2
+else
+  echo "OKAY: no users logged in
+  exit 0
+fi</pre></code>
+      <div class="handout">
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Configuring Nagios: Custom Checks</h1>
+      <pre><code>define command {
+  command_name    check_users
+  command_line    /usr/local/nagios/libexec/check_by_ssh --check check_users --host $HOSTADDRESS$
+}
+
+define service {
+  hostgroup_name        rpis
+  service_description   USERS
+  check_command         check_users
+}</pre></code>
+      <div class="handout">
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Questions and contact details</h1>
+      <p>Any questions?</p>
+      <dl>
+        <dt>Email me</dt><dd><a href="mailto:craig@barkingiguana.com">craig@barkingiguana.com</a></dd>
+        <dt>My blog</dt><dd><a href="http://barkingiguana.com/">http://barkingiguana.com/</a></dd>
+        <dt>These slides</dt><dd><a href="http://barkingiguana.com/u/craig/talks/2017/nagios-introduction">http://barkingiguana.com/u/craig/talks/2017/nagios-introduction</a></dd>
+        <div class="handout">
+        </div>
+      </div>
+    </div>
+
+    <!--
+      <div class="slide">
+        <h1>[slide title]</h1>
+        <ul>
+          <li>[point one]</li>
+          <li>[point two]</li>
+          <li>[point three]</li>
+          <li>[point four]</li>
+          <li>[point five]</li>
+        </ul>
+        <div class="handout">
+          [any material that should appear in print but not on the slide]
+        </div>
+      </div>
+    -->
+  </div>
+</body>
+</html>
