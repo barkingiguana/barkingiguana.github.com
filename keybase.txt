@@ -1,0 +1,54 @@
+==================================================================
+https://keybase.io/craigwebster
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://barkingiguana.com
+  * I am craigwebster (https://keybase.io/craigwebster) on keybase.
+  * I have a public key ASBxJ45L_zTKY5jqcBAz0r97yqTxpBSg1i0ty5_8D7nwkwo
+
+To do so, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "eldest_kid": "01206d6c91105f5baea80924acba663041558b1522bcc961475b045753d94b6ada350a",
+            "host": "keybase.io",
+            "kid": "012071278e4bff34ca6398ea701033d2bf7bcaa4f1a414a0d62d2dcb9ffc0fb9f0930a",
+            "uid": "5a489bb9d15204959944a97c8d20b319",
+            "username": "craigwebster"
+        },
+        "service": {
+            "hostname": "barkingiguana.com",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "client": {
+        "name": "keybase.io go client",
+        "version": "1.0.23"
+    },
+    "ctime": 1496474824,
+    "expire_in": 504576000,
+    "merkle_root": {
+        "ctime": 1496474630,
+        "hash": "2008cbd9033bbe39d17fca6f82cf64062b4a7f38a1e8d00b72549a83f9b1908dfc902edd3ecd9ffef9df02f6109f770abbc02d39c5f7ea15e68880687509c4e4",
+        "seqno": 1139720
+    },
+    "prev": "be17a04992989f91327e493fdda0136a1a5dd08e7d01c48263b2f1487f327056",
+    "seqno": 15,
+    "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgcSeOS/80ymOY6nAQM9K/e8qk8aQUoNYtLcuf/A+58JMKp3BheWxvYWTFAv57ImJvZHkiOnsia2V5Ijp7ImVsZGVzdF9raWQiOiIwMTIwNmQ2YzkxMTA1ZjViYWVhODA5MjRhY2JhNjYzMDQxNTU4YjE1MjJiY2M5NjE0NzViMDQ1NzUzZDk0YjZhZGEzNTBhIiwiaG9zdCI6ImtleWJhc2UuaW8iLCJraWQiOiIwMTIwNzEyNzhlNGJmZjM0Y2E2Mzk4ZWE3MDEwMzNkMmJmN2JjYWE0ZjFhNDE0YTBkNjJkMmRjYjlmZmMwZmI5ZjA5MzBhIiwidWlkIjoiNWE0ODliYjlkMTUyMDQ5NTk5NDRhOTdjOGQyMGIzMTkiLCJ1c2VybmFtZSI6ImNyYWlnd2Vic3RlciJ9LCJzZXJ2aWNlIjp7Imhvc3RuYW1lIjoiYmFya2luZ2lndWFuYS5jb20iLCJwcm90b2NvbCI6Imh0dHA6In0sInR5cGUiOiJ3ZWJfc2VydmljZV9iaW5kaW5nIiwidmVyc2lvbiI6MX0sImNsaWVudCI6eyJuYW1lIjoia2V5YmFzZS5pbyBnbyBjbGllbnQiLCJ2ZXJzaW9uIjoiMS4wLjIzIn0sImN0aW1lIjoxNDk2NDc0ODI0LCJleHBpcmVfaW4iOjUwNDU3NjAwMCwibWVya2xlX3Jvb3QiOnsiY3RpbWUiOjE0OTY0NzQ2MzAsImhhc2giOiIyMDA4Y2JkOTAzM2JiZTM5ZDE3ZmNhNmY4MmNmNjQwNjJiNGE3ZjM4YTFlOGQwMGI3MjU0OWE4M2Y5YjE5MDhkZmM5MDJlZGQzZWNkOWZmZWY5ZGYwMmY2MTA5Zjc3MGFiYmMwMmQzOWM1ZjdlYTE1ZTY4ODgwNjg3NTA5YzRlNCIsInNlcW5vIjoxMTM5NzIwfSwicHJldiI6ImJlMTdhMDQ5OTI5ODlmOTEzMjdlNDkzZmRkYTAxMzZhMWE1ZGQwOGU3ZDAxYzQ4MjYzYjJmMTQ4N2YzMjcwNTYiLCJzZXFubyI6MTUsInRhZyI6InNpZ25hdHVyZSJ9o3NpZ8RAr43WlvIMW6wmf/cgpuJ67+BsOxvCQi+1zUIVbU0FFtH7tBdn8yeSc6S48BeNh/sK7XUEFgi3ygAHWK8w4I71AahzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEIF1gj0cWTs8OXKcYKj/zAUv8ykwVWopulhLq6Od5tbiJo3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/craigwebster
+
+==================================================================
