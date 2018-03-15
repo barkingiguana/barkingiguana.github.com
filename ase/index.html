@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Barking Iguana - App Service Engine Cost Estimator</title>
+    <meta http-equiv="Content-Language" content="English" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="Robots" content="index,follow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Tangle -->
+    <script type="text/javascript" src="Tangle.js"></script>
+
+    <!-- TangleKit (optional) -->
+    <link rel="stylesheet" href="TangleKit/TangleKit.css" type="text/css">
+    <script type="text/javascript" src="TangleKit/mootools.js"></script>
+    <script type="text/javascript" src="TangleKit/sprintf.js"></script>
+    <script type="text/javascript" src="TangleKit/BVTouchable.js"></script>
+    <script type="text/javascript" src="TangleKit/TangleKit.js"></script>
+    <script type="text/javascript" src="./index.js"></script>
+    <link rel="stylesheet" type="text/css" href="../site.css" />
+    <link rel="stylesheet" type="text/css" href="./index.css" />
+  </head>
+  <body onload="javascript:onLoad()">
+    <header class="navbar navbar-fixed-top">
+      <nav class="navbar-inner">
+	<div class="container">
+          <a href="/" class="brand">Barking Iguana</a>
+	</div>
+      </nav>
+    </header>
+    <div id="main" role="main">
+      <div class="container">
+	<div class="content">
+	  <div class="page">
+  <div id="calculator">
+<p>Let's say we have <span data-var="apiCount" class="TKAdjustableNumber" data-min="1" data-max="10000"></span> APIs.</p>
+
+<p>Further, let's assume <span data-var="ramPerApi" class="TKAdjustableNumber" data-min="64" data-max="14336" data-step="64"></span>Mb RAM per API, that we can survive on <span data-var="cpuPerApi" class="TKAdjustableNumber" data-min="0.01" data-max="4" data-step="0.01"></span> CPUs per instance per API, that we’re not network bound, and that we’re doing blue/green deployments, we can fit at most <span data-var="apiPerInstance"></span> APIs into each I<span  data-var="instanceSize" class="TKAdjustableNumber" data-min="1" data-max="3"></span> size worker. Assuming the APIs will have exactly <span data-var="instancesPerApi" class="TKAdjustableNumber"></span> instances allocated, and won’t scale beyond that.</p>
+
+<p><span data-var="instancesPerApi"></span> instances per API means <span data-var="workerPairs"></span> worker pairs per ASE (which has up to <span data-var="workersPerAse" class="TKAdjustableNumber" data-min="1" data-max="1000"></span> worker max). That means we can fit up to <span data-var="apiPerAse"></span> APIs per ASE.</p>
+
+<p>We have dev, stage, and prod environments which will need separate ASEs, and each ASE has a base cost of $<span  data-var="aseMonthlyBaseCost" class="TKAdjustableNumber" data-min="10" data-max="10000"></span>/month so that’s $<span data-var="aseBaseCostPerMonthPerApiSet"></span>/month.</p>
+
+<p>Base monthly cost = (<span  data-var="aseMonthlyBaseCost"></span> * ((<span data-var="apiCount"></span> | <span  data-var="apiPerAse"></span>) + 1)) * 3 = $<span data-var="aseBaseCostPerMonth"></span>/month.</p>
+
+<p>We also pay for the instances, at something like $<span data-var="instanceCostPerHour" data-min="0.01" data-max="10.00" data-step="0.01"></span>/hour. Let’s say there are <span data-var="hoursPerMonth" class="TKAdjustableNumber" data-min="600" data-max="900"></span> hours in a month. Then each instance costs $<span data-var="instanceCostPerMonth"></span>/month. Each block of <span data-var="apiPerInstance"></span> APIs needs <span data-var="instancesPerApi"></span> of these, in each of the three environments.</p>
+
+<p>Monthly instance cost = (<span data-var="instanceCostPerMonth"></span> * ((<span data-var="apiCount"></span> | <span data-var="apiPerInstance"></span>) + 1) * 2 * 3 = $<span data-var="monthlyInstanceCostPerApiSet"></span>/month.</p>
+
+<p>Total cost = $<span data-var="totalCost"></span>/month, or $<span data-var="apiCostPerMonth"></span>/api/month</p>
+
+<p><strong>This does not take into account slots for blue/green deploment, which will make it more expensive!</strong></p>
+  </div>
+</div>
+
+	  <footer class="muted">
+	    Copyright &copy; 2018 Craig R Webster &lt;<a href="mailto:craig@barkingiguana.com">craig@barkingiguana.com</a>&gt;
+	  </footer>
+	</div>
+      </div> <!--! end of .container -->
+    </div> <!--! end of #main -->
+    <script type="text/javascript">
+      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+      var pageTracker = _gat._getTracker("UA-1576507-2");
+      pageTracker._trackPageview();
+    </script>
+  </body>
+</html>
