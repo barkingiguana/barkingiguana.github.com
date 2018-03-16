@@ -2,10 +2,10 @@ function onLoad() {
   var rootElement = document.getElementById("calculator")
   var model = {
     initialize: function () {
-      this.apiCount = 12
+      this.apiCount = 25
       this.instancesPerApi = 2
-      this.ramPerApi = 2048
-      this.cpuPerApi = 0.57
+      this.ramPerApi = 4096
+      this.cpuPerApi = 0.8
       this.instanceSize = 3
       this.workersPerAse = 100
       this.aseHourlyBaseCost = 1.43
