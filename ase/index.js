@@ -8,9 +8,9 @@ function onLoad() {
       this.cpuPerApi = 0.57
       this.instanceSize = 3
       this.workersPerAse = 100
-      this.aseMonthlyBaseCost = 1300
-      this.instanceCostPerHour = 0.55
-      this.hoursPerMonth = 730
+      this.aseHourlyBaseCost = 1.43
+      this.instanceCostPerHour = 1.6
+      this.hoursPerMonth = 731
     },
     update: function () {
       this.apiPerInstance = Math.min(
@@ -20,6 +20,7 @@ function onLoad() {
       this.aseBaseCostPerMonthPerApiSet = 3 * this.aseMonthlyBaseCost
       this.workerPairs = Math.floor(this.workersPerAse / this.instancesPerApi)
       this.apiPerAse = this.workerPairs * this.apiPerInstance
+      this.aseMonthlyBaseCost = Math.floor(this.aseHourlyBaseCost * this.hoursPerMonth * 100) / 100
       this.aseBaseCostPerMonth = (this.aseMonthlyBaseCost * (Math.floor(this.apiCount / this.apiPerAse) + 1)) * 3
       this.instanceCostPerMonth = Math.floor(this.instanceCostPerHour * this.hoursPerMonth * 100) / 100
       this.monthlyInstanceCostPerApiSet = Math.floor((this.instanceCostPerMonth * (Math.floor(this.apiCount / this.apiPerInstance) + 1) * 2 * 3) * 100) / 100
