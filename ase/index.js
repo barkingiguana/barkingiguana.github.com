@@ -17,7 +17,6 @@ function onLoad() {
         Math.floor(this.instanceRam() / this.ramPerApi),
         Math.floor(this.instanceCpu() / this.cpuPerApi)
       )
-      this.aseBaseCostPerMonthPerApiSet = 3 * this.aseMonthlyBaseCost
       this.workerPairs = Math.floor(this.workersPerAse / this.instancesPerApi)
       this.apiPerAse = this.workerPairs * this.apiPerInstance
       this.aseMonthlyBaseCost = Math.floor(this.aseHourlyBaseCost * this.hoursPerMonth * 100) / 100
