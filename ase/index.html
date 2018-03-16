@@ -38,7 +38,7 @@
 
 <p><span data-var="instancesPerApi"></span> instances per API means <span data-var="workerPairs"></span> worker pairs per ASE (which has up to <span data-var="workersPerAse" class="TKAdjustableNumber" data-min="1" data-max="1000"></span> worker max). Assuming the APIs will have exactly <span data-var="instancesPerApi" class="TKAdjustableNumber"></span> instances allocated, and won’t scale beyond those, that means we can fit up to <span data-var="apiPerAse"></span> APIs per ASE.</p>
 
-<p>We have dev, stage, and prod environments which will need separate ASEs, and each ASE has a base cost of $<span data-var="aseHourlyBaseCost" class="TKAdjustableNumber" data-min="0.01" data-max="100" data-step="0.01"></span>/hour so that’s $<span data-var="aseBaseCostPerMonthPerApiSet"></span>/month.</p>
+<p>We have dev, stage, and prod environments which will need separate ASEs, and each ASE has a base cost of $<span data-var="aseHourlyBaseCost" class="TKAdjustableNumber" data-min="0.01" data-max="100" data-step="0.01"></span>/hour.</p>
 
 <p><strong>Monthly cost for ASE's = (<span data-var="aseMonthlyBaseCost"></span> * ((<span data-var="apiCount"></span> | <span data-var="apiPerAse"></span>) + 1)) * 3 = $<span data-var="aseBaseCostPerMonth"></span>/month.</strong></p>
 
