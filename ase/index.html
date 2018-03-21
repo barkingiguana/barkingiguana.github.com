@@ -34,21 +34,106 @@
   <div id="calculator">
 <p>Let's say we have <span data-var="apiCount" class="TKAdjustableNumber" data-min="1" data-max="10000"></span> APIs.</p>
 
-<p>Further, let's assume <span data-var="ramPerApi" class="TKAdjustableNumber" data-min="64" data-max="14336" data-step="64"></span>Mb RAM per API, that we can survive on <span data-var="cpuPerApi" class="TKAdjustableNumber" data-min="0.01" data-max="4" data-step="0.01"></span> CPUs per instance per API, that we’re not network bound, and that we’re not doing blue/green deployments, we can fit at most <span data-var="apiPerInstance"></span> APIs into each I<span  data-var="instanceSize" class="TKAdjustableNumber" data-min="1" data-max="3"></span> size worker.</p>
+<p>Further, let's assume <span data-var="ramPerApi" class="TKAdjustableNumber" data-min="64" data-max="14336" data-step="64"></span>Mb RAM per API, that we can survive on <span data-var="cpuPerApi" class="TKAdjustableNumber" data-min="0.01" data-max="4" data-step="0.01"></span> CPUs per instance per API, that we’re not network bound, and that we’re not doing blue/green deployments.<.p>
 
-<p>We'll say the APIs will have exactly <span data-var="instancesPerApi" class="TKAdjustableNumber"></span> instances allocated, and won’t scale beyond those. <span data-var="instancesPerApi"></span> instances per API means <span data-var="workerPairs"></span> worker pairs per ASE (which has up to <span data-var="workersPerAse" class="TKAdjustableNumber" data-min="1" data-max="1000"></span> worker max), that means we can fit up to <span data-var="apiPerAse"></span> APIs per ASE.</p>
+<p>ASE's in the location we want cost <span data-var="aseHourlyBaseCost"></span>. We'll be running HA in production, and we also have stage and dev environments.</p>
 
-<p>We have dev, stage, and prod environments which will need separate ASEs - prod will need 2 so we can do H.A. goodness. Each ASE has a base cost of $<span data-var="aseHourlyBaseCost" class="TKAdjustableNumber" data-min="0.01" data-max="100" data-step="0.01"></span>/hour.</p>
+<p>We'll say the APIs will have exactly <span data-var="instancesPerApi" class="TKAdjustableNumber"></span> instances allocated, and won’t scale beyond those. <span data-var="instancesPerApi"></span> instances per API means <span data-var="workerPairs"></span> worker pairs per ASE (which has up to <span data-var="workersPerAse" class="TKAdjustableNumber" data-min="1" data-max="1000"></span> worker max).</p>
 
-<p><strong>Monthly cost for ASE's = (<span data-var="aseMonthlyBaseCost"></span> * ((<span data-var="apiCount"></span> | <span data-var="apiPerAse"></span>) + 1)) * 4 = $<span data-var="aseBaseCostPerMonth"></span>/month.</strong></p>
+<p>There are <span data-min="600" data-max="800" data-var="hoursPerMonth" class="TKAdjustableNumber"></span> hours in a month.</p>
 
-<p>We also pay for the instances, at $<span data-var="instanceCostPerHour"></span>/hour. Let’s say there are <span data-var="hoursPerMonth" class="TKAdjustableNumber" data-min="600" data-max="900"></span> hours in a month. Then each instance costs $<span data-var="instanceCostPerMonth"></span>/month. Each block of <span data-var="apiPerInstance"></span> APIs needs <span data-var="instancesPerApi"></span> of these, in each of the three environments.</p>
-
-<p><strong>Monthly cost for instances = (<span data-var="instanceCostPerMonth"></span> * ((<span data-var="apiCount"></span> | <span data-var="apiPerInstance"></span>) + 1) * 2 * 3 = $<span data-var="monthlyInstanceCostPerApiSet"></span>/month.</strong></p>
-
-<p><strong><em>Monthly total cost = $<span data-var="totalCost"></span>/month, or $<span data-var="apiCostPerMonth"></span>/api/month</em></strong></p>
-
-<p><strong>This does not take into account slots for blue/green deploment, which will make it more expensive!</strong></p>
+    <table>
+      <tr>
+        <th></th>
+        <th>I1</th>
+        <th>I2</th>
+        <th>I3</th>
+      </tr>
+      <tr>
+        <td>RAM (Mb)</td>
+        <td data-var="i1InstanceRam"></td>
+        <td data-var="i2InstanceRam"></td>
+        <td data-var="i3InstanceRam"></td>
+      </tr>
+      <tr>
+        <td>CPU</td>
+        <td data-var="i1InstanceCpu"></td>
+        <td data-var="i2InstanceCpu"></td>
+        <td data-var="i3InstanceCpu"></td>
+      </tr>
+      <tr>
+        <td>APIs per instance</td>
+        <td data-var="i1InstanceApis"></td>
+        <td data-var="i2InstanceApis"></td>
+        <td data-var="i3InstanceApis"></td>
+      </tr>
+      <tr>
+        <td>APIs per ASE</td>
+        <td data-var="i1AseApis"></td>
+        <td data-var="i2AseApis"></td>
+        <td data-var="i3AseApis"></td>
+      </tr>
+      <tr>
+        <td>ASE's needed for all APIs</td>
+        <td data-var="i1AseRequiredPerEnvironment"></td>
+        <td data-var="i2AseRequiredPerEnvironment"></td>
+        <td data-var="i3AseRequiredPerEnvironment"></td>
+      </tr>
+      <tr>
+        <td>ASE's needed for all environments</td>
+        <td data-var="i1AseRequired"></td>
+        <td data-var="i2AseRequired"></td>
+        <td data-var="i3AseRequired"></td>
+      </tr>
+      <tr class="subtotal">
+        <td><strong>ASE monthly base cost</strong></td>
+        <td data-var="i1AseMonthlyBaseCost"></td>
+        <td data-var="i2AseMonthlyBaseCost"></td>
+        <td data-var="i3AseMonthlyBaseCost"></td>
+      </tr>
+      <tr>
+        <td>Backend instances needed</td>
+        <td data-var="i1BackendRequired"></td>
+        <td data-var="i2BackendRequired"></td>
+        <td data-var="i3BackendRequired"></td>
+      </tr>
+      <tr>
+        <td>Frontend instances required<br />(first one included in the ASE base cost)</td>
+        <td data-var="i1FrontendRequired"></td>
+        <td data-var="i2FrontendRequired"></td>
+        <td data-var="i3FrontendRequired"></td>
+      </tr>
+      <tr>
+        <td>Instance cost per hour</td>
+        <td data-var="i1InstanceCostPerHour"></td>
+        <td data-var="i2InstanceCostPerHour"></td>
+        <td data-var="i3InstanceCostPerHour"></td>
+      </tr>
+      <tr>
+        <td>Total billable instances</td>
+        <td data-var="i1BillableInstances"></td>
+        <td data-var="i2BillableInstances"></td>
+        <td data-var="i3BillableInstances"></td>
+      </tr>
+      <tr class="subtotal">
+        <td><strong>Instance cost per month</strong></td>
+        <td data-var="i1InstanceCostPerMonth">
+        <td data-var="i2InstanceCostPerMonth">
+        <td data-var="i3InstanceCostPerMonth">
+      </tr>
+      <tr class="total">
+        <td><strong><em>Total cost per month</em></strong></td>
+        <td data-var="i1TotalCostPerMonth"></td>
+        <td data-var="i2TotalCostPerMonth"></td>
+        <td data-var="i3TotalCostPerMonth"></td>
+      </tr>
+      <tr class="subtotal">
+        <td>Cost per API per month</td>
+        <td data-var="i1ApiCostPerMonth"></td>
+        <td data-var="i2ApiCostPerMonth"></td>
+        <td data-var="i3ApiCostPerMonth"></td>
+      </tr>
+    </table>
   </div>
 </div>
 

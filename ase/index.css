@@ -48,3 +48,16 @@
 	font: 9px "Helvetica-Neue", "Arial", sans-serif;
 }
 
+table th, table td {
+  border: 1px dotted black;
+  border-collapse: collapse;
+  padding: 0.5em;
+}
+
+table td {
+  width: 15%;
+  text-align: right;
+}
+
+.subtotal { background-color: #ddd }
+.total { background-color: #fdd }
