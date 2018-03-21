@@ -28,7 +28,8 @@ function onLoad() {
       this.apiCostPerMonth = Math.floor((this.totalCost / this.apiCount) * 100) / 100
     },
     instanceCost: function () {
-      return [0.4, 0.8, 1.6][this.instanceSize - 1]
+      // https://azure.microsoft.com/en-gb/pricing/details/app-service/ - prices for Isolated in Australia East
+      return [ 0.637, 1.274, 2.548 ][this.instanceSize - 1]
     },
     instanceRam: function () {
       return [ 3.5, 7, 14 ][this.instanceSize - 1] * 1024
