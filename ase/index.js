@@ -8,7 +8,7 @@ function onLoad() {
       this.cpuPerApi = 0.8
       this.instanceSize = 3
       this.workersPerAse = 100
-      this.aseHourlyBaseCost = 1.43
+      this.aseHourlyBaseCost = 1.822 // AUD in Australia East https://azure.microsoft.com/en-gb/pricing/details/app-service/
       this.instanceCostPerHour = 1.6
       this.hoursPerMonth = 731
     },
