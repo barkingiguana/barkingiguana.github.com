@@ -3,29 +3,28 @@ function onLoad() {
   var model = {
     initialize: function () {
       this.apiCount = 25
-      this.instancesPerApi = 2
-      this.ramPerApi = 2048
-      this.cpuPerApi = 0.75
+      this.instancesPerAsp = 2
+      this.ramPerApi = 256
+      this.cpuPerApi = 0.25
       this.workersPerAse = 100
       this.aseHourlyBaseCost = 1.822 // AUD in Australia East https://azure.microsoft.com/en-gb/pricing/details/app-service/
-      this.instanceCostPerHour = 1.6
       this.hoursPerMonth = 731
     },
     update: function () {
-      this.workerPairs = Math.floor(this.workersPerAse / this.instancesPerApi)
+      this.asps = Math.floor(this.workersPerAse / this.instancesPerAsp)
       for(let size = 1; size <= 3; size++) {
         let key = "i" + size.toString()
         this[key + "InstanceRam"] = this.instanceRam(size)
         this[key + "InstanceCpu"] = this.instanceCpu(size)
-        this[key + "InstanceApis"] = Math.min(
+        this[key + "AspApis"] = Math.min(
           Math.floor(this[key + "InstanceRam"] / this.ramPerApi),
           Math.floor(this[key + "InstanceCpu"] / this.cpuPerApi),
         )
-        this[key + "AseApis"] = this.workerPairs * this[key + "InstanceApis"]
+        this[key + "AseApis"] = this.asps * this[key + "AspApis"]
         this[key + "AseRequiredPerEnvironment"] = Math.ceil(this.apiCount / this[key + "AseApis"])
         this[key + "AseRequired"] = 4 * this[key + "AseRequiredPerEnvironment"]
         this[key + "AseMonthlyBaseCost"] = this.cost(this[key + "AseRequired"] * this.hoursPerMonth * this.aseHourlyBaseCost)
-        this[key + "BackendRequired"] = Math.ceil(this.apiCount / this[key + "InstanceApis"])
+        this[key + "BackendRequired"] = Math.ceil(this.apiCount / this[key + "AspApis"])
         this[key + "FrontendRequired"] = Math.ceil(this[key + "BackendRequired"] / 15)
         this[key + "BillableInstances"] = (this[key + "FrontendRequired"] - 1) + this[key + "BackendRequired"]
         this[key + "InstanceCostPerHour"] = this.instanceCost(size)
