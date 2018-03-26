@@ -34,11 +34,11 @@
   <div id="calculator">
 <p>Let's say we have <span data-var="apiCount" class="TKAdjustableNumber" data-min="1" data-max="10000"></span> APIs.</p>
 
-<p>Further, let's assume <span data-var="ramPerApi" class="TKAdjustableNumber" data-min="64" data-max="14336" data-step="64"></span>Mb RAM per API, that we can survive on <span data-var="cpuPerApi" class="TKAdjustableNumber" data-min="0.01" data-max="4" data-step="0.01"></span> CPUs per instance per API, that we’re not network bound, we won't over-commit RAM or CPU, and that we’re not doing blue/green deployments.</p>
+<p>Further, let's assume <span data-var="ramPerApi" class="TKAdjustableNumber" data-min="64" data-max="14336" data-step="64"></span>Mb RAM per API, that we can survive on <span data-var="cpuPerApi" class="TKAdjustableNumber" data-min="0.01" data-max="4" data-step="0.01"></span> CPUs per instance per API, that we’re not network bound, and that we’re not doing blue/green deployments.</p>
 
-<p>ASE's in the location we want cost $<span data-var="aseHourlyBaseCost"></span>. We'll be running HA in production, and we also have stage and dev environments.</p>
+<p>ASE's in the location we want cost $<span data-var="aseHourlyBaseCost"></span>. We'll be spreading instances over two locations in production (which will require 2 ASE's), and we also have stage and dev environments (which will be in only 1 location, so require only 1 ASE each).</p>
 
-<p>We'll say the ASPs will be allocated <span data-var="instancesPerAsp" class="TKAdjustableNumber"></span> instances each, and won’t scale beyond those. ASE's can have up to <span data-var="workersPerAse" class="TKAdjustableNumber" data-min="1" data-max="1000"></span> workers.</p>
+<p>We'll pack as many API's as possible into each ASP without over-committing RAM or CPU, and we'll say each ASPs will be allocated <span data-var="instancesPerAsp" class="TKAdjustableNumber"></span> instances each, and won’t scale beyond those. ASE's can have up to <span data-var="workersPerAse" class="TKAdjustableNumber" data-min="1" data-max="1000"></span> workers.</p>
 
 <p>There are <span data-min="600" data-max="800" data-var="hoursPerMonth" class="TKAdjustableNumber"></span> hours in a month.</p>
 
