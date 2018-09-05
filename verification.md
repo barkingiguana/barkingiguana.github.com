@@ -20,5 +20,4 @@ gpg:                 aka "[jpeg image of size 3895]" [ultimate]
 Unless you or someone in your web of trust has signed my key you're likely to see `[unknown]` at the end of the `good signature` line. This means that while GnuPG can verify that my signature was made against the article that you downloaded, you have no way to determine that the key used to generate the signature is actually owned by me. You can fix this by extending your web of trust until it connects with me or someone I know. Perhaps you'd like to [attend a keysigning party]?
 
 [GnuPG]: https://www.gnupg.org/
-[entire blog in GitHub]: https://github.com/craigw/craigw.github.com/
 [attend a keysigning party]: /2011/07/10/reposted-ten-steps-for-attending-a-keysigning-party/

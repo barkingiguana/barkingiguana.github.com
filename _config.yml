@@ -4,4 +4,4 @@ highlighter: rouge
 markdown: kramdown
 safe: true
 lsi: false
-exclude: [ 'sign.sh', 'hooks' ]
+exclude: [ 'hooks' ]
