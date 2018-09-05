@@ -65,7 +65,7 @@ set mbox = "imaps://imap.gmail.com/[Gmail]/All Mail"
 set move = yes
 ```
 
-Bam. I can now read email.
+Bam. I can now mark email as read.
 
 ## Day 2: Travel
 
@@ -99,7 +99,7 @@ I copied http://stevelosh.com/blog/2012/10/the-homely-mutt/ for the below, and e
 TODO: Copy this from working settings & replace any secrets
 ```
 
-Note the `transporttunnel` section above - we'll need to make sure we have an `openssl` install taht can support TLS 1.2. The default version with Sierra only supports 1.0. Here we go:
+Note the `transporttunnel` section above - we'll need to make sure we have an `openssl` install that can support TLS 1.2. The default version with Sierra only supports 1.0. Here we go:
 
 ```
 brew update
