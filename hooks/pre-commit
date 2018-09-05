@@ -14,6 +14,10 @@ find _posts -type f -name "*.md" -or -name "*.html" | sort | sed 's/_posts\///' 
   TARGET="${FILE:11}.orig"
   perl -ne '$i > 1 ? print : /^---/ && $i++' _posts/$FILE > $DIR/$TARGET
   $GPG --output $DIR/$TARGET.asc --detach-sig $DIR/$TARGET
+  git add $DIR/$TARGET.asc
 done
 
 $GPG --output verification.md.asc --detach-sig verification.md
+git add verification.md.asc
+$GPG --export > u/craig/key.asc
+git add u/craig/key.asc
