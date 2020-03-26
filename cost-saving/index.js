@@ -12,7 +12,7 @@ function onLoad() {
       var costForSaving = this.hours * costPerHour
       this.costForSaving = (Math.ceil(costForSaving/100))*100
 
-      this.timeToRecover = (Math.ceil((costForSaving / this.saving) * 365.25)/100)*100
+      this.timeToRecover = (Math.ceil(((costForSaving / this.saving) * 365.25)/100))*100
     },
   }
   new Tangle(rootElement, model)
