@@ -1,3 +1,11 @@
-FROM ruby:2.3-onbuild
+FROM ruby:3
 
-CMD [ "jekyll", "serve" ]
+RUN bundle config --global frozen 1
+
+EXPOSE 4000
+WORKDIR /usr/src/app
+
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+CMD [ "bundle", "exec", "jekyll", "serve", "--incremental" ]
