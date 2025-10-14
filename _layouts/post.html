@@ -20,12 +20,7 @@ layout: base
     </dl>
   </div>
   <div>
-    <div class="alert alert-info comments" id="comments">Disagree? Found a typo? Got a question?<br />If you'd like to have a conversation about this post, <a href="mailto:craig@barkingiguana.com">email craig@barkingiguana.com</a>. I don't bite.</div>
-    <div class="alert alert-warning security" id="security">You can verify that I've written this post by following the <a href="/verification">verification instructions</a>:
-      <pre><code>curl -LO {{ verify_base_url }}
-curl -LO {{ verify_base_url | append: '.asc' }}
-gpg --verify {{ verify_file_name }}{.asc,}</code></pre>
-    </div>
+    <div class="alert alert-info comments" id="comments">Disagree? Found a typo? Got a question? <a href="mailto:craig@barkingiguana.com">Email me at craig@barkingiguana.com</a>.</div>
   </div>
   <div class="related btn-group">
     {% if page.previous.url %}

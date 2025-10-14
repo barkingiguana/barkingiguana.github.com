@@ -4,4 +4,4 @@ highlighter: rouge
 markdown: kramdown
 safe: true
 lsi: false
-exclude: [ 'hooks', 'compose.yml' ]
+exclude: [ 'compose.yml' ]
