@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Maturity Assessment — Mechanical Rock</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0F172A; font-family: 'DM Sans', -apple-system, sans-serif; }
+  #root { min-height: 100vh; }
+  input:focus { border-color: #06B6D4 !important; outline: none; }
+  button:hover { opacity: 1 !important; transform: scale(1.02); }
+  button { transition: all 0.15s ease; }
+  @media print {
+    .no-print { display: none !important; }
+    body { background: white; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const LEVELS = [
+  { id: 1, name: "Ad Hoc", color: "#EF4444", description: "Experimentation without formal direction" },
+  { id: 2, name: "Opportunistic", color: "#F97316", description: "Isolated pilots with limited coordination" },
+  { id: 3, name: "Systematic", color: "#EAB308", description: "Defined processes and early production use" },
+  { id: 4, name: "Managed", color: "#22C55E", description: "Scaled operations with governance in place" },
+  { id: 5, name: "Optimising", color: "#06B6D4", description: "AI-driven culture with continuous improvement" },
+];
+
+const DIMENSIONS = [
+  {
+    id: "strategy",
+    name: "Strategy & Vision",
+    icon: "\u{1F3AF}",
+    descriptors: [
+      {
+        summary: "No AI strategy; ad hoc experimentation driven by individuals",
+        signals: [
+          "Individual team members experimenting with ChatGPT or Copilot on their own initiative",
+          "No executive awareness or sponsorship of AI initiatives",
+          "AI discussed informally but not in any strategic planning documents",
+          "No budget allocated for AI; any spend hidden in existing line items",
+          "\"We should look into AI\" said in meetings but no action taken",
+        ],
+        clientSays: "\"A few of our devs are playing with AI tools but it's not really an official thing.\""
+      },
+      {
+        summary: "Business case exists for specific use cases; executive sponsor identified",
+        signals: [
+          "One or two use cases identified with rough ROI estimates",
+          "A senior leader is championing AI but it's a side-of-desk effort",
+          "Vendor demos have been attended; maybe a PoC with a single vendor",
+          "AI appears in board or leadership discussions but without a formal plan",
+          "Budget exists for a pilot but not for sustained investment",
+          "Team has identified pain points that AI could address but hasn't started building",
+        ],
+        clientSays: "\"Our CTO thinks we should use AI for customer support \u2014 we've seen a demo from a vendor.\""
+      },
+      {
+        summary: "AI roadmap aligned to business objectives; funded initiative with clear ownership",
+        signals: [
+          "Written AI roadmap exists, linked to specific business KPIs or OKRs",
+          "Dedicated budget line item for AI initiatives across multiple quarters",
+          "AI lead or working group formally appointed with clear accountability",
+          "Use case prioritisation framework in place (value vs feasibility matrix)",
+          "Regular reporting on AI initiative progress to leadership",
+          "Multiple use cases in pipeline, not just one hero project",
+        ],
+        clientSays: "\"We have three AI projects on our roadmap this year and a dedicated team lead driving them.\""
+      },
+      {
+        summary: "AI embedded in enterprise strategy; portfolio of use cases prioritised by value",
+        signals: [
+          "AI mentioned in annual report, investor communications, or corporate strategy",
+          "Portfolio management approach \u2014 multiple concurrent initiatives with stage-gates",
+          "Cross-functional steering committee reviews AI investments quarterly",
+          "AI strategy explicitly addresses build vs buy vs partner decisions",
+          "Measurable business outcomes tracked and reported (revenue, cost savings, NPS impact)",
+          "AI considerations are part of new product and service design processes",
+        ],
+        clientSays: "\"AI is one of our four strategic pillars this year. We review our AI portfolio quarterly with the exec team.\""
+      },
+      {
+        summary: "AI is a core competitive differentiator; strategy continuously evolves with market",
+        signals: [
+          "AI capabilities are a key part of the company's value proposition to customers",
+          "Continuous horizon scanning for emerging AI capabilities and threats",
+          "AI strategy refreshed at least bi-annually based on market and technology shifts",
+          "Board-level AI literacy; directors can challenge and guide AI investments",
+          "Company is recognised externally as an AI leader in their industry",
+          "AI drives new business models and revenue streams, not just efficiency",
+        ],
+        clientSays: "\"Our AI capabilities are why customers choose us over competitors. The board reviews our AI roadmap every quarter.\""
+      },
+    ],
+  },
+  {
+    id: "data",
+    name: "Data Foundation",
+    icon: "\u{1F5C4}\uFE0F",
+    descriptors: [
+      {
+        summary: "Siloed data; no catalogue or quality standards; manual extraction",
+        signals: [
+          "Data lives in spreadsheets, individual databases, and email attachments",
+          "No one knows what data exists across the organisation",
+          "Extracting data for analysis requires asking specific people or teams",
+          "No data quality checks \u2014 duplicates, missing values, inconsistencies common",
+          "Reporting is manual and often contradictory between departments",
+          "\"The data is in Sarah's spreadsheet\" is a common phrase",
+        ],
+        clientSays: "\"Every team has their own way of storing data. Getting a single view of anything takes weeks.\""
+      },
+      {
+        summary: "Some data consolidated; basic quality checks; limited discoverability",
+        signals: [
+          "Central data warehouse or lake exists but not all sources feed into it",
+          "Some ETL pipelines in place but many are fragile or manually triggered",
+          "Basic data quality rules (null checks, type validation) on key tables",
+          "A few teams know the data well, but there's no searchable catalogue",
+          "BI dashboards exist but analysts still often query raw databases",
+          "Data access requests take days and go through informal channels",
+        ],
+        clientSays: "\"We have a data warehouse but half the teams still export from their own systems. Our BI team handles most requests.\""
+      },
+      {
+        summary: "Central data platform; catalogued; defined quality metrics",
+        signals: [
+          "Managed data lake or lakehouse (e.g. S3 + Glue, Redshift, Snowflake) serving most teams",
+          "Data catalogue in place (e.g. AWS Glue Catalog, DataHub) with searchable metadata",
+          "Data quality metrics defined and monitored (completeness, freshness, accuracy)",
+          "Self-service access for approved users with appropriate IAM controls",
+          "Data pipelines are version-controlled and monitored",
+          "Data stewards assigned for critical domains",
+        ],
+        clientSays: "\"Teams can find and access most of the data they need through our catalogue. We track data quality scores weekly.\""
+      },
+      {
+        summary: "Governed data mesh/fabric; automated quality pipelines; real-time availability",
+        signals: [
+          "Domain-oriented data ownership with federated governance (data mesh principles)",
+          "Automated data quality pipelines with alerting on anomalies or drift",
+          "Real-time and near-real-time data available for operational AI use cases",
+          "Data contracts between producers and consumers are formalised",
+          "Full data lineage tracked from source to consumption",
+          "Feature store in place for ML model training and serving",
+          "PII and sensitive data automatically classified and access-controlled",
+        ],
+        clientSays: "\"Each domain owns their data products. We have automated quality gates and real-time streams for our ML models.\""
+      },
+      {
+        summary: "Self-service data marketplace; AI-augmented data quality; full lineage and observability",
+        signals: [
+          "Internal data marketplace where teams publish and discover data products",
+          "AI/ML used to detect data quality issues, suggest corrections, and auto-classify",
+          "Full observability stack for data: lineage, freshness, volume, quality, cost",
+          "External data sources seamlessly integrated and governed alongside internal data",
+          "Data democratisation \u2014 business users can explore data without engineering help",
+          "Synthetic data generation capabilities for testing and privacy-safe ML training",
+        ],
+        clientSays: "\"Anyone in the company can find, access, and trust the data they need. Our data quality is AI-monitored.\""
+      },
+    ],
+  },
+  {
+    id: "technology",
+    name: "Technology & Infrastructure",
+    icon: "\u2699\uFE0F",
+    descriptors: [
+      {
+        summary: "Local notebooks; no cloud ML services; manual deployments",
+        signals: [
+          "Data scientists work in local Jupyter notebooks or Google Colab",
+          "Models shared via email, Slack, or USB drives",
+          "No cloud ML services in use; maybe a basic AWS/Azure account for other workloads",
+          "GPU access is ad hoc \u2014 personal machines or one-off cloud instances",
+          "No version control for models or experiments",
+          "\"It works on my machine\" is the deployment strategy",
+        ],
+        clientSays: "\"Our data scientist runs everything on their laptop. When they need more compute they spin up an EC2 and shut it down after.\""
+      },
+      {
+        summary: "Cloud account with basic services; some use of managed AI",
+        signals: [
+          "Using managed AI services for specific tasks (e.g. Bedrock for text, Rekognition for images)",
+          "SageMaker notebooks or similar used but not as a proper ML platform",
+          "Models deployed manually \u2014 someone SSHs in and updates the endpoint",
+          "One or two AI workloads running in the cloud but not well-architected",
+          "Cost management is reactive \u2014 surprises on the monthly bill",
+          "No separation between dev, staging, and production for AI workloads",
+        ],
+        clientSays: "\"We use Bedrock for one chatbot and have some SageMaker notebooks. Deployments are a bit manual.\""
+      },
+      {
+        summary: "Standardised ML platform; CI/CD for models; cost-managed compute",
+        signals: [
+          "ML platform established (e.g. SageMaker Studio, Vertex AI) with team onboarding",
+          "CI/CD pipelines for model training and deployment (CodePipeline, GitHub Actions)",
+          "Separate environments for dev/staging/prod with promotion gates",
+          "Compute costs tracked and optimised (spot instances, auto-scaling, reserved capacity)",
+          "Experiment tracking in place (MLflow, SageMaker Experiments, W&B)",
+          "Container-based model serving with defined resource limits",
+          "Infrastructure as code for ML resources (CDK, Terraform, CloudFormation)",
+        ],
+        clientSays: "\"We have a proper ML platform. Models go through CI/CD and we track all our experiments. Costs are predictable.\""
+      },
+      {
+        summary: "MLOps pipelines; model registry; automated retraining; multi-environment promotion",
+        signals: [
+          "Automated model retraining triggered by data drift or schedule",
+          "Central model registry with versioning, metadata, and approval workflows",
+          "Blue/green or canary deployments for model updates",
+          "Automated rollback if model performance degrades",
+          "GPU/accelerator fleet managed efficiently across teams",
+          "Security scanning on model artifacts and dependencies",
+          "LLM gateway or proxy for managed access to foundation models",
+        ],
+        clientSays: "\"Models retrain automatically when drift is detected. We have a registry with full approval workflow and canary deployments.\""
+      },
+      {
+        summary: "Platform engineering for AI; self-service model deployment; edge and hybrid inference",
+        signals: [
+          "Internal developer platform for AI \u2014 teams self-serve model deployment",
+          "Multi-modal inference capabilities (text, image, video, audio) at scale",
+          "Edge inference for latency-sensitive or disconnected use cases",
+          "Hybrid cloud/on-prem AI infrastructure for regulatory or performance needs",
+          "Custom silicon or optimised inference (e.g. Inferentia, Trainium) in use",
+          "AI infrastructure benchmarked and continuously optimised for cost/performance",
+          "Abstraction layers that let teams swap models without re-engineering pipelines",
+        ],
+        clientSays: "\"Any team can deploy a model through our platform in under an hour. We run inference at the edge for our IoT use cases.\""
+      },
+    ],
+  },
+  {
+    id: "talent",
+    name: "Talent & Skills",
+    icon: "\u{1F465}",
+    descriptors: [
+      {
+        summary: "No dedicated AI roles; reliance on individual curiosity or external vendors",
+        signals: [
+          "No one has 'AI' or 'ML' in their job title",
+          "AI knowledge depends on one or two enthusiasts who self-taught",
+          "All AI work outsourced to vendors with no internal capability to evaluate quality",
+          "No training budget or plan for AI skills development",
+          "Team can't distinguish between AI hype and genuine capability",
+          "Recruitment doesn't target AI skills; no AI in job descriptions",
+        ],
+        clientSays: "\"We don't have anyone dedicated to AI. Dave in engineering has been playing around with it though.\""
+      },
+      {
+        summary: "1\u20132 practitioners; basic AI literacy training planned or underway",
+        signals: [
+          "Hired or reassigned 1\u20132 people to focus on AI/ML",
+          "Some team members completing online courses (Coursera, AWS Skill Builder)",
+          "AI literacy sessions or lunch-and-learns being organised",
+          "Leadership can articulate basic AI concepts but lacks depth",
+          "Reliance on consultants to supplement internal skills for delivery",
+          "Team knows enough to ask good questions but can't build independently yet",
+        ],
+        clientSays: "\"We hired a data scientist last quarter and a few of the team are doing AWS ML courses. We still lean on partners for delivery.\""
+      },
+      {
+        summary: "Dedicated AI team; defined career paths; certified practitioners",
+        signals: [
+          "AI/ML team of 3+ with defined roles (ML engineer, data scientist, AI product manager)",
+          "Team members hold relevant certifications (AWS ML Specialty, AI Practitioner)",
+          "Career ladder for AI roles \u2014 clear progression from junior to senior/lead",
+          "Regular knowledge sharing between AI team and broader engineering",
+          "AI team can independently deliver end-to-end ML projects",
+          "Training budget specifically allocated for AI skills development",
+          "AI capability considered in hiring across engineering, not just the AI team",
+        ],
+        clientSays: "\"We have a team of five. Three are AWS ML certified. They run projects end-to-end and mentor others in engineering.\""
+      },
+      {
+        summary: "Cross-functional AI champions embedded in business units; continuous upskilling",
+        signals: [
+          "AI champions or ambassadors in each business unit \u2014 not just central IT",
+          "Business analysts and product managers can specify AI requirements effectively",
+          "Continuous learning program with structured pathways (not just ad hoc courses)",
+          "Internal AI community of practice with regular meetups and show-and-tell",
+          "Non-technical staff trained on prompt engineering and AI tool usage",
+          "AI team members rotate through business units to cross-pollinate",
+          "Performance reviews include AI capability development goals",
+        ],
+        clientSays: "\"Every business unit has an AI champion. Our product managers can write solid AI requirements and our sales team uses AI tools daily.\""
+      },
+      {
+        summary: "Organisation-wide AI fluency; innovation culture; attract top AI talent",
+        signals: [
+          "AI fluency expected at all levels \u2014 from executives to frontline staff",
+          "Company is a magnet for top AI talent; known in the market as an AI employer",
+          "Hackathons, innovation time, and internal AI research projects are normal",
+          "AI ethics and responsible AI part of everyone's training, not just the AI team",
+          "External thought leadership \u2014 conference talks, papers, open-source contributions",
+          "University partnerships or internship programs for AI talent pipeline",
+          "AI capability is a competitive advantage in talent acquisition across all roles",
+        ],
+        clientSays: "\"Everyone here can have an informed conversation about AI. Our team speaks at conferences and we have a waitlist of engineers wanting to join.\""
+      },
+    ],
+  },
+  {
+    id: "governance",
+    name: "Governance & Responsible AI",
+    icon: "\u{1F6E1}\uFE0F",
+    descriptors: [
+      {
+        summary: "No AI policies; unaware of regulatory requirements or ethical considerations",
+        signals: [
+          "No AI usage policy \u2014 people use ChatGPT with sensitive data without guidelines",
+          "No awareness of AI-specific regulations (EU AI Act, Australian AI Ethics Principles)",
+          "No process for assessing AI risk or impact before deployment",
+          "IP and copyright implications of AI-generated content not considered",
+          "No data privacy assessment for AI use cases",
+          "\"Just don't put anything too sensitive in there\" is the only guidance",
+        ],
+        clientSays: "\"People use whatever AI tools they want. We haven't really thought about policies for it yet.\""
+      },
+      {
+        summary: "Awareness of AI risks; informal review of high-risk use cases",
+        signals: [
+          "Basic AI acceptable use policy exists (even if just a one-pager)",
+          "Leadership aware of AI risks but no formal risk framework",
+          "High-profile or customer-facing AI use cases get informal review before launch",
+          "Legal team has flagged AI IP and liability questions but no resolution yet",
+          "Data privacy team consulted ad hoc for AI projects but not systematically",
+          "Some awareness of AI bias but no testing or mitigation processes",
+        ],
+        clientSays: "\"We have a basic AI use policy and legal reviews the big stuff. But we don't have a formal framework for assessing AI risk.\""
+      },
+      {
+        summary: "AI governance framework defined; risk classification; bias testing on key models",
+        signals: [
+          "Formal AI governance framework with risk tiers (low/medium/high/critical)",
+          "AI risk assessment required before production deployment",
+          "Bias and fairness testing performed on customer-facing models",
+          "Model documentation standards (model cards or similar) adopted",
+          "Data privacy impact assessments (DPIA) conducted for AI use cases",
+          "Clear policy on acceptable AI training data sources",
+          "Incident response process includes AI-specific failure modes",
+          "Approved list of AI tools and services with security review",
+        ],
+        clientSays: "\"Every AI project goes through risk classification. We test for bias on customer-facing models and maintain model cards.\""
+      },
+      {
+        summary: "Responsible AI review board; automated compliance checks; transparent documentation",
+        signals: [
+          "Cross-functional AI ethics/governance board with authority to approve or block",
+          "Automated compliance checks integrated into CI/CD (bias metrics, data lineage, access)",
+          "Transparency reports or explainability outputs available for stakeholders",
+          "Regular audits of production AI systems against governance standards",
+          "Third-party AI risk assessments conducted periodically",
+          "Whistleblower or escalation process for AI concerns",
+          "AI governance metrics reported to board or executive committee",
+          "Alignment with international standards (ISO 42001, NIST AI RMF)",
+        ],
+        clientSays: "\"Our AI governance board reviews all high-risk deployments. Compliance checks run automatically in our pipeline.\""
+      },
+      {
+        summary: "Proactive ethical AI leadership; industry contribution; continuous audit and improvement",
+        signals: [
+          "Company contributes to industry AI governance standards and best practices",
+          "Proactive engagement with regulators on AI policy",
+          "Continuous monitoring and improvement of governance based on real incidents",
+          "Public transparency about AI use \u2014 customers know when they interact with AI",
+          "AI ethics research or partnerships with academic institutions",
+          "Red teaming and adversarial testing as standard practice",
+          "Governance framework evolves ahead of regulation, not in reaction to it",
+          "Recognised externally for responsible AI practices",
+        ],
+        clientSays: "\"We helped shape the industry guidelines. We red-team all high-risk models and publish transparency reports.\""
+      },
+    ],
+  },
+  {
+    id: "operations",
+    name: "Operations & Scale",
+    icon: "\u{1F4C8}",
+    descriptors: [
+      {
+        summary: "No models in production; results shared via reports or demos only",
+        signals: [
+          "AI outputs are screenshots, exported CSVs, or PowerPoint slides",
+          "No real-time AI inference serving end users or systems",
+          "\"Production\" means running a notebook and emailing results",
+          "No monitoring, alerting, or SLAs for AI outputs",
+          "AI is a research exercise, not an operational capability",
+          "Success measured by demo impressions, not business outcomes",
+        ],
+        clientSays: "\"Our data scientist runs the model weekly and sends the results to the team in a spreadsheet.\""
+      },
+      {
+        summary: "1\u20132 models in production; manual monitoring; reactive incident response",
+        signals: [
+          "One or two models serving real traffic (e.g. a recommendation engine, chatbot)",
+          "Monitoring is checking logs manually or basic CloudWatch alarms",
+          "No formal SLA \u2014 \"it's usually up\" is the standard",
+          "Model updates require manual intervention and downtime",
+          "When something breaks, one person knows how to fix it",
+          "No process for model rollback \u2014 fix forward is the only option",
+          "Performance degradation discovered by users, not by monitoring",
+        ],
+        clientSays: "\"We have a chatbot in production and a prediction model. If something goes wrong, James fixes it. We don't have formal monitoring.\""
+      },
+      {
+        summary: "Multiple production models; basic monitoring and alerting; defined SLAs",
+        signals: [
+          "3+ models in production across different use cases or business units",
+          "Monitoring dashboards for model latency, throughput, and error rates",
+          "Alerting configured for key model health metrics",
+          "SLAs defined and communicated to stakeholders (uptime, response time)",
+          "Runbooks exist for common AI operational issues",
+          "Model performance reviewed regularly (weekly/monthly) against baselines",
+          "On-call rotation includes AI systems",
+          "Basic cost tracking per model or use case",
+        ],
+        clientSays: "\"We run five models in production with dashboards and alerts. We have SLAs and the team reviews model performance monthly.\""
+      },
+      {
+        summary: "Centralised model observability; automated drift detection; A/B testing frameworks",
+        signals: [
+          "Centralised observability platform for all production models",
+          "Automated data and model drift detection with alerting",
+          "A/B testing or shadow deployment capability for model changes",
+          "Automated model performance regression testing before promotion",
+          "Cost attribution and optimisation at the model/use-case level",
+          "Capacity planning for AI inference based on growth projections",
+          "Incident post-mortems include AI-specific root cause analysis",
+          "Model serving infrastructure scales automatically with demand",
+        ],
+        clientSays: "\"We detect drift automatically and A/B test model updates before full rollout. Every model has cost attribution and auto-scaling.\""
+      },
+      {
+        summary: "Self-healing ML systems; organisation-wide model catalogue; continuous value tracking",
+        signals: [
+          "Self-healing systems that automatically retrain or roll back degrading models",
+          "Organisation-wide model catalogue showing all production AI \u2014 what, where, who, why",
+          "Continuous business value tracking tied to model performance (revenue, cost, NPS)",
+          "AI operations metrics feed back into strategy and prioritisation",
+          "Chaos engineering or resilience testing for AI systems",
+          "Multi-region or multi-cloud AI serving for availability",
+          "Operational AI maturity benchmarked against industry standards",
+          "AI operations team is a recognised function with defined processes",
+        ],
+        clientSays: "\"Models self-heal when they drift. We have a catalogue of every model in production with live business value dashboards.\""
+      },
+    ],
+  },
+];
+
+const RadarChart = ({ scores }) => {
+  const size = 300;
+  const center = size / 2;
+  const maxRadius = 120;
+  const levels = 5;
+  const angleStep = (2 * Math.PI) / DIMENSIONS.length;
+  const startAngle = -Math.PI / 2;
+
+  const getPoint = (index, value) => {
+    const angle = startAngle + index * angleStep;
+    const radius = (value / levels) * maxRadius;
+    return { x: center + radius * Math.cos(angle), y: center + radius * Math.sin(angle) };
+  };
+
+  const gridLines = [];
+  for (let level = 1; level <= levels; level++) {
+    const points = DIMENSIONS.map((_, i) => getPoint(i, level));
+    const pathData = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ") + " Z";
+    gridLines.push(<path key={level} d={pathData} fill="none" stroke="#334155" strokeWidth="1" opacity={0.4} />);
+  }
+
+  const axisLines = DIMENSIONS.map((_, i) => {
+    const endPoint = getPoint(i, levels);
+    return <line key={i} x1={center} y1={center} x2={endPoint.x} y2={endPoint.y} stroke="#334155" strokeWidth="1" opacity={0.4} />;
+  });
+
+  const scorePoints = DIMENSIONS.map((dim, i) => getPoint(i, scores[dim.id] || 0));
+  const scorePath = scorePoints.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ") + " Z";
+
+  const labels = DIMENSIONS.map((dim, i) => {
+    const point = getPoint(i, levels + 1.1);
+    const angle = startAngle + i * angleStep;
+    const isLeft = Math.cos(angle) < -0.1;
+    const isRight = Math.cos(angle) > 0.1;
+    return (
+      <text key={dim.id} x={point.x} y={point.y} textAnchor={isLeft ? "end" : isRight ? "start" : "middle"} dominantBaseline="middle" fill="#94A3B8" fontSize="11" fontWeight="500">
+        {dim.icon} {dim.name}
+      </text>
+    );
+  });
+
+  return (
+    <svg viewBox={`0 0 ${size} ${size}`} style={{ width: "100%", maxWidth: 360, margin: "0 auto", display: "block" }}>
+      {gridLines}
+      {axisLines}
+      <path d={scorePath} fill="rgba(6, 182, 212, 0.15)" stroke="#06B6D4" strokeWidth="2" />
+      {scorePoints.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r="5" fill="#06B6D4" stroke="#0F172A" strokeWidth="2" />)}
+      {labels}
+      {[1,2,3,4,5].map((n) => { const p = getPoint(0, n); return <text key={n} x={p.x + 6} y={p.y - 4} fill="#64748B" fontSize="9">{n}</text>; })}
+    </svg>
+  );
+};
+
+function AIMaturityModel() {
+  const [scores, setScores] = useState({ strategy: 0, data: 0, technology: 0, talent: 0, governance: 0, operations: 0 });
+  const [clientName, setClientName] = useState("");
+  const [showDetail, setShowDetail] = useState(null);
+
+  const avgScore = Object.values(scores).reduce((a, b) => a + b, 0) / DIMENSIONS.length;
+  const overallLevel = LEVELS[Math.max(0, Math.min(4, Math.round(avgScore) - 1))] || LEVELS[0];
+  const handleScore = (dimId, level) => setScores((prev) => ({ ...prev, [dimId]: prev[dimId] === level ? 0 : level }));
+  const hasScores = Object.values(scores).some((s) => s > 0);
+
+  return (
+    <div style={{ fontFamily: "'DM Sans', -apple-system, sans-serif", background: "#0F172A", color: "#E2E8F0", minHeight: "100vh", padding: "24px 16px" }}>
+      <div style={{ maxWidth: 860, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+          <div style={{ width: 40, height: 40, background: "linear-gradient(135deg, #06B6D4, #2DD4BF)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, fontWeight: 700, color: "#0F172A" }}>M</div>
+          <div>
+            <div style={{ fontSize: 11, color: "#06B6D4", fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase" }}>Mechanical Rock</div>
+            <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0, color: "#F8FAFC" }}>AI Maturity Assessment</h1>
+          </div>
+        </div>
+        <p style={{ color: "#94A3B8", fontSize: 13, marginBottom: 24, marginTop: 8 }}>
+          Evaluate your organisation's AI readiness across six dimensions. Click any dimension to expand detailed signals and example client quotes to help determine the right level.
+        </p>
+
+        <div style={{ marginBottom: 24 }} className="no-print">
+          <input type="text" placeholder="Client / Organisation name" value={clientName} onChange={(e) => setClientName(e.target.value)}
+            style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: 8, padding: "10px 14px", color: "#F8FAFC", fontSize: 14, width: "100%", boxSizing: "border-box" }} />
+        </div>
+
+        <div style={{ display: "flex", gap: 4, marginBottom: 24, flexWrap: "wrap" }}>
+          {LEVELS.map((level) => (
+            <div key={level.id} style={{ display: "flex", alignItems: "center", gap: 6, background: "#1E293B", borderRadius: 6, padding: "6px 10px", fontSize: 11 }}>
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: level.color, flexShrink: 0 }} />
+              <span style={{ color: "#CBD5E1", fontWeight: 500 }}>{level.id}. {level.name}</span>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 32 }}>
+          {DIMENSIONS.map((dim) => (
+            <div key={dim.id} style={{ background: "#1E293B", borderRadius: 12, padding: "16px 18px", border: showDetail === dim.id ? "1px solid #06B6D4" : "1px solid #1E293B", transition: "border-color 0.2s" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => setShowDetail(showDetail === dim.id ? null : dim.id)}>
+                  <span style={{ fontSize: 18 }}>{dim.icon}</span>
+                  <span style={{ fontWeight: 600, fontSize: 15, color: "#F8FAFC" }}>{dim.name}</span>
+                  <span style={{ color: "#64748B", fontSize: 12, marginLeft: 4 }}>{showDetail === dim.id ? "\u25B2" : "\u25BC"}</span>
+                </div>
+                {scores[dim.id] > 0 && (
+                  <span style={{ fontSize: 12, color: LEVELS[scores[dim.id] - 1].color, fontWeight: 600 }}>
+                    Level {scores[dim.id]}: {LEVELS[scores[dim.id] - 1].name}
+                  </span>
+                )}
+              </div>
+              <div style={{ display: "flex", gap: 6 }} className="no-print">
+                {LEVELS.map((level) => (
+                  <button key={level.id} onClick={() => handleScore(dim.id, level.id)}
+                    style={{ flex: 1, height: 36, borderRadius: 6, border: "none", cursor: "pointer", background: scores[dim.id] === level.id ? level.color : "#0F172A", color: scores[dim.id] === level.id ? "#0F172A" : "#64748B", fontWeight: 600, fontSize: 13, opacity: scores[dim.id] === level.id ? 1 : 0.6 }}
+                    title={level.description}>{level.id}</button>
+                ))}
+              </div>
+              {showDetail === dim.id && (
+                <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 12 }}>
+                  {dim.descriptors.map((desc, i) => (
+                    <div key={i} onClick={() => handleScore(dim.id, i + 1)}
+                      style={{ padding: "12px 14px", borderRadius: 8, background: scores[dim.id] === i + 1 ? `${LEVELS[i].color}12` : "#0F172A", border: scores[dim.id] === i + 1 ? `1px solid ${LEVELS[i].color}50` : "1px solid #1E293B", cursor: "pointer", transition: "all 0.15s" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                        <div style={{ width: 24, height: 24, borderRadius: "50%", background: scores[dim.id] === i + 1 ? LEVELS[i].color : "#334155", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: scores[dim.id] === i + 1 ? "#0F172A" : "#94A3B8", flexShrink: 0 }}>{i + 1}</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: LEVELS[i].color }}>{LEVELS[i].name}</div>
+                      </div>
+                      <div style={{ fontSize: 12, color: "#CBD5E1", marginBottom: 8, fontWeight: 500 }}>{desc.summary}</div>
+                      <div style={{ fontSize: 11, color: "#94A3B8", lineHeight: 1.6, marginBottom: 8 }}>
+                        <div style={{ fontWeight: 600, color: "#64748B", fontSize: 10, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Look for these signals:</div>
+                        {desc.signals.map((s, j) => (
+                          <div key={j} style={{ display: "flex", gap: 6, marginBottom: 3 }}>
+                            <span style={{ color: LEVELS[i].color, flexShrink: 0 }}>{"\u2022"}</span>
+                            <span>{s}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ fontSize: 12, color: "#CBD5E1", fontStyle: "italic", background: "#06B6D408", padding: "8px 10px", borderRadius: 6, borderLeft: `2px solid ${LEVELS[i].color}40` }}>
+                        <span style={{ fontSize: 10, fontWeight: 600, color: "#64748B", textTransform: "uppercase", letterSpacing: 0.5, fontStyle: "normal", display: "block", marginBottom: 2 }}>Client typically says:</span>
+                        {desc.clientSays}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {hasScores && (
+          <div style={{ background: "#1E293B", borderRadius: 12, padding: 24, marginBottom: 24 }}>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: "#F8FAFC", margin: "0 0 6px 0" }}>
+              {clientName ? `${clientName} \u2014 ` : ""}Assessment Summary
+            </h2>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+              <span style={{ fontSize: 28, fontWeight: 800, color: overallLevel.color }}>{avgScore.toFixed(1)}</span>
+              <span style={{ fontSize: 14, color: "#94A3B8" }}>/ 5.0</span>
+              <span style={{ fontSize: 14, color: overallLevel.color, fontWeight: 600, marginLeft: 4 }}>Overall: {overallLevel.name}</span>
+            </div>
+            <RadarChart scores={scores} />
+
+            <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 6 }}>
+              {DIMENSIONS.map((dim) => scores[dim.id] > 0 && (
+                <div key={dim.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "#0F172A", borderRadius: 6 }}>
+                  <span style={{ fontSize: 14 }}>{dim.icon}</span>
+                  <span style={{ fontSize: 13, color: "#CBD5E1", flex: 1 }}>{dim.name}</span>
+                  <div style={{ width: 120, height: 6, background: "#334155", borderRadius: 3, overflow: "hidden" }}>
+                    <div style={{ width: `${(scores[dim.id] / 5) * 100}%`, height: "100%", background: LEVELS[scores[dim.id] - 1].color, borderRadius: 3, transition: "width 0.3s" }} />
+                  </div>
+                  <span style={{ fontSize: 12, color: LEVELS[scores[dim.id] - 1].color, fontWeight: 600, minWidth: 70, textAlign: "right" }}>
+                    {scores[dim.id]} {"\u2013"} {LEVELS[scores[dim.id] - 1].name}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: 20, padding: "12px 14px", background: "#0F172A", borderRadius: 8, borderLeft: "3px solid #06B6D4" }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#06B6D4", marginBottom: 4 }}>Recommended Next Step</div>
+              <div style={{ fontSize: 13, color: "#94A3B8", lineHeight: 1.5 }}>
+                {avgScore < 2
+                  ? "AI Strategy & Governance Workshop \u2014 Establish vision, identify high-value use cases, and build your AI roadmap. (2 weeks, outcome-based engagement)"
+                  : avgScore < 3.5
+                  ? "AI Proof of Concept \u2014 Validate a priority use case end-to-end to demonstrate measurable value and build internal confidence. (6 weeks, outcome-based engagement)"
+                  : "AI Scaling & Optimisation \u2014 Operationalise your AI capability with MLOps, governance automation, and organisation-wide enablement."}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div style={{ textAlign: "center", color: "#475569", fontSize: 11, padding: "16px 0" }}>
+          Mechanical Rock {"\u2014"} AI & ML Solutions Practice {"\u00B7"} mechanicalrock.io
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<AIMaturityModel />, document.getElementById("root"));
+</script>
+</body>
+</html>

@@ -9,6 +9,10 @@ Discuss addressing instances. Account ID, Region, Name (Instance ID). Name proba
 
 ![Example AWS Instances spread across 2 accounts and 2 regions](/images/aws-instances.png)
 
+```bash
+ssh i-facecafe
+```
+
 
 Design solution:
 * Get instsance IDs
@@ -28,28 +32,29 @@ Design solution:
 (3) Download the SSM proxy script and put it in ~/.ssh/ssm-proxy.sh like this: `curl -o ~/.ssh/ssm-proxy.sh https://gist.githubusercontent.com/qoomon/fcf2c85194c55aee34b78ddcaa9e83a1/raw/cd8f960c80646811c32d7a5e9cffd2a0e0fd55c4/aws-ssm-ec2-proxy-command.sh; chmod u+x ~/.ssh/ssm-proxy.sh`
 (4) Configure the SSH client on your laptop, in ~/.ssh/config -- here's mine, customise it as needed:
 Host *
-ChallengeResponseAuthentication no
-Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
-Compression yes
-ConnectionAttempts 3
-ControlMaster auto
-ControlPath ~/.ssh/cp.%C
-ControlPersist 300
-ForwardAgent no
-HashKnownHosts yes
-HostKeyAlgorithms ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ssh-ed25519,ssh-rsa
-KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
-MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
-PubkeyAuthentication yes
-ServerAliveInterval 600
+	ChallengeResponseAuthentication no
+	Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+	Compression yes
+	ConnectionAttempts 3
+	ControlMaster auto
+	ControlPath ~/.ssh/cp.%C
+	ControlPersist 300
+	ForwardAgent no
+	HashKnownHosts yes
+	HostKeyAlgorithms ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ssh-ed25519,ssh-rsa
+	KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
+	MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
+	PubkeyAuthentication yes
+	ServerAliveInterval 600
+
 Host i-* mi-*
-User ssm-user
-IdentitiesOnly yes
-IdentityFile ~/.ssh/id_rsa
-ProxyCommand ~/.ssh/ssm-proxy.sh %h %r %p ~/.ssh/id_aws.pub
+	User ssm-user
+	IdentitiesOnly yes
+	IdentityFile ~/.ssh/id_rsa
+	ProxyCommand ~/.ssh/ssm-proxy.sh %h %r %p ~/.ssh/id_aws.pub
 (5) Ensure AWS_DEFAULT_REGION and AWS_PROFILE environment variables are set.
 (6) ssh to the host by targeting the instance ID: `ssh <instance-id>`
-(7) You can target instances in other regions by setting your AWS_DEFAULT_REGION environment variable: `AWS_DEFAULT_REGION=us-west-2 ssh I-beefcafe`, or you can do `ssh <instance-id>::<region>` e.g. `ssh i-beefcafe::us-west-2`
+(7) You can target instances in other regions by setting your AWS_DEFAULT_REGION environment variable: `AWS_DEFAULT_REGION=us-west-2 ssh i-beefcafe`, or you can do `ssh <instance-id>::<region>` e.g. `ssh i-beefcafe::us-west-2` -- I'll work around this by having an inventory of all ec2 instances in a dynamo
 (8) :partywizard:
 
 
