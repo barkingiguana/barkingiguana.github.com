@@ -307,61 +307,68 @@ const MaturityGrowthChart=({currentAvg,projectedAvg})=>{
   const projectedLevel=Math.min(5,Math.max(currentLevel,Math.round(projectedAvg)));
 
   return(
-    <div style={{padding:20,background:"#0F172A",borderRadius:10,border:"1px solid #334155",marginBottom:16}}>
-      <div style={{fontSize:10,fontWeight:600,color:"#06B6D4",textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>Your AI Maturity Journey</div>
-      <div style={{fontSize:15,fontWeight:700,color:"#F8FAFC",marginBottom:16}}>Where you are — and where you could be</div>
+    <div style={{marginBottom:20}}>
+      <div style={{fontSize:10,fontWeight:600,color:"#06B6D4",textTransform:"uppercase",letterSpacing:1.2,marginBottom:4}}>Your AI Maturity Journey</div>
+      <div style={{fontSize:15,fontWeight:700,color:"#F8FAFC",marginBottom:20}}>Where you are — and where you could be</div>
 
-      {/* Growth stage bar */}
-      <div style={{position:"relative",marginBottom:32}}>
-        {/* Background track */}
-        <div style={{display:"flex",gap:2,marginBottom:8}}>
-          {LEVELS.map((level,i)=>{
-            const isCurrent=level.id===currentLevel;
-            const isProjected=level.id===projectedLevel&&projectedLevel!==currentLevel;
-            const isPast=level.id<currentLevel;
-            const isBetween=level.id>currentLevel&&level.id<projectedLevel;
-            let bg=`${level.color}15`;
-            let border=`1px solid ${level.color}30`;
-            if(isCurrent){bg=`${level.color}40`;border=`2px solid ${level.color}`}
-            else if(isProjected){bg=`${level.color}25`;border=`2px dashed ${level.color}`}
-            else if(isPast){bg=`${level.color}30`;border=`1px solid ${level.color}50`}
-            else if(isBetween){bg=`${level.color}20`;border=`1px dashed ${level.color}40`}
-            return(
-              <div key={level.id} style={{flex:1,position:"relative"}}>
-                <div style={{background:bg,border,borderRadius:8,padding:"14px 8px",textAlign:"center",minHeight:72,display:"flex",flexDirection:"column",justifyContent:"center",position:"relative"}}>
-                  <div style={{fontSize:11,fontWeight:700,color:level.color,marginBottom:2}}>{level.name}</div>
-                  <div style={{fontSize:10,color:"#94A3B8"}}>{level.description}</div>
-                </div>
-                {/* "You are here" marker */}
-                {isCurrent&&(
-                  <div style={{position:"absolute",top:-28,left:"50%",transform:"translateX(-50%)",whiteSpace:"nowrap",display:"flex",flexDirection:"column",alignItems:"center"}}>
-                    <div style={{fontSize:10,fontWeight:700,color:"#06B6D4",background:"#06B6D420",padding:"2px 8px",borderRadius:4,border:"1px solid #06B6D4"}}>You are here</div>
-                    <div style={{width:0,height:0,borderLeft:"5px solid transparent",borderRight:"5px solid transparent",borderTop:"5px solid #06B6D4",marginTop:1}}/>
-                  </div>
-                )}
-                {/* "You could be here" marker */}
-                {isProjected&&(
-                  <div style={{position:"absolute",top:-28,left:"50%",transform:"translateX(-50%)",whiteSpace:"nowrap",display:"flex",flexDirection:"column",alignItems:"center"}}>
-                    <div style={{fontSize:10,fontWeight:700,color:"#2DD4BF",background:"#2DD4BF20",padding:"2px 8px",borderRadius:4,border:"1px dashed #2DD4BF"}}>You could be here</div>
-                    <div style={{width:0,height:0,borderLeft:"5px solid transparent",borderRight:"5px solid transparent",borderTop:"5px solid #2DD4BF",marginTop:1}}/>
-                  </div>
-                )}
+      {/* Growth stage boxes */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(5, 1fr)",gap:6,marginBottom:8}}>
+        {LEVELS.map((level,i)=>{
+          const isCurrent=level.id===currentLevel;
+          const isProjected=level.id===projectedLevel&&projectedLevel!==currentLevel;
+          const isPast=level.id<currentLevel;
+          const isBetween=level.id>currentLevel&&level.id<projectedLevel;
+          let bg=`${level.color}15`;
+          let border=`1px solid ${level.color}30`;
+          if(isCurrent){bg=`${level.color}40`;border=`2px solid ${level.color}`}
+          else if(isProjected){bg=`${level.color}25`;border=`2px dashed ${level.color}`}
+          else if(isPast){bg=`${level.color}30`;border=`1px solid ${level.color}50`}
+          else if(isBetween){bg=`${level.color}20`;border=`1px dashed ${level.color}40`}
+          return(
+            <div key={level.id} style={{position:"relative"}}>
+              <div style={{background:bg,border,borderRadius:8,padding:"12px 6px",textAlign:"center",minHeight:68,display:"flex",flexDirection:"column",justifyContent:"center",overflow:"hidden"}}>
+                <div style={{fontSize:10,fontWeight:700,color:level.color,marginBottom:2}}>{level.name}</div>
+                <div style={{fontSize:9,color:"#94A3B8",lineHeight:1.3}}>{level.description}</div>
               </div>
-            );
-          })}
-        </div>
-
-        {/* Progress arrow */}
-        {projectedLevel>currentLevel&&(
-          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginTop:4}}>
-            <div style={{fontSize:11,color:"#64748B"}}>Level {currentLevel}</div>
-            <div style={{flex:1,maxWidth:200,height:2,background:"linear-gradient(90deg,#06B6D4,#2DD4BF)",borderRadius:1,position:"relative"}}>
-              <div style={{position:"absolute",right:-6,top:-4,width:0,height:0,borderTop:"5px solid transparent",borderBottom:"5px solid transparent",borderLeft:"8px solid #2DD4BF"}}/>
             </div>
-            <div style={{fontSize:11,color:"#2DD4BF",fontWeight:600}}>Level {projectedLevel}</div>
-          </div>
-        )}
+          );
+        })}
       </div>
+
+      {/* Markers below the boxes */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(5, 1fr)",gap:6,marginBottom:12}}>
+        {LEVELS.map((level)=>{
+          const isCurrent=level.id===currentLevel;
+          const isProjected=level.id===projectedLevel&&projectedLevel!==currentLevel;
+          return(
+            <div key={level.id} style={{textAlign:"center",minHeight:24}}>
+              {isCurrent&&(
+                <div style={{display:"inline-flex",flexDirection:"column",alignItems:"center"}}>
+                  <div style={{width:0,height:0,borderLeft:"5px solid transparent",borderRight:"5px solid transparent",borderBottom:"5px solid #06B6D4",marginBottom:1}}/>
+                  <div style={{fontSize:9,fontWeight:700,color:"#06B6D4",background:"#06B6D420",padding:"2px 6px",borderRadius:3,border:"1px solid #06B6D4",whiteSpace:"nowrap"}}>You are here</div>
+                </div>
+              )}
+              {isProjected&&(
+                <div style={{display:"inline-flex",flexDirection:"column",alignItems:"center"}}>
+                  <div style={{width:0,height:0,borderLeft:"5px solid transparent",borderRight:"5px solid transparent",borderBottom:"5px solid #2DD4BF",marginBottom:1}}/>
+                  <div style={{fontSize:9,fontWeight:700,color:"#2DD4BF",background:"#2DD4BF20",padding:"2px 6px",borderRadius:3,border:"1px dashed #2DD4BF",whiteSpace:"nowrap"}}>You could be here</div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Progress arrow */}
+      {projectedLevel>currentLevel&&(
+        <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:12}}>
+          <div style={{fontSize:11,color:"#64748B"}}>Level {currentLevel}</div>
+          <div style={{flex:1,maxWidth:200,height:2,background:"linear-gradient(90deg,#06B6D4,#2DD4BF)",borderRadius:1,position:"relative"}}>
+            <div style={{position:"absolute",right:-6,top:-4,width:0,height:0,borderTop:"5px solid transparent",borderBottom:"5px solid transparent",borderLeft:"8px solid #2DD4BF"}}/>
+          </div>
+          <div style={{fontSize:11,color:"#2DD4BF",fontWeight:600}}>Level {projectedLevel}</div>
+        </div>
+      )}
 
       <p style={{fontSize:12,color:"#94A3B8",lineHeight:1.6,margin:0}}>
         {projectedLevel>currentLevel
@@ -572,87 +579,76 @@ function App(){
               ))}
             </div>
 
-            {/* Outcome + Next Steps */}
+            {/* Diagnosis > Solution > Action — one cohesive flow */}
             {allScored&&(
               <div className="fade-in" style={{marginTop:24}}>
-                {/* Outcome */}
-                <div style={{padding:16,background:"#0F172A",borderRadius:10,border:"1px solid #06B6D430",marginBottom:16}}>
-                  <div style={{fontSize:10,fontWeight:600,color:"#06B6D4",textTransform:"uppercase",letterSpacing:1.2,marginBottom:4}}>Your Result</div>
-                  <div style={{fontSize:18,fontWeight:700,color:"#F8FAFC",marginBottom:4}}>{outcome.title}</div>
-                  <div style={{fontSize:13,color:"#94A3B8",marginBottom:12,lineHeight:1.5}}>{outcome.subtitle}</div>
-                  <div style={{fontSize:13,color:"#CBD5E1",lineHeight:1.6,marginBottom:16}}>{outcome.recommendation}</div>
-                  <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",background:"#1E293B",borderRadius:8}}>
-                    <div style={{width:8,height:8,borderRadius:"50%",background:"#06B6D4"}}/>
-                    <div><div style={{fontSize:13,fontWeight:600,color:"#F8FAFC"}}>{outcome.service}</div>
-                    <div style={{fontSize:11,color:"#64748B"}}>{outcome.serviceDetail}</div></div>
-                  </div>
-                </div>
 
-                {/* Maturity Growth Chart */}
+                {/* 1. Your result + maturity journey */}
+                <div style={{fontSize:10,fontWeight:600,color:"#06B6D4",textTransform:"uppercase",letterSpacing:1.2,marginBottom:4}}>Your Result</div>
+                <div style={{fontSize:18,fontWeight:700,color:"#F8FAFC",marginBottom:4}}>{outcome.title}</div>
+                <div style={{fontSize:13,color:"#94A3B8",marginBottom:12,lineHeight:1.5}}>{outcome.subtitle}</div>
+                <div style={{fontSize:13,color:"#CBD5E1",lineHeight:1.6,marginBottom:20}}>{outcome.recommendation}</div>
+
                 <MaturityGrowthChart currentAvg={avgScore} projectedAvg={projectedAvg}/>
 
-                {/* Next Steps */}
+                {/* 2. What to do next */}
                 {nextSteps.length>0&&(
-                  <div style={{marginBottom:16}}>
-                    <div style={{marginBottom:12}}>
-                      <div style={{fontSize:10,fontWeight:600,color:"#2DD4BF",textTransform:"uppercase",letterSpacing:1.2,marginBottom:2}}>Your Next Steps</div>
-                      <div style={{fontSize:15,fontWeight:700,color:"#F8FAFC"}}>The {nextSteps.length===1?"one thing":"two things"} that will make the biggest difference</div>
-                    </div>
+                  <>
+                    <div style={{height:1,background:"#334155",margin:"4px 0 20px"}}/>
+                    <div style={{fontSize:10,fontWeight:600,color:"#2DD4BF",textTransform:"uppercase",letterSpacing:1.2,marginBottom:2}}>What to focus on</div>
+                    <div style={{fontSize:15,fontWeight:700,color:"#F8FAFC",marginBottom:6}}>The {nextSteps.length===1?"one thing":"two things"} that will make the biggest difference</div>
                     <p style={{fontSize:12,color:"#94A3B8",marginBottom:14,lineHeight:1.5}}>
-                      Based on your scores, {nextSteps.length===1?"this is the single most impactful step":"these are the two most impactful steps"} you can take to level up your AI maturity. Focus here first.
+                      Based on your scores, {nextSteps.length===1?"this is the single most impactful step":"these are the two most impactful steps"} you can take right now.
                     </p>
                     {nextSteps.map((step,i)=><NextStepCard key={i} step={step} index={i}/>)}
-
-                    {/* CTA with inline contact form */}
-                    <div ref={contactFormRef} style={{marginTop:14,padding:"16px 18px",background:"linear-gradient(135deg,#06B6D410,#2DD4BF10)",borderRadius:10,border:"1px solid #06B6D430",scrollMarginTop:16}}>
-                      {submitted?(
-                        <div className="fade-in" style={{textAlign:"center",padding:"8px 0"}}>
-                          <div style={{fontSize:28,marginBottom:8}}>{"\u2705"}</div>
-                          <div style={{fontSize:16,fontWeight:700,color:"#F8FAFC",marginBottom:4}}>Thanks{contactName?`, ${contactName}`:""}!</div>
-                          <p style={{fontSize:13,color:"#94A3B8",lineHeight:1.5}}>
-                            We've got your results. Someone from our AI team will be in touch to chat about your {outcome.service.toLowerCase()} options. In the meantime, share your results with your team using the link above.
-                          </p>
-                        </div>
-                      ):(
-                        <>
-                          <div style={{textAlign:"center",marginBottom:showContactForm?16:0}}>
-                            <div style={{fontSize:14,fontWeight:700,color:"#F8FAFC",marginBottom:4}}>Ready to take {nextSteps.length===1?"this step":"these steps"}?</div>
-                            <p style={{fontSize:12,color:"#94A3B8",marginBottom:12,lineHeight:1.5}}>
-                              Mechanical Rock helps organisations like yours move from assessment to action. We'll work with you to turn these next steps into a concrete plan with measurable outcomes.
-                            </p>
-                            {!showContactForm&&(
-                              <button onClick={()=>{setShowContactForm(true);setTimeout(()=>{if(contactFormRef.current)contactFormRef.current.scrollIntoView({behavior:"smooth",block:"start"})},100)}}
-                                style={{background:"linear-gradient(135deg,#06B6D4,#2DD4BF)",color:"#0F172A",border:"none",borderRadius:8,padding:"12px 24px",fontSize:14,fontWeight:700,cursor:"pointer"}}>
-                                {outcome.ctaLabel} {"\u2192"}
-                              </button>
-                            )}
-                          </div>
-                          {showContactForm&&(
-                            <div className="fade-in">
-                              <p style={{fontSize:12,color:"#94A3B8",marginBottom:12,lineHeight:1.5,textAlign:"center"}}>
-                                Drop your details and we'll reach out with tailored guidance based on your results. No spam, no obligation.
-                              </p>
-                              <div style={{display:"flex",flexDirection:"column",gap:10,maxWidth:400,margin:"0 auto"}}>
-                                <input type="text" placeholder="Your name" value={contactName} onChange={e=>setContactName(e.target.value)}
-                                  style={{background:"#1E293B",border:"1px solid #334155",borderRadius:8,padding:"10px 14px",color:"#F8FAFC",fontSize:14,width:"100%",boxSizing:"border-box"}}/>
-                                <input type="text" placeholder="Organisation name" value={orgName} onChange={e=>setOrgName(e.target.value)}
-                                  style={{background:"#1E293B",border:"1px solid #334155",borderRadius:8,padding:"10px 14px",color:"#F8FAFC",fontSize:14,width:"100%",boxSizing:"border-box"}}/>
-                                <input type="email" placeholder="Email address" value={contactEmail} onChange={e=>setContactEmail(e.target.value)}
-                                  style={{background:"#1E293B",border:"1px solid #334155",borderRadius:8,padding:"10px 14px",color:"#F8FAFC",fontSize:14,width:"100%",boxSizing:"border-box"}}/>
-                                <input type="tel" placeholder="Phone number (optional)" value={contactPhone} onChange={e=>setContactPhone(e.target.value)}
-                                  style={{background:"#1E293B",border:"1px solid #334155",borderRadius:8,padding:"10px 14px",color:"#F8FAFC",fontSize:14,width:"100%",boxSizing:"border-box"}}/>
-                                <button onClick={handleContactSubmit} disabled={submitting||(!contactEmail&&!contactPhone)}
-                                  style={{background:(!contactEmail&&!contactPhone)?"#334155":"linear-gradient(135deg,#06B6D4,#2DD4BF)",color:(!contactEmail&&!contactPhone)?"#64748B":"#0F172A",border:"none",borderRadius:8,padding:"12px 20px",fontSize:14,fontWeight:700,cursor:(!contactEmail&&!contactPhone)?"default":"pointer",opacity:submitting?.7:1,animation:submitting?"pulse 1.5s infinite":"none"}}>
-                                  {submitting?"Sending...":outcome.ctaLabel}
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
+                  </>
                 )}
+
+                {/* 3. How we help + contact form */}
+                <div style={{height:1,background:"#334155",margin:"8px 0 20px"}}/>
+                <div style={{fontSize:10,fontWeight:600,color:"#F97316",textTransform:"uppercase",letterSpacing:1.2,marginBottom:2}}>How we can help</div>
+                <div style={{fontSize:15,fontWeight:700,color:"#F8FAFC",marginBottom:6}}>{outcome.service}</div>
+                <div style={{fontSize:11,color:"#64748B",marginBottom:10}}>{outcome.serviceDetail}</div>
+
+                <div ref={contactFormRef} style={{scrollMarginTop:16}}>
+                  {submitted?(
+                    <div className="fade-in" style={{textAlign:"center",padding:"20px 0 8px"}}>
+                      <div style={{fontSize:28,marginBottom:8}}>{"\u2705"}</div>
+                      <div style={{fontSize:16,fontWeight:700,color:"#F8FAFC",marginBottom:4}}>Thanks{contactName?`, ${contactName}`:""}!</div>
+                      <p style={{fontSize:13,color:"#94A3B8",lineHeight:1.5}}>
+                        We've got your results. Someone from our AI team will be in touch soon. In the meantime, share your results with your team using the link above.
+                      </p>
+                    </div>
+                  ):(
+                    <>
+                      <p style={{fontSize:12,color:"#94A3B8",marginBottom:14,lineHeight:1.5}}>
+                        We'll work with you to turn these next steps into a concrete plan with measurable outcomes. Drop your details and we'll be in touch — no spam, no obligation.
+                      </p>
+                      {!showContactForm?(
+                        <button onClick={()=>{setShowContactForm(true);setTimeout(()=>{if(contactFormRef.current)contactFormRef.current.scrollIntoView({behavior:"smooth",block:"start"})},100)}}
+                          style={{background:"linear-gradient(135deg,#06B6D4,#2DD4BF)",color:"#0F172A",border:"none",borderRadius:8,padding:"12px 24px",fontSize:14,fontWeight:700,cursor:"pointer"}}>
+                          {outcome.ctaLabel} {"\u2192"}
+                        </button>
+                      ):(
+                        <div className="fade-in" style={{display:"flex",flexDirection:"column",gap:10,maxWidth:400}}>
+                          <input type="text" placeholder="Your name" value={contactName} onChange={e=>setContactName(e.target.value)}
+                            style={{background:"#0F172A",border:"1px solid #334155",borderRadius:8,padding:"10px 14px",color:"#F8FAFC",fontSize:14,width:"100%",boxSizing:"border-box"}}/>
+                          <input type="text" placeholder="Organisation name" value={orgName} onChange={e=>setOrgName(e.target.value)}
+                            style={{background:"#0F172A",border:"1px solid #334155",borderRadius:8,padding:"10px 14px",color:"#F8FAFC",fontSize:14,width:"100%",boxSizing:"border-box"}}/>
+                          <input type="email" placeholder="Email address" value={contactEmail} onChange={e=>setContactEmail(e.target.value)}
+                            style={{background:"#0F172A",border:"1px solid #334155",borderRadius:8,padding:"10px 14px",color:"#F8FAFC",fontSize:14,width:"100%",boxSizing:"border-box"}}/>
+                          <input type="tel" placeholder="Phone number (optional)" value={contactPhone} onChange={e=>setContactPhone(e.target.value)}
+                            style={{background:"#0F172A",border:"1px solid #334155",borderRadius:8,padding:"10px 14px",color:"#F8FAFC",fontSize:14,width:"100%",boxSizing:"border-box"}}/>
+                          <button onClick={handleContactSubmit} disabled={submitting||(!contactEmail&&!contactPhone)}
+                            style={{background:(!contactEmail&&!contactPhone)?"#334155":"linear-gradient(135deg,#06B6D4,#2DD4BF)",color:(!contactEmail&&!contactPhone)?"#64748B":"#0F172A",border:"none",borderRadius:8,padding:"12px 20px",fontSize:14,fontWeight:700,cursor:(!contactEmail&&!contactPhone)?"default":"pointer",opacity:submitting?.7:1,animation:submitting?"pulse 1.5s infinite":"none"}}>
+                            {submitting?"Sending...":outcome.ctaLabel}
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+
               </div>
             )}
           </div>
